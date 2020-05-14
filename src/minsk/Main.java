@@ -7,6 +7,7 @@ import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.syntax.Parser;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.SyntaxToken;
+import minsk.diagnostics.*;
 
 // https://www.youtube.com/watch?v=wgHIkdUQbp0
 

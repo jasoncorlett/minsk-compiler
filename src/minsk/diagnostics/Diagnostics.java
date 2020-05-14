@@ -1,4 +1,4 @@
-package minsk;
+package minsk.diagnostics;
 
 import java.util.LinkedList;
 

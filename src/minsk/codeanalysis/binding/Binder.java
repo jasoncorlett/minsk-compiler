@@ -1,15 +1,11 @@
 package minsk.codeanalysis.binding;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import minsk.Diagnosable;
-import minsk.Diagnostics;
 import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.ExpressionSyntax;
 import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
+import minsk.diagnostics.*;
 
 public class Binder implements Diagnosable {
 	
@@ -29,7 +25,7 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundExpression bindLiteralExpression(LiteralExpressionSyntax syntax) {
-		var value = (Integer) syntax.getLiteralToken().getValue();
+		var value = syntax.getValue();
 		return new BoundLiteralExpression(value);
 	}
 

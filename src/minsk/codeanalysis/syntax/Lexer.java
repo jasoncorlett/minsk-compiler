@@ -1,10 +1,8 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Function;
 
-import minsk.Diagnosable;
-import minsk.Diagnostics;
+import minsk.diagnostics.*;
 
 public class Lexer implements Diagnosable {
 	public static final char EOF = '\0';
@@ -25,60 +23,73 @@ public class Lexer implements Diagnosable {
 		return text.charAt(position);
 	}
 	
-	public SyntaxToken nextToken() {
+	private boolean match(Function<Character, Boolean> fn) {
+		return fn.apply(current());
+	}
+	
+	private void next() {
+		position++;
+	}
+	
+	public SyntaxToken lex() {
 		if (position >= text.length()) {
-			return new SyntaxToken(SyntaxKind.EndOfFileToken, position, "" + EOF, null);
+			return SyntaxKind.EndOfFileToken.newToken(position, "" + EOF, null);
 		}
 		
-		else if (Character.isDigit(current())) {
+		if (match(Character::isDigit)) {
 			var start = position;
-			while (Character.isDigit(current())) {
-				position++;
+			
+			while (match(Character::isDigit)) {
+				next();
 			}
 			
 			var t = text.substring(start, position);
 			// TODO: Handle parseInt exceptions in a useful way
-			return new SyntaxToken(SyntaxKind.LiteralToken, start, t, Integer.parseInt(t));
+			return SyntaxKind.LiteralToken.newToken(start, t, Integer.parseInt(t));
 		}
 		
-		else if (Character.isWhitespace(current())) {
+		if (match(Character::isWhitespace)) {
 			var start = position;
-			while (Character.isWhitespace(current())) {
-				position++;
+			while (match(Character::isWhitespace)) {
+				next();
 			}
 			
 			var t = text.substring(start, position);
 			
-			return new SyntaxToken(SyntaxKind.WhitespaceToken, start, t, t);
+			return SyntaxKind.WhitespaceToken.newToken(position, t, t);
 		}
 		
-		else if (current() == '+') {
-			return new SyntaxToken(SyntaxKind.PlusToken, position++, "+", null);
+		if (match(Character::isLetter)) {
+			var start = position;
+			
+			while (match(Character::isLetter)) {
+				next();
+			}
+			
+			var t = text.substring(start, position);
+			var kind = SyntaxFacts.getKeywordKind(t);
+			
+			return kind.newToken(start, t, null);
 		}
 		
-		else if (current() == '-') {
-			return new SyntaxToken(SyntaxKind.MinusToken, position++, "-", null);
-		}
-		
-		else if (current() == '*') {
-			return new SyntaxToken(SyntaxKind.StarToken, position++, "*", null);
-		}
-		
-		else if (current() == '/') {
-			return new SyntaxToken(SyntaxKind.SlashToken, position++, "/", null);
-		}
-		
-		else if (current() == '(') {
-			return new SyntaxToken(SyntaxKind.OpenParenthesisToken, position++, "(", null);
-		}
-		
-		else if (current() == ')') {
-			return new SyntaxToken(SyntaxKind.CloseParenthesisToken, position++, ")", null);
+		switch (current()) {
+		case '+':
+			return SyntaxKind.PlusToken.newToken(position++, "+", null);
+		case '-':
+			return SyntaxKind.MinusToken.newToken(position++, "-", null);
+		case '*':
+			return SyntaxKind.StarToken.newToken(position++, "*", null);
+		case '/':
+			return SyntaxKind.SlashToken.newToken(position++, "/", null);
+		case '(':
+			return SyntaxKind.OpenParenthesisToken.newToken(position++, "(", null);
+		case ')':
+			return SyntaxKind.CloseParenthesisToken.newToken(position++, ")", null);
 		}
 		
 		getDiagnostics().add("ERROR: Bad character input: '" + current() + "'");
 		position++;
-		return new SyntaxToken(SyntaxKind.BadToken, position -1, text.substring(position - 1, position), null);	
+		return SyntaxKind.BadToken.newToken(position - 1, text.substring(position - 1, position), null);	
 	}
 
 	public Diagnostics getDiagnostics() {

@@ -5,6 +5,8 @@ import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 
+import minsk.diagnostics.*;
+
 public class Evaluator {
 	private final BoundExpression root;
 
@@ -12,17 +14,17 @@ public class Evaluator {
 		this.root = root;
 	}
 	
-	public int evaluate() {
+	public Object evaluate() {
 		return evaluateExpression(root);
 	}
 	
-	public int evaluateExpression(BoundExpression expr) {
+	public Object evaluateExpression(BoundExpression expr) {
 		if (expr instanceof BoundLiteralExpression) {
 			var n = (BoundLiteralExpression) expr;
-			return (int) n.getValue();
+			return n.getValue();
 		} else if (expr instanceof BoundUnaryExpression) {
 			var u = (BoundUnaryExpression) expr;
-			var operand = evaluateExpression(u.getOperand());
+			var operand = (int) evaluateExpression(u.getOperand());
 			
 			switch (u.getOperatorKind()) {
 			case Identity:
@@ -35,8 +37,8 @@ public class Evaluator {
 		} else if (expr instanceof BoundBinaryExpression) {
 			var binaryExpression = (BoundBinaryExpression) expr;
 			
-			var left = evaluateExpression(binaryExpression.getLeft());
-			var right = evaluateExpression(binaryExpression.getRight());
+			var left = (int) evaluateExpression(binaryExpression.getLeft());
+			var right = (int) evaluateExpression(binaryExpression.getRight());
 			
 			switch (binaryExpression.getOperaetorKind()) {
 			case Addition:
