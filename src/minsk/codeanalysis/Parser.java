@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
+	
 	public List<String> diagnostics = new ArrayList<String>();
 	public final List<SyntaxToken> tokens;
 	private int position = 0;
@@ -61,21 +62,7 @@ public class Parser {
 		
 		return new SyntaxTree(diagnostics, expression, endOfFileToken);
 	}
-	
-	private static int getBinaryOperatorPrecedence(SyntaxKind kind) {
-		switch (kind) {
-		case StarToken:
-		case SlashToken:
-			return 2;
-			
-		case PlusToken:
-		case MinusToken:
-			return 1;
-			
-		default:
-			return 0; // Not a binary operator
-		}
-	}
+
 	
 	private ExpressionSyntax parseExpression() {
 		return parseExpression(0);
@@ -85,7 +72,7 @@ public class Parser {
 		var left = parsePrimaryExpression();
 		
 		while (true) {
-			var precedence = getBinaryOperatorPrecedence(current().kind);
+			var precedence = SyntaxFacts.getBinaryOperatorPrecedence(current().kind);
 			if (precedence == 0 || precedence <= parentPrecedence) {
 				break;
 			}
