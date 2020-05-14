@@ -12,9 +12,9 @@ public class Evaluator {
 	}
 	
 	public int evaluateExpression(ExpressionSyntax expr) {
-		if (expr instanceof NumberExpressionSyntax) {
-			var n = (NumberExpressionSyntax) expr;
-			return (int) n.numberToken.value;
+		if (expr instanceof LiteralExpressionSyntax) {
+			var n = (LiteralExpressionSyntax) expr;
+			return (int) n.literalToken.value;
 		} else if (expr instanceof BinaryExpressionSyntax) {
 			var binaryExpression = (BinaryExpressionSyntax) expr;
 			

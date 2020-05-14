@@ -101,6 +101,6 @@ public class Parser {
 		}
 		
 		var numberToken = match(SyntaxKind.NumberToken);
-		return new NumberExpressionSyntax(numberToken);
+		return new LiteralExpressionSyntax(numberToken);
 	}
 }
