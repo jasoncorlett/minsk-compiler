@@ -14,25 +14,25 @@ public class Evaluator {
 	public int evaluateExpression(ExpressionSyntax expr) {
 		if (expr instanceof LiteralExpressionSyntax) {
 			var n = (LiteralExpressionSyntax) expr;
-			return (int) n.literalToken.value;
+			return (int) n.getLiteralToken().getValue();
 		} else if (expr instanceof UnaryExpressionSyntax) {
 			var u = (UnaryExpressionSyntax) expr;
-			var operand = evaluateExpression(u.operand);
+			var operand = evaluateExpression(u.getOperand());
 			
-			if (u.operatorToken.kind == SyntaxKind.PlusToken) {
+			if (u.getOperatorToken().getKind() == SyntaxKind.PlusToken) {
 				return operand;
-			} else if (u.operatorToken.kind == SyntaxKind.MinusToken) {
+			} else if (u.getOperatorToken().getKind() == SyntaxKind.MinusToken) {
 				return -operand;
 			} else {
-				throw new RuntimeException("Unexpected unary operator: " + u.operatorToken.kind);
+				throw new RuntimeException("Unexpected unary operator: " + u.getOperatorToken().getKind());
 			}
 		} else if (expr instanceof BinaryExpressionSyntax) {
 			var binaryExpression = (BinaryExpressionSyntax) expr;
 			
-			var left = evaluateExpression(binaryExpression.left);
-			var right = evaluateExpression(binaryExpression.right);
+			var left = evaluateExpression(binaryExpression.getLeft());
+			var right = evaluateExpression(binaryExpression.getRight());
 			
-			switch (binaryExpression.operatorToken.kind) {
+			switch (binaryExpression.getOperatorToken().getKind()) {
 			case PlusToken:
 				return left + right;
 			case MinusToken:
@@ -42,13 +42,13 @@ public class Evaluator {
 			case SlashToken:
 				return left / right;
 			default:
-				throw new RuntimeException("Unexpected operator: " + binaryExpression.operatorToken.kind);
+				throw new RuntimeException("Unexpected operator: " + binaryExpression.getOperatorToken().getKind());
 			}
 		} else if (expr instanceof ParenthesizedExpressionSyntax) {
 			var paren = (ParenthesizedExpressionSyntax) expr;
-			return evaluateExpression(paren.expression);
+			return evaluateExpression(paren.getExpression());
 		}
 		
-		throw new RuntimeException("Invalid syntax node: " + expr.kind);
+		throw new RuntimeException("Invalid syntax node: " + expr.getKind());
 	}
 }

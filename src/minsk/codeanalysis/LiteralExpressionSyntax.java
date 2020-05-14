@@ -3,14 +3,19 @@ package minsk.codeanalysis;
 import java.util.List;
 
 public class LiteralExpressionSyntax extends ExpressionSyntax {
-	public final SyntaxToken literalToken;
+	private final SyntaxToken literalToken;
+	
 	public LiteralExpressionSyntax(SyntaxToken literalToken) {
 		super(SyntaxKind.NumberExpression);
 		this.literalToken = literalToken;
 	}
 	
+	public SyntaxToken getLiteralToken() {
+		return literalToken;
+	}
+
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
-		return List.of(literalToken);
+		return List.of(getLiteralToken());
 	}
 }

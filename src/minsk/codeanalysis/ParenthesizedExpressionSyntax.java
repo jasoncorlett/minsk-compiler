@@ -3,9 +3,9 @@ package minsk.codeanalysis;
 import java.util.List;
 
 public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
-	public final SyntaxToken openParenToken;
-	public final ExpressionSyntax expression;
-	public final SyntaxToken closeParenToken;
+	private final SyntaxToken openParenToken;
+	private final ExpressionSyntax expression;
+	private final SyntaxToken closeParenToken;
 
 	public ParenthesizedExpressionSyntax(SyntaxToken openParenToken, ExpressionSyntax expr, SyntaxToken closeParenToken) {
 		super(SyntaxKind.ParenthesizedExpression);
@@ -14,8 +14,20 @@ public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
 		this.closeParenToken = closeParenToken;
 	}
 
+	public SyntaxToken getOpenParenToken() {
+		return openParenToken;
+	}
+
+	public ExpressionSyntax getExpression() {
+		return expression;
+	}
+
+	public SyntaxToken getCloseParenToken() {
+		return closeParenToken;
+	}
+
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
-		return List.of(openParenToken, expression, closeParenToken);
+		return List.of(getOpenParenToken(), getExpression(), getCloseParenToken());
 	}
 }

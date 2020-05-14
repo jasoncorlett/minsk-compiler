@@ -1,11 +1,15 @@
 package minsk.codeanalysis;
 
 public abstract class SyntaxNode {
-	public final SyntaxKind kind;
+	private final SyntaxKind kind;
 	
 	public SyntaxNode(SyntaxKind kind) {
 		this.kind = kind;
 	}
 	
+	public SyntaxKind getKind() {
+		return kind;
+	}
+
 	public abstract Iterable<SyntaxNode> getChildren();
 }

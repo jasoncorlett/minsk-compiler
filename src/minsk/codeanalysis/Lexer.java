@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-	public List<String> diagnostics = new ArrayList<>();
 	public static final char EOF = '\0';
+	
+	private final List<String> diagnostics = new ArrayList<>();
 	
 	private final String text;
 	private int position;
@@ -72,8 +73,12 @@ public class Lexer {
 			return new SyntaxToken(SyntaxKind.CloseParenthesisToken, position++, ")", null);
 		}
 		
-		diagnostics.add("ERROR: Bad character input: '" + current() + "'");
+		getDiagnostics().add("ERROR: Bad character input: '" + current() + "'");
 		position++;
 		return new SyntaxToken(SyntaxKind.BadToken, position -1, text.substring(position - 1, position), null);	
+	}
+
+	public List<String> getDiagnostics() {
+		return diagnostics;
 	}
 }

@@ -43,13 +43,13 @@ public class Main {
 		var children = node.getChildren().iterator();
 
 		prettyIndent(indent, isLast, isParentLast);
-		System.out.print(node.kind);
+		System.out.print(node.getKind());
 		
 		if (node instanceof SyntaxToken) {
 			SyntaxToken token = (SyntaxToken) node;
 			
-			if (token.value != null)
-				System.out.print(" " + token.value);
+			if (token.getValue() != null)
+				System.out.print(" " + token.getValue());
 		}
 		
 		System.out.println();
@@ -105,12 +105,12 @@ public class Main {
 				var expr = parser.parse();
 				
 				if (showTree) {
-					prettyPrint(expr.root);	
+					prettyPrint(expr.getRoot());	
 				}
 				
 				parser.diagnostics.forEach(System.err::println);
 				
-				System.out.println(new Evaluator(expr.root).evaluate());
+				System.out.println(new Evaluator(expr.getRoot()).evaluate());
 			}
 		}
 	}

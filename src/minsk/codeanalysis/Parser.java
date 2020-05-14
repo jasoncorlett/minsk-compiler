@@ -17,14 +17,14 @@ public class Parser {
 		do  {
 			token = lexer.nextToken();
 			
-			if (token.kind == SyntaxKind.WhitespaceToken || token.kind == SyntaxKind.BadToken) {
+			if (token.getKind() == SyntaxKind.WhitespaceToken || token.getKind() == SyntaxKind.BadToken) {
 				continue;
 			}
 			
 			tokens.add(token);
-		} while (token.kind != SyntaxKind.EndOfFileToken);
+		} while (token.getKind() != SyntaxKind.EndOfFileToken);
 		
-		diagnostics.addAll(lexer.diagnostics);
+		diagnostics.addAll(lexer.getDiagnostics());
 	}
 	
 	private SyntaxToken nextToken() {
@@ -48,12 +48,12 @@ public class Parser {
 	}
 	
 	private SyntaxToken match(SyntaxKind kind) {
-		if (current().kind == kind) {
+		if (current().getKind() == kind) {
 			return nextToken();
 		}
 		
-		diagnostics.add("ERROR: Unexpected token: " + current().kind + " expected " + kind);
-		return new SyntaxToken(kind, current().position, null, null);
+		diagnostics.add("ERROR: Unexpected token: " + current().getKind() + " expected " + kind);
+		return new SyntaxToken(kind, current().getPosition(), null, null);
 	}
 	
 	public SyntaxTree parse() {
@@ -71,7 +71,7 @@ public class Parser {
 	private ExpressionSyntax parseExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 		
-		var unaryOperatorPrecedence = SyntaxFacts.getUnaryOperatorPrecedence(current().kind);
+		var unaryOperatorPrecedence = SyntaxFacts.getUnaryOperatorPrecedence(current().getKind());
 		
 		if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
 			var operatorToken = nextToken();
@@ -82,7 +82,7 @@ public class Parser {
 		}
 		
 		while (true) {
-			var precedence = SyntaxFacts.getBinaryOperatorPrecedence(current().kind);
+			var precedence = SyntaxFacts.getBinaryOperatorPrecedence(current().getKind());
 			if (precedence == 0 || precedence <= parentPrecedence) {
 				break;
 			}
@@ -97,7 +97,7 @@ public class Parser {
 	}
 	
 	private ExpressionSyntax parsePrimaryExpression() {
-		if (current().kind == SyntaxKind.OpenParenthesisToken) {
+		if (current().getKind() == SyntaxKind.OpenParenthesisToken) {
 			var left = nextToken();
 			var expression = parseExpression();
 			var right = match(SyntaxKind.CloseParenthesisToken);
