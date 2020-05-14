@@ -56,35 +56,42 @@ public class Parser {
 	}
 	
 	public SyntaxTree parse() {
-		var expression = parseTerm();
+		var expression = parseExpression();
 		var endOfFileToken = match(SyntaxKind.EndOfFileToken);
 		
 		return new SyntaxTree(diagnostics, expression, endOfFileToken);
 	}
 	
-	public ExpressionSyntax parseTerm() {
-		var left = parseFactor();
-		
-		while (current().kind == SyntaxKind.PlusToken ||
-				current().kind == SyntaxKind.MinusToken) {
+	private static int getBinaryOperatorPrecedence(SyntaxKind kind) {
+		switch (kind) {
+		case StarToken:
+		case SlashToken:
+			return 2;
 			
-			var operatorToken = nextToken();
-			var right = parseFactor();
+		case PlusToken:
+		case MinusToken:
+			return 1;
 			
-			left = new BinaryExpressionSyntax(left, operatorToken, right);
+		default:
+			return 0; // Not a binary operator
 		}
-		
-		return left;
 	}
 	
-	public ExpressionSyntax parseFactor() {
+	private ExpressionSyntax parseExpression() {
+		return parseExpression(0);
+	}
+	
+	private ExpressionSyntax parseExpression(int parentPrecedence) {
 		var left = parsePrimaryExpression();
 		
-		while (current().kind == SyntaxKind.StarToken ||
-				current().kind == SyntaxKind.SlashToken) {
+		while (true) {
+			var precedence = getBinaryOperatorPrecedence(current().kind);
+			if (precedence == 0 || precedence <= parentPrecedence) {
+				break;
+			}
 			
 			var operatorToken = nextToken();
-			var right = parsePrimaryExpression();
+			var right = parseExpression(precedence);
 			
 			left = new BinaryExpressionSyntax(left, operatorToken, right);
 		}
@@ -95,7 +102,7 @@ public class Parser {
 	private ExpressionSyntax parsePrimaryExpression() {
 		if (current().kind == SyntaxKind.OpenParenthesisToken) {
 			var left = nextToken();
-			var expression = parseTerm();
+			var expression = parseExpression();
 			var right = match(SyntaxKind.CloseParenthesisToken);
 			return new ParenthesizedExpressionSyntax(left, expression, right);
 		}
