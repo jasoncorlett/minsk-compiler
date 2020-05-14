@@ -5,5 +5,6 @@ public enum SyntaxKind {
 	NumberToken, WhitespaceToken,
 	PlusToken, SlashToken, StarToken, MinusToken,
 	OpenParenthesisToken, CloseParenthesisToken,
-	NumberExpression, BinaryExpression, ParenthesizedExpression
+	UnaryExpression, BinaryExpression,
+	NumberExpression, ParenthesizedExpression, 
 }

@@ -15,6 +15,17 @@ public class Evaluator {
 		if (expr instanceof LiteralExpressionSyntax) {
 			var n = (LiteralExpressionSyntax) expr;
 			return (int) n.literalToken.value;
+		} else if (expr instanceof UnaryExpressionSyntax) {
+			var u = (UnaryExpressionSyntax) expr;
+			var operand = evaluateExpression(u.operand);
+			
+			if (u.operatorToken.kind == SyntaxKind.PlusToken) {
+				return operand;
+			} else if (u.operatorToken.kind == SyntaxKind.MinusToken) {
+				return -operand;
+			} else {
+				throw new RuntimeException("Unexpected unary operator: " + u.operatorToken.kind);
+			}
 		} else if (expr instanceof BinaryExpressionSyntax) {
 			var binaryExpression = (BinaryExpressionSyntax) expr;
 			
