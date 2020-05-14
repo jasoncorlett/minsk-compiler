@@ -24,31 +24,37 @@ public class Evaluator {
 			return n.getValue();
 		} else if (expr instanceof BoundUnaryExpression) {
 			var u = (BoundUnaryExpression) expr;
-			var operand = (int) evaluateExpression(u.getOperand());
+			var operand = evaluateExpression(u.getOperand());
 			
 			switch (u.getOperatorKind()) {
 			case Identity:
-				return operand;
+				return (int) operand;
 			case Negation:
-				return -operand;
+				return -(int) operand;
+			case LogicalNegation:
+				return !(boolean) operand;
 			default:
 				throw new RuntimeException("Unexpected unary operator: " + u.getOperatorKind());
 			}
 		} else if (expr instanceof BoundBinaryExpression) {
 			var binaryExpression = (BoundBinaryExpression) expr;
 			
-			var left = (int) evaluateExpression(binaryExpression.getLeft());
-			var right = (int) evaluateExpression(binaryExpression.getRight());
+			var left = evaluateExpression(binaryExpression.getLeft());
+			var right = evaluateExpression(binaryExpression.getRight());
 			
 			switch (binaryExpression.getOperaetorKind()) {
 			case Addition:
-				return left + right;
+				return (int) left + (int) right;
 			case Subtraction:
-				return left - right;
+				return (int) left - (int) right;
 			case Multiplication:
-				return left * right;
+				return (int) left * (int) right;
 			case Division:
-				return left / right;
+				return (int) left / (int) right;
+			case LogicalAnd:
+				return (boolean) left && (boolean) right;
+			case LogicalOr:
+				return (boolean) left || (boolean) right;
 			default:
 				throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
 			}

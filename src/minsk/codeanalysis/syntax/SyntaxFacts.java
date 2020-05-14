@@ -5,7 +5,9 @@ public class SyntaxFacts {
 		switch (kind) {
 		case PlusToken:
 		case MinusToken:
-			return 3;
+		case BangToken:
+			return 5;
+			
 		default:
 			return 0;
 		}
@@ -15,8 +17,14 @@ public class SyntaxFacts {
 		switch (kind) {
 		case StarToken:
 		case SlashToken:
-			return 2;
+			return 4;
 
+		case AmpersandAmpersandToken:
+			return 3;
+			
+		case PipePipeToken:
+			return 2;
+			
 		case PlusToken:
 		case MinusToken:
 			return 1;

@@ -7,6 +7,7 @@ public enum SyntaxKind {
 	PlusToken, SlashToken, StarToken, MinusToken,
 	OpenParenthesisToken, CloseParenthesisToken,
 	IdentifierToken,
+	BangToken, AmpersandAmpersandToken, PipePipeToken,
 	
 	// Keywords
 	TrueKeyword, FalseKeyword,

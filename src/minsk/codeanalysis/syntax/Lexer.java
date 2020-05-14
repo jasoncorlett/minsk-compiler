@@ -17,10 +17,21 @@ public class Lexer implements Diagnosable {
 	}
 
 	private char current() {
-		if (position >= text.length()) {
+		return peek(0);
+	}
+	
+	private char lookahead() {
+		return peek(1);
+	}
+	
+	private char peek(int offset) {
+		var index = position + offset;
+		
+		if (index >= text.length()) {
 			return EOF;
 		}
-		return text.charAt(position);
+		
+		return text.charAt(index);
 	}
 	
 	private boolean match(Function<Character, Boolean> fn) {
@@ -85,6 +96,17 @@ public class Lexer implements Diagnosable {
 			return SyntaxKind.OpenParenthesisToken.newToken(position++, "(", null);
 		case ')':
 			return SyntaxKind.CloseParenthesisToken.newToken(position++, ")", null);
+		case '!':
+			return SyntaxKind.BangToken.newToken(position++, "!", null);
+		case '&':
+			if (lookahead() == '&') {
+				return SyntaxKind.AmpersandAmpersandToken.newToken(position += 2, "&&", null);
+			}
+			break;
+		case '|':
+			if (lookahead() == '|') {
+				return SyntaxKind.PipePipeToken.newToken(position += 2, "||", null);
+			}
 		}
 		
 		getDiagnostics().add("ERROR: Bad character input: '" + current() + "'");

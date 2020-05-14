@@ -1,5 +1,5 @@
 package minsk.codeanalysis.binding;
 
 public enum BoundUnaryOperatorKind {
-	Identity, Negation
+	Identity, Negation, LogicalNegation
 }

@@ -8,7 +8,7 @@ import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
 import minsk.diagnostics.*;
 
 public class Binder implements Diagnosable {
-	
+
 	private final Diagnostics diagnostics = new Diagnostics();
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
@@ -30,9 +30,7 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxKind kind, Class<?> operandType) {
-		if (operandType != Integer.class) {
-			return null;
-		}
+		if (operandType == Integer.class) {
 		
 		switch (kind) {
 		case PlusToken:
@@ -40,8 +38,13 @@ public class Binder implements Diagnosable {
 		case MinusToken:
 			return BoundUnaryOperatorKind.Negation;
 		default:
-			throw new RuntimeException("Unexpected unary operator: " + kind);
+			break;
 		}
+		} else if (operandType == Boolean.class && kind == SyntaxKind.BangToken) {
+			return BoundUnaryOperatorKind.LogicalNegation;
+		}
+		
+		throw new RuntimeException("Unexpected unary operator: " + kind);
 	}
 
 	private BoundExpression bindUnaryExpression(UnaryExpressionSyntax syntax) {
@@ -49,42 +52,54 @@ public class Binder implements Diagnosable {
 		var boundOperatorKind = bindUnaryOperatorKind(syntax.getOperatorToken().getKind(), boundOperand.getType());
 
 		if (boundOperatorKind == null) {
-			diagnostics.add("Unary operator " + syntax.getOperatorToken().getText() + " is not defined for " + boundOperand.getType());
+			diagnostics.add("Unary operator " + syntax.getOperatorToken().getText() + " is not defined for "
+					+ boundOperand.getType());
 			return boundOperand;
 		}
-		
+
 		return new BoundUnaryExpression(boundOperatorKind, boundOperand);
 	}
 
 	private BoundBinaryOperatorKind bindBinaryOperatorKind(SyntaxKind kind, Class<?> leftType, Class<?> rightType) {
-		if (leftType != Integer.class || rightType != Integer.class) {
-			return null;
+		if (leftType == Integer.class && rightType == Integer.class) {
+			switch (kind) {
+			case PlusToken:
+				return BoundBinaryOperatorKind.Addition;
+			case MinusToken:
+				return BoundBinaryOperatorKind.Subtraction;
+			case StarToken:
+				return BoundBinaryOperatorKind.Multiplication;
+			case SlashToken:
+				return BoundBinaryOperatorKind.Division;
+			default:
+				break;
+			}
+		} else if (leftType == Boolean.class && rightType == Boolean.class) {
+			switch (kind) {
+			case AmpersandAmpersandToken:
+				return BoundBinaryOperatorKind.LogicalAnd;
+			case PipePipeToken:
+				return BoundBinaryOperatorKind.LogicalOr;
+			default:
+				break;
+			}
 		}
-	
-		switch (kind) {
-		case PlusToken:
-			return BoundBinaryOperatorKind.Addition;
-		case MinusToken:
-			return BoundBinaryOperatorKind.Subtraction;
-		case StarToken:
-			return BoundBinaryOperatorKind.Multiplication;
-		case SlashToken:
-			return BoundBinaryOperatorKind.Division;
-		default:
-			throw new RuntimeException("Unexpected binary operator " + kind);
-		}
+		
+		throw new RuntimeException("Unexpected binary operator " + kind);
 	}
 
 	private BoundExpression bindBinaryExpression(BinaryExpressionSyntax syntax) {
 		var boundLeft = bindExpression(syntax.getLeft());
 		var boundRight = bindExpression(syntax.getRight());
-		var boundOperatorKind = bindBinaryOperatorKind(syntax.getOperatorToken().getKind(), boundLeft.getType(), boundRight.getType());
-		
+		var boundOperatorKind = bindBinaryOperatorKind(syntax.getOperatorToken().getKind(), boundLeft.getType(),
+				boundRight.getType());
+
 		if (boundOperatorKind == null) {
-			diagnostics.add(String.format("Binary operator %s is not defined for types %s and %s", syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType()));
+			diagnostics.add(String.format("Binary operator %s is not defined for types %s and %s",
+					syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType()));
 			return boundLeft;
 		}
-		
+
 		return new BoundBinaryExpression(boundLeft, boundOperatorKind, boundRight);
 	}
 
