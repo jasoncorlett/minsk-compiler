@@ -3,10 +3,13 @@ package minsk.codeanalysis.syntax;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Lexer {
+import minsk.Diagnosable;
+import minsk.Diagnostics;
+
+public class Lexer implements Diagnosable {
 	public static final char EOF = '\0';
 	
-	private final List<String> diagnostics = new ArrayList<>();
+	private final Diagnostics diagnostics = new Diagnostics();
 	
 	private final String text;
 	private int position;
@@ -35,7 +38,7 @@ public class Lexer {
 			
 			var t = text.substring(start, position);
 			// TODO: Handle parseInt exceptions in a useful way
-			return new SyntaxToken(SyntaxKind.NumberToken, start, t, Integer.parseInt(t));
+			return new SyntaxToken(SyntaxKind.LiteralToken, start, t, Integer.parseInt(t));
 		}
 		
 		else if (Character.isWhitespace(current())) {
@@ -78,7 +81,7 @@ public class Lexer {
 		return new SyntaxToken(SyntaxKind.BadToken, position -1, text.substring(position - 1, position), null);	
 	}
 
-	public List<String> getDiagnostics() {
+	public Diagnostics getDiagnostics() {
 		return diagnostics;
 	}
 }

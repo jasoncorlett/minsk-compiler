@@ -6,7 +6,7 @@ public class LiteralExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken literalToken;
 	
 	public LiteralExpressionSyntax(SyntaxToken literalToken) {
-		super(SyntaxKind.NumberExpression);
+		super(SyntaxKind.LiteralExpression);
 		this.literalToken = literalToken;
 	}
 	

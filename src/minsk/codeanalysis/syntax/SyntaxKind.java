@@ -2,9 +2,9 @@ package minsk.codeanalysis.syntax;
 
 public enum SyntaxKind {
 	BadToken, EndOfFileToken,
-	NumberToken, WhitespaceToken,
+	LiteralToken, WhitespaceToken,
 	PlusToken, SlashToken, StarToken, MinusToken,
 	OpenParenthesisToken, CloseParenthesisToken,
 	UnaryExpression, BinaryExpression,
-	NumberExpression, ParenthesizedExpression, 
+	LiteralExpression, ParenthesizedExpression, 
 }

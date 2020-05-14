@@ -3,6 +3,7 @@ package minsk;
 import java.io.IOException;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
+import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.syntax.Parser;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.SyntaxToken;
@@ -18,10 +19,8 @@ public class Main {
 	private static final String INDENT_LAST  = "└── ";
 	
 	private static final String SHOW_TREE_CMD = "#showtree";
-	private static final String SHOW_TOKENS_CMD = "#showtokens";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	
-	private boolean showTokens = false;
 	private boolean showTree = false;
 	
 	static void prettyIndent(final int level, final boolean isLast, final boolean isParentLast) {
@@ -80,12 +79,6 @@ public class Main {
 					continue;
 				}
 				
-				if (SHOW_TOKENS_CMD.equalsIgnoreCase(line) ) {
-					showTokens = !showTokens;
-					System.out.println((showTokens ? "" : "Not ") + "Showing Tokens");
-					continue;
-				}
-				
 				// TODO: Doesn't really work in eclipse terminal
 				// TODO: Linux
 				if (CLEAR_SCREEN_CMD.equalsIgnoreCase(line)) {
@@ -97,23 +90,23 @@ public class Main {
 					continue;
 				}
 				
-				var parser = new Parser(line);
-				
-				if (showTokens) {
-					System.out.print("[ ");
-					parser.tokens.forEach(a -> System.out.print("<" + a + "> "));
-					System.out.println("]");	
-				}
-				
-				var expr = parser.parse();
+				var syntaxTree = new Parser(line).parse();
+				var binder = new Binder();
+				var boundExpression = binder.bindExpression(syntaxTree.getRoot());
 				
 				if (showTree) {
-					prettyPrint(expr.getRoot());	
+					prettyPrint(syntaxTree.getRoot());	
 				}
 				
-				parser.diagnostics.forEach(System.err::println);
+				var diagnostics = new Diagnostics();
+				diagnostics.addAll(syntaxTree.getDiagnostics());
+				diagnostics.addAll(binder.getDiagnostics());
 				
-				System.out.println(new Evaluator(expr.getRoot()).evaluate());
+				if (diagnostics.isEmpty()) {
+					System.out.println(new Evaluator(boundExpression).evaluate());
+				} else {
+					diagnostics.forEach(System.err::println);
+				}
 			}
 		}
 	}

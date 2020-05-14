@@ -1,16 +1,14 @@
 package minsk.codeanalysis;
 
-import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
-import minsk.codeanalysis.syntax.ExpressionSyntax;
-import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
-import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
-import minsk.codeanalysis.syntax.SyntaxKind;
-import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
+import minsk.codeanalysis.binding.BoundBinaryExpression;
+import minsk.codeanalysis.binding.BoundExpression;
+import minsk.codeanalysis.binding.BoundLiteralExpression;
+import minsk.codeanalysis.binding.BoundUnaryExpression;
 
 public class Evaluator {
-	private ExpressionSyntax root;
+	private final BoundExpression root;
 
-	public Evaluator(ExpressionSyntax root) {
+	public Evaluator(BoundExpression root) {
 		this.root = root;
 	}
 	
@@ -18,42 +16,40 @@ public class Evaluator {
 		return evaluateExpression(root);
 	}
 	
-	public int evaluateExpression(ExpressionSyntax expr) {
-		if (expr instanceof LiteralExpressionSyntax) {
-			var n = (LiteralExpressionSyntax) expr;
-			return (int) n.getLiteralToken().getValue();
-		} else if (expr instanceof UnaryExpressionSyntax) {
-			var u = (UnaryExpressionSyntax) expr;
+	public int evaluateExpression(BoundExpression expr) {
+		if (expr instanceof BoundLiteralExpression) {
+			var n = (BoundLiteralExpression) expr;
+			return (int) n.getValue();
+		} else if (expr instanceof BoundUnaryExpression) {
+			var u = (BoundUnaryExpression) expr;
 			var operand = evaluateExpression(u.getOperand());
 			
-			if (u.getOperatorToken().getKind() == SyntaxKind.PlusToken) {
+			switch (u.getOperatorKind()) {
+			case Identity:
 				return operand;
-			} else if (u.getOperatorToken().getKind() == SyntaxKind.MinusToken) {
+			case Negation:
 				return -operand;
-			} else {
-				throw new RuntimeException("Unexpected unary operator: " + u.getOperatorToken().getKind());
+			default:
+				throw new RuntimeException("Unexpected unary operator: " + u.getOperatorKind());
 			}
-		} else if (expr instanceof BinaryExpressionSyntax) {
-			var binaryExpression = (BinaryExpressionSyntax) expr;
+		} else if (expr instanceof BoundBinaryExpression) {
+			var binaryExpression = (BoundBinaryExpression) expr;
 			
 			var left = evaluateExpression(binaryExpression.getLeft());
 			var right = evaluateExpression(binaryExpression.getRight());
 			
-			switch (binaryExpression.getOperatorToken().getKind()) {
-			case PlusToken:
+			switch (binaryExpression.getOperaetorKind()) {
+			case Addition:
 				return left + right;
-			case MinusToken:
+			case Subtraction:
 				return left - right;
-			case StarToken:
+			case Multiplication:
 				return left * right;
-			case SlashToken:
+			case Division:
 				return left / right;
 			default:
-				throw new RuntimeException("Unexpected operator: " + binaryExpression.getOperatorToken().getKind());
+				throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
 			}
-		} else if (expr instanceof ParenthesizedExpressionSyntax) {
-			var paren = (ParenthesizedExpressionSyntax) expr;
-			return evaluateExpression(paren.getExpression());
 		}
 		
 		throw new RuntimeException("Invalid syntax node: " + expr.getKind());

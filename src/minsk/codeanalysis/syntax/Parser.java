@@ -3,10 +3,14 @@ package minsk.codeanalysis.syntax;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
+import minsk.Diagnosable;
+import minsk.Diagnostics;
+
+public class Parser implements Diagnosable {
 	
-	public List<String> diagnostics = new ArrayList<String>();
-	public final List<SyntaxToken> tokens;
+	private final Diagnostics diagnostics = new Diagnostics();
+	private final List<SyntaxToken> tokens;
+
 	private int position = 0;
 	
 	public Parser(String text) {
@@ -21,10 +25,10 @@ public class Parser {
 				continue;
 			}
 			
-			tokens.add(token);
+			getTokens().add(token);
 		} while (token.getKind() != SyntaxKind.EndOfFileToken);
 		
-		diagnostics.addAll(lexer.getDiagnostics());
+		getDiagnostics().addAll(lexer.getDiagnostics());
 	}
 	
 	private SyntaxToken nextToken() {
@@ -35,11 +39,11 @@ public class Parser {
 	
 	private SyntaxToken peek(int offset) {
 		var index = position + offset;
-		if (index >= tokens.size()) {
-			return tokens.get(tokens.size() - 1);
+		if (index >= getTokens().size()) {
+			return getTokens().get(getTokens().size() - 1);
 		}
 		else {
-			return tokens.get(index);
+			return getTokens().get(index);
 		}
 	}
 	
@@ -52,7 +56,7 @@ public class Parser {
 			return nextToken();
 		}
 		
-		diagnostics.add("ERROR: Unexpected token: " + current().getKind() + " expected " + kind);
+		getDiagnostics().add("ERROR: Unexpected token: " + current().getKind() + " expected " + kind);
 		return new SyntaxToken(kind, current().getPosition(), null, null);
 	}
 	
@@ -60,7 +64,7 @@ public class Parser {
 		var expression = parseExpression();
 		var endOfFileToken = match(SyntaxKind.EndOfFileToken);
 		
-		return new SyntaxTree(diagnostics, expression, endOfFileToken);
+		return new SyntaxTree(getDiagnostics(), expression, endOfFileToken);
 	}
 
 	
@@ -104,7 +108,15 @@ public class Parser {
 			return new ParenthesizedExpressionSyntax(left, expression, right);
 		}
 		
-		var numberToken = match(SyntaxKind.NumberToken);
+		var numberToken = match(SyntaxKind.LiteralToken);
 		return new LiteralExpressionSyntax(numberToken);
+	}
+
+	public List<SyntaxToken> getTokens() {
+		return tokens;
+	}
+
+	public Diagnostics getDiagnostics() {
+		return diagnostics;
 	}
 }
