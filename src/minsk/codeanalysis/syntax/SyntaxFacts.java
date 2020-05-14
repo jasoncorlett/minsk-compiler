@@ -1,4 +1,4 @@
-package minsk.codeanalysis;
+package minsk.codeanalysis.syntax;
 
 public class SyntaxFacts {
 	static int getUnaryOperatorPrecedence(SyntaxKind kind) {

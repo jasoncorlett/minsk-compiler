@@ -1,5 +1,12 @@
 package minsk.codeanalysis;
 
+import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
+import minsk.codeanalysis.syntax.ExpressionSyntax;
+import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
+import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
+import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
+
 public class Evaluator {
 	private ExpressionSyntax root;
 

@@ -1,4 +1,4 @@
-package minsk.codeanalysis;
+package minsk.codeanalysis.syntax;
 
 public enum SyntaxKind {
 	BadToken, EndOfFileToken,

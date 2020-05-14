@@ -3,6 +3,9 @@ package minsk;
 import java.io.IOException;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
+import minsk.codeanalysis.syntax.Parser;
+import minsk.codeanalysis.syntax.SyntaxNode;
+import minsk.codeanalysis.syntax.SyntaxToken;
 
 // https://www.youtube.com/watch?v=wgHIkdUQbp0
 

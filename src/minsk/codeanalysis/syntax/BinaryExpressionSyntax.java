@@ -1,4 +1,4 @@
-package minsk.codeanalysis;
+package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
