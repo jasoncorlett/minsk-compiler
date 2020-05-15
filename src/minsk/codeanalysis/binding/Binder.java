@@ -3,7 +3,7 @@ package minsk.codeanalysis.binding;
 import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.ExpressionSyntax;
 import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
-import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
 import minsk.diagnostics.*;
 
@@ -19,6 +19,8 @@ public class Binder implements Diagnosable {
 			return bindUnaryExpression((UnaryExpressionSyntax) syntax);
 		case BinaryExpression:
 			return bindBinaryExpression((BinaryExpressionSyntax) syntax);
+		case ParenthesizedExpression:
+			return bindExpression(((ParenthesizedExpressionSyntax)syntax).getExpression());
 		default:
 			throw new RuntimeException("Unexpected syntax " + syntax.getKind());
 		}
