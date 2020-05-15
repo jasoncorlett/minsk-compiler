@@ -3,13 +3,12 @@ package minsk.codeanalysis.binding;
 public final class BoundBinaryExpression extends BoundExpression {
 
 	private final BoundExpression left;
-	private final BoundBinaryOperatorKind operaetorKind;
+	private final BoundBinaryOperator operaetor;
 	private final BoundExpression right;
 
-	public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind operaetorKind,
-			BoundExpression right) {
+	public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator operaetor, BoundExpression right) {
 		this.left = left;
-		this.operaetorKind = operaetorKind;
+		this.operaetor = operaetor;
 		this.right = right;
 	}
 
@@ -22,12 +21,14 @@ public final class BoundBinaryExpression extends BoundExpression {
 		return left;
 	}
 
-	public BoundBinaryOperatorKind getOperaetorKind() {
-		return operaetorKind;
-	}
-
 	public BoundExpression getRight() {
 		return right;
+	}
+	
+
+
+	public BoundBinaryOperator getOperaetor() {
+		return operaetor;
 	}
 
 	@Override

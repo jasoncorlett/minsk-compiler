@@ -1,16 +1,16 @@
 package minsk.codeanalysis.binding;
 
 public final class BoundUnaryExpression extends BoundExpression {
-	private final BoundUnaryOperatorKind operatorKind;
+	private final BoundUnaryOperator operator;
 	private final BoundExpression operand;
 
-	public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand) {
-		this.operatorKind = operatorKind;
+	public BoundUnaryExpression(BoundUnaryOperator operator, BoundExpression operand) {
+		this.operator = operator;
 		this.operand = operand;
 	}
 
-	public BoundUnaryOperatorKind getOperatorKind() {
-		return operatorKind;
+	public BoundUnaryOperator getOperator() {
+		return operator;
 	}
 
 	public BoundExpression getOperand() {
