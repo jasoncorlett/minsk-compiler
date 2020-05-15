@@ -21,6 +21,7 @@ public class Main {
 	
 	private static final String SHOW_TREE_CMD = "#showtree";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
+	private static final String QUIT_CMD = "#quit";
 	
 	private boolean showTree = false;
 	
@@ -73,6 +74,10 @@ public class Main {
 				System.out.print("> ");
 				
 				var line = sc.nextLine();
+
+				if (QUIT_CMD.equalsIgnoreCase(line)) {
+					break;
+				}
 				
 				if (SHOW_TREE_CMD.equalsIgnoreCase(line)) {
 					showTree = !showTree;
