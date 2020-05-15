@@ -8,6 +8,7 @@ public enum SyntaxKind {
 	OpenParenthesisToken, CloseParenthesisToken,
 	IdentifierToken,
 	BangToken, AmpersandAmpersandToken, PipePipeToken,
+	EqualsEqualsToken, BangEqualsToken,
 	
 	// Keywords
 	TrueKeyword, FalseKeyword,

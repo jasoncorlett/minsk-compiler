@@ -78,7 +78,7 @@ public class Lexer implements Diagnosable {
 			}
 			
 			var t = text.substring(start, position);
-			var kind = SyntaxFacts.getKeywordKind(t);
+			var kind = SyntaxFacts.lookupKeywordKind(t);
 			
 			return kind.newToken(start, t, null);
 		}
@@ -97,6 +97,9 @@ public class Lexer implements Diagnosable {
 		case ')':
 			return SyntaxKind.CloseParenthesisToken.newToken(position++, ")", null);
 		case '!':
+			if (lookahead() == '=') {
+				return SyntaxKind.BangEqualsToken.newToken(position += 2, "!=", null);
+			}
 			return SyntaxKind.BangToken.newToken(position++, "!", null);
 		case '&':
 			if (lookahead() == '&') {
@@ -107,6 +110,12 @@ public class Lexer implements Diagnosable {
 			if (lookahead() == '|') {
 				return SyntaxKind.PipePipeToken.newToken(position += 2, "||", null);
 			}
+			break;
+		case '=':
+			if (lookahead() == '=') {
+				return SyntaxKind.EqualsEqualsToken.newToken(position += 2, "==", null);
+			}
+			break;
 		}
 		
 		getDiagnostics().add("ERROR: Bad character input: '" + current() + "'");

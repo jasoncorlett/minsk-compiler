@@ -73,7 +73,7 @@ public class Parser implements Diagnosable {
 	private ExpressionSyntax parseExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 
-		var unaryOperatorPrecedence = SyntaxFacts.getUnaryOperatorPrecedence(current().getKind());
+		var unaryOperatorPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(current().getKind());
 
 		if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
 			var operatorToken = nextToken();
@@ -84,7 +84,7 @@ public class Parser implements Diagnosable {
 		}
 
 		while (true) {
-			var precedence = SyntaxFacts.getBinaryOperatorPrecedence(current().getKind());
+			var precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(current().getKind());
 			if (precedence == 0 || precedence <= parentPrecedence) {
 				break;
 			}

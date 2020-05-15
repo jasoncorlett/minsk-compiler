@@ -1,47 +1,40 @@
 package minsk.codeanalysis.syntax;
 
+import java.util.Map;
+import static minsk.codeanalysis.syntax.SyntaxKind.*;
+
 public class SyntaxFacts {
-	static int getUnaryOperatorPrecedence(SyntaxKind kind) {
-		switch (kind) {
-		case PlusToken:
-		case MinusToken:
-		case BangToken:
-			return 5;
-			
-		default:
-			return 0;
-		}
+	private static final Map<SyntaxKind, Integer> unaryOperatorPrecedence = Map.of(
+			PlusToken, 6,
+			MinusToken, 6,
+			BangToken, 6
+	);
+	
+	private static final Map<SyntaxKind, Integer> binaryOperatorPrecedence = Map.of(
+			StarToken, 5,
+			SlashToken, 5,
+			PlusToken, 4,
+			MinusToken, 4,
+			EqualsEqualsToken, 3,
+			BangEqualsToken, 3,
+			AmpersandAmpersandToken, 2,
+			PipePipeToken, 1
+	);
+	
+	public static final Map<String, SyntaxKind> keywords = Map.of(
+			"true", TrueKeyword,
+			"false", FalseKeyword
+	);
+	
+	static int lookupUnaryOperatorPrecedence(SyntaxKind kind) {
+		return unaryOperatorPrecedence.getOrDefault(kind, 0);
 	}
 
-	static int getBinaryOperatorPrecedence(SyntaxKind kind) {
-		switch (kind) {
-		case StarToken:
-		case SlashToken:
-			return 4;
-
-		case AmpersandAmpersandToken:
-			return 3;
-			
-		case PipePipeToken:
-			return 2;
-			
-		case PlusToken:
-		case MinusToken:
-			return 1;
-
-		default:
-			return 0; // Not a binary operator
-		}
+	static int lookupBinaryOperatorPrecedence(SyntaxKind kind) {
+		return binaryOperatorPrecedence.getOrDefault(kind, 0);
 	}
 
-	public static SyntaxKind getKeywordKind(String text) {
-		switch (text) {
-		case "true":
-			return SyntaxKind.TrueKeyword;
-		case "false":
-			return SyntaxKind.FalseKeyword;
-		default:
-			return SyntaxKind.IdentifierToken;
-		}
+	public static SyntaxKind lookupKeywordKind(String text) {
+		return keywords.getOrDefault(text, IdentifierToken);
 	}
 }

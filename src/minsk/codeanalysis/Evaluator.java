@@ -42,7 +42,7 @@ public class Evaluator {
 			var left = evaluateExpression(binaryExpression.getLeft());
 			var right = evaluateExpression(binaryExpression.getRight());
 			
-			switch (binaryExpression.getOperaetor().getKind()) {
+			switch (binaryExpression.getOperator().getKind()) {
 			case Addition:
 				return (int) left + (int) right;
 			case Subtraction:
@@ -55,6 +55,10 @@ public class Evaluator {
 				return (boolean) left && (boolean) right;
 			case LogicalOr:
 				return (boolean) left || (boolean) right;
+			case Equals:
+				return left.equals(right);
+			case NotEquals:
+				return !left.equals(right);
 			default:
 				throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
 			}
