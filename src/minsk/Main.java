@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
+import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.Parser;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.SyntaxToken;
@@ -18,11 +19,10 @@ public class Main {
 	private static final String INDENT_CHILD = "├── ";
 	private static final String INDENT_LAST  = "└── ";
 	
+	private static final String SHOW_VARS_CMD = "#showvars";
 	private static final String SHOW_TREE_CMD = "#showtree";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
-	
-	
 	
 	static void prettyIndent(final int level, final boolean isLast, final boolean isParentLast) {
 		for (int i = level; i > 2; i--) {
@@ -69,7 +69,9 @@ public class Main {
 	
 	public void run() {
 		var showTree = false;
-		Map<String, Object> variables = new HashMap<>(); 
+		var showVars = false;
+		
+		Map<VariableSymbol, Object> variables = new HashMap<>(); 
 		
 		try (Scanner sc = new Scanner(System.in)) {
 			while (true) {
@@ -90,6 +92,12 @@ public class Main {
 					continue;
 				}
 				
+				if (SHOW_VARS_CMD.equalsIgnoreCase(line)) {
+					showVars = !showVars;
+					System.out.println((showVars ? "" : "Not ") + "Showing Variables");
+					continue;
+				}
+				
 				// TODO: Doesn't really work in eclipse terminal
 				// TODO: Linux
 				if (CLEAR_SCREEN_CMD.equalsIgnoreCase(line)) {
@@ -106,9 +114,12 @@ public class Main {
 				var result = comp.evaluate(variables);
 				
 				if (showTree) {
-					prettyPrint(syntaxTree.getRoot());	
+					prettyPrint(syntaxTree.getRoot());
 				}
-	
+				
+				if (showVars) {
+					variables.entrySet().forEach(e -> System.out.println(e.getKey() + " = " + e.getValue()));
+				}
 				
 				if (result.getDiagnostics().isEmpty()) {
 					System.out.println(result.getValue());

@@ -14,9 +14,9 @@ import minsk.diagnostics.*;
 public class Binder implements Diagnosable {
 
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
-	private final Map<String, Object> variables;
+	private final Map<VariableSymbol, Object> variables;
 
-	public Binder(Map<String, Object> variables) {
+	public Binder(Map<VariableSymbol, Object> variables) {
 		this.variables = variables;
 	}
 
@@ -39,35 +39,33 @@ public class Binder implements Diagnosable {
 		}
 	}
 
-	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
-		var name = syntax.getIdentifierToken().getText();
-		var boundExpression = bindExpression(syntax.getExpression());
-		
-		Object defaultValue = boundExpression.getType() == Integer.class ? 0 
-				: boundExpression.getType() == Boolean.class ? false
-				: null;
-		
-		if (defaultValue == null) {
-			throw new RuntimeException(String.format("Unsupported variable type: ", boundExpression.getType()));
-		}
-		
-		variables.put(name, defaultValue);
-		
-		return new BoundAssignmentExpression(name, boundExpression);
-	}
-
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
-		var value = variables.get(name);
-
-		if (value == null) {
+		
+		var variable = variables.keySet().stream().filter(v -> name.equals(v.getName())).findFirst();
+		
+		if (variable.isEmpty()) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
 			return new BoundLiteralExpression(0);
 		}
 		
-		var type = value.getClass();
+		return new BoundVariableExpression(variable.get());
+	}
+	
+	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
+		var name = syntax.getIdentifierToken().getText();
+		var boundExpression = bindExpression(syntax.getExpression());
+		var variable = new VariableSymbol(name, boundExpression.getType()); 
 		
-		return new BoundVariableExpression(name, type);
+		var existingVariable = variables.keySet().stream().filter(v -> name.equals(v.getName())).findFirst();
+		
+		if (existingVariable.isPresent()) {
+			variables.remove(existingVariable.get());
+		}
+		
+		variables.put(variable, null);
+		
+		return new BoundAssignmentExpression(variable, boundExpression);
 	}
 
 	private BoundExpression bindParenthesizedExpression(ParenthesizedExpressionSyntax parenthesizedExpressionSyntax) {
@@ -108,7 +106,7 @@ public class Binder implements Diagnosable {
 	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
-	public Map<String, Object> getVariables() {
+	public Map<VariableSymbol, Object> getVariables() {
 		return variables;
 	}
 }

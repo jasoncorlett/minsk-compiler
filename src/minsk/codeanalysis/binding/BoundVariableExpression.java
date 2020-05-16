@@ -1,21 +1,19 @@
 package minsk.codeanalysis.binding;
 
 public class BoundVariableExpression extends BoundExpression {
-	private final String name;
-	private final Class<?> type;
-
-	public BoundVariableExpression(String name, Class<?> type) {
-		this.name = name;
-		this.type = type;
+	private final VariableSymbol variable;
+	
+	public BoundVariableExpression(VariableSymbol variable) {
+		this.variable = variable;
 	}
 
-	public String getName() {
-		return name;
+	public VariableSymbol getVariable() {
+		return variable;
 	}
-
+	
 	@Override
 	Class<? extends Object> getType() {
-		return type;
+		return variable.getType();
 	}
 
 	@Override

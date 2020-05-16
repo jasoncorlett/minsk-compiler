@@ -2,11 +2,11 @@ package minsk.codeanalysis.binding;
 
 public class BoundAssignmentExpression extends BoundExpression {
 
-	private final String name;
+	private final VariableSymbol variable;
 	private final BoundExpression expression;
 
-	public BoundAssignmentExpression(String name, BoundExpression expression) {
-		this.name = name;
+	public BoundAssignmentExpression(VariableSymbol variable, BoundExpression expression) {
+		this.variable = variable;
 		this.expression = expression;
 	}
 	
@@ -20,8 +20,8 @@ public class BoundAssignmentExpression extends BoundExpression {
 		return BoundNodeKind.AssignmentExpression;
 	}
 
-	public String getName() {
-		return name;
+	public VariableSymbol getVariable() {
+		return variable;
 	}
 
 	public BoundExpression getExpression() {

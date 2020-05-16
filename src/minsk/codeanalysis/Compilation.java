@@ -3,6 +3,7 @@ package minsk.codeanalysis;
 import java.util.Map;
 
 import minsk.codeanalysis.binding.Binder;
+import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.diagnostics.DiagnosticsBag;
 
@@ -14,7 +15,7 @@ public class Compilation {
 		this.syntax = syntax;
 	}
 
-	public EvaluationResult evaluate(Map<String, Object> variables) {
+	public EvaluationResult evaluate(Map<VariableSymbol, Object> variables) {
 		var binder = new Binder(variables);
 		var boundExpression = binder.bindExpression(syntax.getRoot());
 		

@@ -8,12 +8,13 @@ import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableExpression;
+import minsk.codeanalysis.binding.VariableSymbol;
 
 public class Evaluator  {
 	private final BoundExpression root;
-	private final Map<String, Object> variables;
+	private final Map<VariableSymbol, Object> variables;
 
-	public Evaluator(BoundExpression root, Map<String, Object> variables) {
+	public Evaluator(BoundExpression root, Map<VariableSymbol, Object> variables) {
 		this.root = root;
 		this.variables = variables;
 	}
@@ -29,13 +30,12 @@ public class Evaluator  {
 			
 		} else if (expr instanceof BoundVariableExpression) {
 			var v = (BoundVariableExpression) expr;
-			return variables.get(v.getName());
-			
+			return variables.get(v.getVariable());
 		} else if (expr instanceof BoundAssignmentExpression) {
 			var a = (BoundAssignmentExpression) expr;
 			var value = evaluateExpression(a.getExpression());
-			variables.put(a.getName(), value);
-			return value;			
+			variables.put(a.getVariable(), value);			
+			return value;
 		} else if (expr instanceof BoundUnaryExpression) {
 			var u = (BoundUnaryExpression) expr;
 			var operand = evaluateExpression(u.getOperand());
@@ -81,7 +81,7 @@ public class Evaluator  {
 		throw new RuntimeException("Invalid syntax node: " + expr.getKind());
 	}
 
-	public Map<String, Object> getVariables() {
+	public Map<VariableSymbol, Object> getVariables() {
 		return variables;
 	}
 }
