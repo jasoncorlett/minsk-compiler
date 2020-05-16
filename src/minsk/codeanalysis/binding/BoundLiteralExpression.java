@@ -13,6 +13,9 @@ public final class BoundLiteralExpression extends BoundExpression {
 
 	@Override
 	public final Class<? extends Object> getType() {
+		if (getValue() == null) {
+			return null;
+		}
 		return getValue().getClass();
 	}
 

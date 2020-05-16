@@ -2,6 +2,8 @@ package minsk.codeanalysis.syntax;
 
 import java.util.ArrayList;
 
+import minsk.codeanalysis.TextSpan;
+
 public class SyntaxToken extends SyntaxNode {
 	private final int position;
 	private final String text;
@@ -24,6 +26,10 @@ public class SyntaxToken extends SyntaxNode {
 
 	public Object getValue() {
 		return value;
+	}
+	
+	public TextSpan getSpan() {
+		return new TextSpan(position, position + text.length());
 	}
 	
 	@Override

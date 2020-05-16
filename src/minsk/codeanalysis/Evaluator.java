@@ -5,9 +5,7 @@ import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 
-import minsk.diagnostics.*;
-
-public class Evaluator {
+public class Evaluator  {
 	private final BoundExpression root;
 
 	public Evaluator(BoundExpression root) {

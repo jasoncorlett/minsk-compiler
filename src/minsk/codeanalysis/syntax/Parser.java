@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.Diagnostics;
+import minsk.diagnostics.DiagnosticsBag;
 
 public class Parser implements Diagnosable {
 
-	private final Diagnostics diagnostics = new Diagnostics();
+	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	private final List<SyntaxToken> tokens;
 
 	private int position = 0;
@@ -28,7 +28,7 @@ public class Parser implements Diagnosable {
 			getTokens().add(token);
 		} while (token.getKind() != SyntaxKind.EndOfFileToken);
 
-		getDiagnostics().addAll(lexer.getDiagnostics());
+		getDiagnostics().addFrom(lexer);
 	}
 
 	private SyntaxToken nextToken() {
@@ -55,7 +55,7 @@ public class Parser implements Diagnosable {
 			return nextToken();
 		}
 
-		getDiagnostics().add("ERROR: Unexpected token: " + current().getKind() + " expected " + kind);
+		getDiagnostics().reportUnexpectedToken(current().getSpan(), current().getKind(), kind);
 		return new SyntaxToken(kind, current().getPosition(), null, null);
 	}
 
@@ -120,7 +120,7 @@ public class Parser implements Diagnosable {
 		return tokens;
 	}
 
-	public Diagnostics getDiagnostics() {
+	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
 }

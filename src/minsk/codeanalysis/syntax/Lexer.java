@@ -2,12 +2,13 @@ package minsk.codeanalysis.syntax;
 
 import java.util.function.Function;
 
+import minsk.codeanalysis.TextSpan;
 import minsk.diagnostics.*;
 
 public class Lexer implements Diagnosable {
 	public static final char EOF = '\0';
 	
-	private final Diagnostics diagnostics = new Diagnostics();
+	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	
 	private final String text;
 	private int position;
@@ -47,20 +48,26 @@ public class Lexer implements Diagnosable {
 			return SyntaxKind.EndOfFileToken.newToken(position, "" + EOF, null);
 		}
 		
+		final var start = position;
+		
 		if (match(Character::isDigit)) {
-			var start = position;
-			
 			while (match(Character::isDigit)) {
 				next();
 			}
 			
 			var t = text.substring(start, position);
-			// TODO: Handle parseInt exceptions in a useful way
-			return SyntaxKind.LiteralToken.newToken(start, t, Integer.parseInt(t));
+			Integer value = null;
+			
+			try {
+				value = Integer.parseInt(t);
+			} catch (NumberFormatException e) {
+				diagnostics.reportInvalidNumber(new TextSpan(start, position), text, Integer.class);
+			}
+			
+			return SyntaxKind.LiteralToken.newToken(start, t, value);
 		}
 		
 		if (match(Character::isWhitespace)) {
-			var start = position;
 			while (match(Character::isWhitespace)) {
 				next();
 			}
@@ -71,8 +78,6 @@ public class Lexer implements Diagnosable {
 		}
 		
 		if (match(Character::isLetter)) {
-			var start = position;
-			
 			while (match(Character::isLetter)) {
 				next();
 			}
@@ -98,32 +103,36 @@ public class Lexer implements Diagnosable {
 			return SyntaxKind.CloseParenthesisToken.newToken(position++, ")", null);
 		case '!':
 			if (lookahead() == '=') {
-				return SyntaxKind.BangEqualsToken.newToken(position += 2, "!=", null);
+				position += 2;
+				return SyntaxKind.BangEqualsToken.newToken(start, "!=", null);
 			}
 			return SyntaxKind.BangToken.newToken(position++, "!", null);
 		case '&':
 			if (lookahead() == '&') {
-				return SyntaxKind.AmpersandAmpersandToken.newToken(position += 2, "&&", null);
+				position += 2;
+				return SyntaxKind.AmpersandAmpersandToken.newToken(start, "&&", null);
 			}
 			break;
 		case '|':
 			if (lookahead() == '|') {
-				return SyntaxKind.PipePipeToken.newToken(position += 2, "||", null);
+				position += 2;
+				return SyntaxKind.PipePipeToken.newToken(start, "||", null);
 			}
 			break;
 		case '=':
 			if (lookahead() == '=') {
-				return SyntaxKind.EqualsEqualsToken.newToken(position += 2, "==", null);
+				position += 2;
+				return SyntaxKind.EqualsEqualsToken.newToken(start, "==", null);
 			}
 			break;
 		}
 		
-		getDiagnostics().add("ERROR: Bad character input: '" + current() + "'");
+		diagnostics.reportBadCharacter(position, current());
 		position++;
 		return SyntaxKind.BadToken.newToken(position - 1, text.substring(position - 1, position), null);	
 	}
 
-	public Diagnostics getDiagnostics() {
+	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
 }

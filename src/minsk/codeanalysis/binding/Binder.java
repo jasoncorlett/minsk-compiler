@@ -9,7 +9,7 @@ import minsk.diagnostics.*;
 
 public class Binder implements Diagnosable {
 
-	private final Diagnostics diagnostics = new Diagnostics();
+	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
 		switch (syntax.getKind()) {
@@ -36,8 +36,7 @@ public class Binder implements Diagnosable {
 		var boundOperator = BoundUnaryOperator.bind(syntax.getOperatorToken().getKind(), boundOperand.getType());
 
 		if (boundOperator == null) {
-			diagnostics.add("Unary operator " + syntax.getOperatorToken().getText() + " is not defined for "
-					+ boundOperand.getType());
+			diagnostics.reportUndefinedUnaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundOperand.getType());
 			return boundOperand;
 		}
 
@@ -50,8 +49,7 @@ public class Binder implements Diagnosable {
 		var boundOperator = BoundBinaryOperator.bind(syntax.getOperatorToken().getKind(), boundLeft.getType(), boundRight.getType());
 
 		if (boundOperator == null) {
-			diagnostics.add(String.format("Binary operator %s is not defined for types %s and %s",
-					syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType()));
+			diagnostics.reportUndefinedBinaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType());
 			return boundLeft;
 		}
 
@@ -59,7 +57,7 @@ public class Binder implements Diagnosable {
 	}
 
 	@Override
-	public Diagnostics getDiagnostics() {
+	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
 }

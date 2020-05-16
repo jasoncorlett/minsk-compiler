@@ -3,16 +3,13 @@ package minsk;
 import java.io.IOException;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
-import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.syntax.Parser;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.SyntaxToken;
-import minsk.diagnostics.*;
 
 // https://www.youtube.com/watch?v=wgHIkdUQbp0
 
 public class Main {
-	
 	// https://en.wikipedia.org/wiki/Tree_(command)
 	private static final String INDENT_BLANK = "    ";
 	private static final String INDENT_TREE  = "│   ";
@@ -74,6 +71,9 @@ public class Main {
 				System.out.print("> ");
 				
 				var line = sc.nextLine();
+				
+				if (line.isEmpty())
+					continue;
 
 				if (QUIT_CMD.equalsIgnoreCase(line)) {
 					break;
@@ -97,21 +97,30 @@ public class Main {
 				}
 				
 				var syntaxTree = new Parser(line).parse();
-				var binder = new Binder();
-				var boundExpression = binder.bindExpression(syntaxTree.getRoot());
+				var comp = new Compilation(syntaxTree);
+				var result = comp.evaluate();
 				
 				if (showTree) {
 					prettyPrint(syntaxTree.getRoot());	
 				}
+	
 				
-				var diagnostics = new Diagnostics();
-				diagnostics.addAll(syntaxTree.getDiagnostics());
-				diagnostics.addAll(binder.getDiagnostics());
-				
-				if (diagnostics.isEmpty()) {
-					System.out.println(new Evaluator(boundExpression).evaluate());
+				if (result.getDiagnostics().isEmpty()) {
+					System.out.println(result.getValue());	
 				} else {
-					diagnostics.forEach(System.err::println);
+					result.getDiagnostics().forEach(d -> {
+						System.err.println();
+						System.err.println(d.getMessage());
+						System.err.println("    " + line);
+						System.err.println("    " + " ".repeat(d.getSpan().getStart()) + "^".repeat(d.getSpan().getLength()));
+					});
+					
+					// Hack to prevent the next iteration's prompt from printing concurrently
+					// with the error messages
+					try {
+						Thread.sleep(25);
+					} catch (InterruptedException uncaught) {
+					}
 				}
 			}
 		}

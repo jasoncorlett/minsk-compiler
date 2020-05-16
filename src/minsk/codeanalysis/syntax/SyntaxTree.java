@@ -1,18 +1,18 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
+import minsk.diagnostics.*;
 
-public class SyntaxTree {
+public class SyntaxTree implements Diagnosable {
 	private final ExpressionSyntax root;
 	private final SyntaxToken endOfFileToken;
-	private final List<String> diagnostics;
+	private final DiagnosticsBag diagnostics;
 	
 	public static SyntaxTree parse(String text) {
 		var parser = new Parser(text);
 		return parser.parse();
 	}
 
-	public SyntaxTree(List<String> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
+	public SyntaxTree(DiagnosticsBag diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
 		this.diagnostics = diagnostics;
 		this.root = root;
 		this.endOfFileToken = endOfFileToken;
@@ -26,7 +26,7 @@ public class SyntaxTree {
 		return endOfFileToken;
 	}
 
-	public List<String> getDiagnostics() {
+	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
 }
