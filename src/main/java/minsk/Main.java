@@ -2,6 +2,7 @@ package minsk;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -24,45 +25,6 @@ public class Main {
 	private static final String SHOW_TREE_CMD = "#showtree";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
-	
-	static void prettyIndent(final int level, final boolean isLast, final boolean isParentLast) {
-		for (int i = level; i > 2; i--) {
-			System.out.print(INDENT_TREE);
-		}
-
-		if (level > 1) {
-			System.out.print(isParentLast ? INDENT_BLANK : INDENT_TREE);
-		}
-		
-		if (level > 0) {
-			System.out.print(isLast ? INDENT_LAST : INDENT_CHILD);
-		}
-	}
-	
-	static void prettyPrint(SyntaxNode node) {
-		prettyPrint(node, 0, false, false);
-	}
-	
-	static void prettyPrint(SyntaxNode node, final int indent, final boolean isLast, final boolean isParentLast) {
-		var children = node.getChildren().iterator();
-
-		prettyIndent(indent, isLast, isParentLast);
-		System.out.print(node.getKind());
-		
-		if (node instanceof SyntaxToken) {
-			SyntaxToken token = (SyntaxToken) node;
-			
-			if (token.getValue() != null)
-				System.out.print(" " + token.getValue());
-		}
-		
-		System.out.println();
-		
-		while (children.hasNext()) {
-			var child = children.next();
-			prettyPrint(child, indent + 1, !children.hasNext(), isLast);
-		}
-	}
 	
 	public static void main(String[] args) {
 		new Main().run();
@@ -146,6 +108,36 @@ public class Main {
 					}
 				}
 			}
+		}
+	}
+
+	private void prettyPrint(SyntaxNode node) {
+		prettyPrint(node, "", true);
+	}
+
+	private void prettyPrint(SyntaxNode node, String indent, boolean isLast) {
+		var marker = isLast ? INDENT_LAST : INDENT_CHILD;
+		
+		List.of((Object)indent, marker, node.getKind()).forEach(System.out::print);
+		
+		if (node instanceof SyntaxToken) {
+			var token = (SyntaxToken) node;
+			
+			if (token.getValue() != null) {
+				System.out.print(" ");
+				System.out.print(token.getValue());
+			}
+		}
+		
+		System.out.println();
+		
+		indent += isLast ? INDENT_BLANK : INDENT_TREE;
+		
+		var iter = node.getChildren().iterator();
+		
+		while (iter.hasNext()) {
+			var child = iter.next();
+			prettyPrint(child, indent, !iter.hasNext());
 		}
 	}
 }
