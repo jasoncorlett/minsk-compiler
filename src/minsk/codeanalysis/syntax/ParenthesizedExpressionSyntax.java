@@ -8,7 +8,6 @@ public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken closeParenToken;
 
 	public ParenthesizedExpressionSyntax(SyntaxToken openParenToken, ExpressionSyntax expr, SyntaxToken closeParenToken) {
-		super(SyntaxKind.ParenthesizedExpression);
 		this.openParenToken = openParenToken;
 		this.expression = expr;
 		this.closeParenToken = closeParenToken;
@@ -29,5 +28,10 @@ public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
 		return List.of(getOpenParenToken(), getExpression(), getCloseParenToken());
+	}
+
+	@Override
+	public SyntaxKind getKind() {
+		return SyntaxKind.ParenthesizedExpression;
 	}
 }

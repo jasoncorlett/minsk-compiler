@@ -1,8 +1,12 @@
 package minsk.codeanalysis.binding;
 
+import java.util.Map;
+
+import minsk.codeanalysis.syntax.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.ExpressionSyntax;
 import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
+import minsk.codeanalysis.syntax.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
 import minsk.diagnostics.*;
@@ -10,20 +14,64 @@ import minsk.diagnostics.*;
 public class Binder implements Diagnosable {
 
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
+	private final Map<String, Object> variables;
+
+	public Binder(Map<String, Object> variables) {
+		this.variables = variables;
+	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
 		switch (syntax.getKind()) {
+		case ParenthesizedExpression:
+			return bindParenthesizedExpression(((ParenthesizedExpressionSyntax)syntax));
 		case LiteralExpression:
 			return bindLiteralExpression((LiteralExpressionSyntax) syntax);
+		case NameExpression:
+			return bindNameExpression((NameExpressionSyntax)syntax);
+		case AssignmentExpression:
+			return bindAssignmentExpression((AssignmentExpressionSyntax)syntax);
 		case UnaryExpression:
 			return bindUnaryExpression((UnaryExpressionSyntax) syntax);
 		case BinaryExpression:
 			return bindBinaryExpression((BinaryExpressionSyntax) syntax);
-		case ParenthesizedExpression:
-			return bindExpression(((ParenthesizedExpressionSyntax)syntax).getExpression());
 		default:
 			throw new RuntimeException("Unexpected syntax " + syntax.getKind());
 		}
+	}
+
+	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
+		var name = syntax.getIdentifierToken().getText();
+		var boundExpression = bindExpression(syntax.getExpression());
+		
+		Object defaultValue = boundExpression.getType() == Integer.class ? 0 
+				: boundExpression.getType() == Boolean.class ? false
+				: null;
+		
+		if (defaultValue == null) {
+			throw new RuntimeException(String.format("Unsupported variable type: ", boundExpression.getType()));
+		}
+		
+		variables.put(name, defaultValue);
+		
+		return new BoundAssignmentExpression(name, boundExpression);
+	}
+
+	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
+		var name = syntax.getIdentifierToken().getText();
+		var value = variables.get(name);
+
+		if (value == null) {
+			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
+			return new BoundLiteralExpression(0);
+		}
+		
+		var type = value.getClass();
+		
+		return new BoundVariableExpression(name, type);
+	}
+
+	private BoundExpression bindParenthesizedExpression(ParenthesizedExpressionSyntax parenthesizedExpressionSyntax) {
+		return bindExpression(parenthesizedExpressionSyntax.getExpression());
 	}
 
 	private BoundExpression bindLiteralExpression(LiteralExpressionSyntax syntax) {
@@ -59,5 +107,8 @@ public class Binder implements Diagnosable {
 	@Override
 	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
+	}
+	public Map<String, Object> getVariables() {
+		return variables;
 	}
 }

@@ -11,7 +11,6 @@ public class LiteralExpressionSyntax extends ExpressionSyntax {
 	}
 	
 	public LiteralExpressionSyntax(SyntaxToken literalToken, Object value) {
-		super(SyntaxKind.LiteralExpression);
 		this.literalToken = literalToken;
 		this.value = value;
 	}
@@ -27,5 +26,10 @@ public class LiteralExpressionSyntax extends ExpressionSyntax {
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
 		return List.of(getLiteralToken());
+	}
+
+	@Override
+	public SyntaxKind getKind() {
+		return SyntaxKind.LiteralExpression;
 	}
 }

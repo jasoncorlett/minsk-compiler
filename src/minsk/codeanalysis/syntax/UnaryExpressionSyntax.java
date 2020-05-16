@@ -7,8 +7,7 @@ public class UnaryExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken operatorToken;
 	
 	public UnaryExpressionSyntax(SyntaxToken operatorToken, ExpressionSyntax operand) {
-		super(SyntaxKind.UnaryExpression);
-		this.operatorToken = operatorToken;
+ 		this.operatorToken = operatorToken;
 		this.operand = operand;
 	}
 	
@@ -23,5 +22,10 @@ public class UnaryExpressionSyntax extends ExpressionSyntax {
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
 		return List.of(getOperatorToken(), getOperand());
+	}
+
+	@Override
+	public SyntaxKind getKind() {
+		return SyntaxKind.UnaryExpression;
 	}
 }

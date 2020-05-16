@@ -8,7 +8,6 @@ public class BinaryExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken operatorToken;
 	
 	public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right) {
-		super(SyntaxKind.BinaryExpression);
 		this.operatorToken = operatorToken;
 		this.left = left;
 		this.right = right;
@@ -30,5 +29,10 @@ public class BinaryExpressionSyntax extends ExpressionSyntax {
 	@Override
 	public Iterable<SyntaxNode> getChildren() {
 		return List.of(getLeft(), getOperatorToken(), getRight());
+	}
+
+	@Override
+	public SyntaxKind getKind() {
+		return SyntaxKind.BinaryExpression;
 	}
 }

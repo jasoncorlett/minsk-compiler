@@ -124,7 +124,7 @@ public class Lexer implements Diagnosable {
 				position += 2;
 				return SyntaxKind.EqualsEqualsToken.newToken(start, "==", null);
 			}
-			break;
+			return SyntaxKind.EqualsToken.newToken(position++, "=", null);
 		}
 		
 		diagnostics.reportBadCharacter(position, current());

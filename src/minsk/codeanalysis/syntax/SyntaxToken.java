@@ -8,9 +8,10 @@ public class SyntaxToken extends SyntaxNode {
 	private final int position;
 	private final String text;
 	private final Object value;
+	private final SyntaxKind kind;
 	
 	public SyntaxToken(SyntaxKind kind, int position, String text, Object value) {
-		super(kind);
+		this.kind = kind;
 		this.position = position;
 		this.text = text;
 		this.value = value;
@@ -40,5 +41,10 @@ public class SyntaxToken extends SyntaxNode {
 	@Override
 	public String toString() {
 		return "" + this.getKind().toString() + ((this.getValue() != null) ? " " + this.getValue() : "");
+	}
+
+	@Override
+	public SyntaxKind getKind() {
+		return kind;
 	}
 }

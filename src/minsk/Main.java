@@ -1,6 +1,8 @@
 package minsk;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
 import minsk.codeanalysis.syntax.Parser;
@@ -20,7 +22,7 @@ public class Main {
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
 	
-	private boolean showTree = false;
+	
 	
 	static void prettyIndent(final int level, final boolean isLast, final boolean isParentLast) {
 		for (int i = level; i > 2; i--) {
@@ -66,6 +68,9 @@ public class Main {
 	}
 	
 	public void run() {
+		var showTree = false;
+		Map<String, Object> variables = new HashMap<>(); 
+		
 		try (Scanner sc = new Scanner(System.in)) {
 			while (true) {
 				System.out.print("> ");
@@ -98,7 +103,7 @@ public class Main {
 				
 				var syntaxTree = new Parser(line).parse();
 				var comp = new Compilation(syntaxTree);
-				var result = comp.evaluate();
+				var result = comp.evaluate(variables);
 				
 				if (showTree) {
 					prettyPrint(syntaxTree.getRoot());	
@@ -106,7 +111,7 @@ public class Main {
 	
 				
 				if (result.getDiagnostics().isEmpty()) {
-					System.out.println(result.getValue());	
+					System.out.println(result.getValue());
 				} else {
 					result.getDiagnostics().forEach(d -> {
 						System.err.println();

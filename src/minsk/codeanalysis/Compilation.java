@@ -1,5 +1,7 @@
 package minsk.codeanalysis;
 
+import java.util.Map;
+
 import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.diagnostics.DiagnosticsBag;
@@ -12,10 +14,9 @@ public class Compilation {
 		this.syntax = syntax;
 	}
 
-	public EvaluationResult evaluate() {
-		var binder = new Binder();
+	public EvaluationResult evaluate(Map<String, Object> variables) {
+		var binder = new Binder(variables);
 		var boundExpression = binder.bindExpression(syntax.getRoot());
-		
 		
 		var diagnostics = new DiagnosticsBag();
 		diagnostics.addFrom(syntax, binder);
@@ -24,7 +25,7 @@ public class Compilation {
 			return new EvaluationResult(diagnostics, null);
 		}
 		
-		var evaluator = new Evaluator(boundExpression);
+		var evaluator = new Evaluator(boundExpression, variables);
 		var value = evaluator.evaluate();
 		
 		return new EvaluationResult(diagnostics, value);

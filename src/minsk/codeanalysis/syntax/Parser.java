@@ -50,6 +50,10 @@ public class Parser implements Diagnosable {
 		return peek(0);
 	}
 
+	private SyntaxToken lookahead() {
+		return peek(1);
+	}
+
 	private SyntaxToken match(SyntaxKind kind) {
 		if (current().getKind() == kind) {
 			return nextToken();
@@ -67,17 +71,33 @@ public class Parser implements Diagnosable {
 	}
 
 	private ExpressionSyntax parseExpression() {
-		return parseExpression(0);
+		return parseAssignmentExpression();
 	}
 
-	private ExpressionSyntax parseExpression(int parentPrecedence) {
+	private ExpressionSyntax parseAssignmentExpression() {
+		if (current().getKind() == SyntaxKind.IdentifierToken && lookahead().getKind() == SyntaxKind.EqualsToken) {
+			var identifierToken = nextToken();
+			var operatorToken = nextToken();
+			var right = parseAssignmentExpression();
+			return new AssignmentExpressionSyntax(identifierToken, operatorToken, right);
+		}
+		
+		return parseBinaryExpression();
+	}
+
+	private ExpressionSyntax parseBinaryExpression() {
+		return parseBinaryExpression(0);
+	}
+
+	// TODO: Naming??
+	private ExpressionSyntax parseBinaryExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 
 		var unaryOperatorPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(current().getKind());
 
 		if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
 			var operatorToken = nextToken();
-			var operand = parseExpression(unaryOperatorPrecedence);
+			var operand = parseBinaryExpression(unaryOperatorPrecedence);
 			left = new UnaryExpressionSyntax(operatorToken, operand);
 		} else {
 			left = parsePrimaryExpression();
@@ -90,7 +110,7 @@ public class Parser implements Diagnosable {
 			}
 
 			var operatorToken = nextToken();
-			var right = parseExpression(precedence);
+			var right = parseBinaryExpression(precedence);
 
 			left = new BinaryExpressionSyntax(left, operatorToken, right);
 		}
@@ -102,7 +122,7 @@ public class Parser implements Diagnosable {
 		switch (current().getKind()) {
 		case OpenParenthesisToken:
 			var left = nextToken();
-			var expression = parseExpression();
+			var expression = parseBinaryExpression();
 			var right = match(SyntaxKind.CloseParenthesisToken);
 			return new ParenthesizedExpressionSyntax(left, expression, right);
 		case TrueKeyword:
@@ -110,6 +130,9 @@ public class Parser implements Diagnosable {
 			var keywordToken = nextToken();
 			var value = keywordToken.getKind() == SyntaxKind.TrueKeyword;
 			return new LiteralExpressionSyntax(keywordToken, value);
+		case IdentifierToken:
+			var identifierToken = nextToken();
+			return new NameExpressionSyntax(identifierToken);
 		default:
 			var numberToken = match(SyntaxKind.LiteralToken);
 			return new LiteralExpressionSyntax(numberToken);

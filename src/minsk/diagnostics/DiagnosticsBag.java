@@ -51,4 +51,8 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 			Class<?> rightType) {
 		report(operatorSpan, "Binary operator '%s' is not defined for types %s and %s", operatorText, leftType, rightType);
 	}
+
+	public void reportUndefinedName(TextSpan span, String name) {
+		report(span, "Variable '%s' is not defined.", name);
+	}
 }
