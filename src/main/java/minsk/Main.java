@@ -3,6 +3,7 @@ package minsk;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
 import minsk.codeanalysis.binding.VariableSymbol;
@@ -77,9 +78,15 @@ public class Main {
 			while (true) {
 				System.out.print("> ");
 				
-				var line = sc.nextLine();
+				String line;
 				
-				if (line.isEmpty())
+				try {
+					line = sc.nextLine();
+				} catch (NoSuchElementException e) {
+					break;
+				}
+
+				if (line == null || line.isEmpty())
 					continue;
 
 				if (QUIT_CMD.equalsIgnoreCase(line)) {
