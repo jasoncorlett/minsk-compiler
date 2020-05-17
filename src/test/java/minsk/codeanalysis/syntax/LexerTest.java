@@ -3,11 +3,15 @@ package minsk.codeanalysis.syntax;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -110,19 +114,6 @@ class LexerTest {
 				.map(s -> new SyntaxTuple(SyntaxKind.WhitespaceToken, s));
 	}
 
-	@Test
-	void EnsureKindsTested() {
-		var excludes = Set.of(SyntaxKind.BadToken, SyntaxKind.EndOfFileToken);
-		var kindsTested = Stream.concat(getSeparatorsData(), getTokenData())
-				.map(t -> t.kind).collect(Collectors.toSet());
-	
-		for (var kind : SyntaxKind.values()) {
-			if ((kind.toString().endsWith("Keyword") || kind.toString().endsWith("Token")) && !excludes.contains(kind)) {
-				assertTrue(kindsTested.contains(kind), "Must test " + kind);
-			}
-		}
-	}
-	
 	@ParameterizedTest
 	@MethodSource("getTokenData")
 	void TestSingleTokens(SyntaxTuple a) {
@@ -167,5 +158,25 @@ class LexerTest {
 		assertEquals(b.kind, 	tokens.get(2).getKind());
 		assertEquals(b.text, 	tokens.get(2).getText());
 	}
+	
+	@Nested
+	@TestInstance(Lifecycle.PER_CLASS)
+	class LexerTestTest {
+		Set<SyntaxKind> excludes = Set.of(SyntaxKind.BadToken, SyntaxKind.EndOfFileToken);
+		
+		final Set<SyntaxKind> kindsTested = Stream.concat(getSeparatorsData(), getTokenData())
+				.map(t -> t.kind).collect(Collectors.toSet());
 
+		Stream<SyntaxKind> getKindsData() {
+			return Arrays.stream(SyntaxKind.values())
+					.filter(k -> k.toString().endsWith("Keyword") || k.toString().endsWith("Token"))
+					.filter(Predicate.not(excludes::contains));
+		}
+		
+		@ParameterizedTest
+		@MethodSource("getKindsData")
+		void EnsureKindsTested(SyntaxKind kind) {
+			assertTrue(kindsTested.contains(kind), "Must test " + kind);
+		}
+	}
 }
