@@ -8,14 +8,14 @@ public enum SyntaxKind {
 	OpenParenthesisToken, CloseParenthesisToken,
 	IdentifierToken,
 	BangToken, AmpersandAmpersandToken, PipePipeToken,
-	EqualsEqualsToken, BangEqualsToken,
+	EqualsEqualsToken, BangEqualsToken, EqualsToken,
 	
 	// Keywords
 	TrueKeyword, FalseKeyword,
 	
 	// Expressions
 	UnaryExpression, BinaryExpression,
-	LiteralExpression, ParenthesizedExpression, NameExpression, AssignmentExpression, EqualsToken;
+	LiteralExpression, ParenthesizedExpression, NameExpression, AssignmentExpression;
 	
 	public SyntaxToken newToken(int position, String text, Object value) {
 		return new SyntaxToken(this, position, text, value);		

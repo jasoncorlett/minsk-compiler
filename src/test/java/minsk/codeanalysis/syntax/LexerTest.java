@@ -1,8 +1,13 @@
 package minsk.codeanalysis.syntax;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -75,32 +80,29 @@ class LexerTest {
 	}
 	
 	private static Stream<SyntaxTuple> getTokenData() {
-		return Stream.of(
-				new SyntaxTuple(SyntaxKind.PlusToken, "+"),
-				new SyntaxTuple(SyntaxKind.PlusToken, "+"),
-				new SyntaxTuple(SyntaxKind.SlashToken, "/"),
-				new SyntaxTuple(SyntaxKind.StarToken, "*"),
-				new SyntaxTuple(SyntaxKind.MinusToken, "-"),
-				new SyntaxTuple(SyntaxKind.OpenParenthesisToken, "("),
-				new SyntaxTuple(SyntaxKind.CloseParenthesisToken, ")"),
-				new SyntaxTuple(SyntaxKind.BangToken, "!"),
-				
-				new SyntaxTuple(SyntaxKind.AmpersandAmpersandToken, "&&"),
-				new SyntaxTuple(SyntaxKind.PipePipeToken, "||"),
-				new SyntaxTuple(SyntaxKind.EqualsEqualsToken, "=="),
-				new SyntaxTuple(SyntaxKind.BangEqualsToken, "!="),
-				new SyntaxTuple(SyntaxKind.TrueKeyword, "true"),
-				new SyntaxTuple(SyntaxKind.FalseKeyword, "false"),
-				new SyntaxTuple(SyntaxKind.EqualsToken, "="),
-				new SyntaxTuple(SyntaxKind.IdentifierToken, "a"),
-				new SyntaxTuple(SyntaxKind.IdentifierToken, "count"),
-				
-				new SyntaxTuple(SyntaxKind.LiteralToken, "2"),
-				new SyntaxTuple(SyntaxKind.LiteralToken, "12")
-			
-			// Arguments.of(SyntaxKind.BadToken, "🐋")
-			// Arguments.of(SyntaxKind.EndOfFileToken, "")
-		);
+		return Stream.concat(
+				Stream.of(
+						SyntaxKind.PlusToken,
+						SyntaxKind.SlashToken, 
+						SyntaxKind.StarToken, 
+						SyntaxKind.MinusToken,
+						SyntaxKind.OpenParenthesisToken, 
+						SyntaxKind.CloseParenthesisToken, 
+						SyntaxKind.BangToken,
+						SyntaxKind.AmpersandAmpersandToken, 
+						SyntaxKind.PipePipeToken, 
+						SyntaxKind.EqualsEqualsToken,
+						SyntaxKind.BangEqualsToken, 
+						SyntaxKind.TrueKeyword, 
+						SyntaxKind.FalseKeyword,
+						SyntaxKind.EqualsToken)
+					.map(kind -> new SyntaxTuple(kind, SyntaxFacts.getFixedText(kind))),
+				Stream.of(
+						new SyntaxTuple(SyntaxKind.IdentifierToken, "a"),
+						new SyntaxTuple(SyntaxKind.IdentifierToken, "count"),
+						new SyntaxTuple(SyntaxKind.LiteralToken, "2"),
+						new SyntaxTuple(SyntaxKind.LiteralToken, "12")
+				));
 	}
 	
 	public static Stream<SyntaxTuple> getSeparatorsData() {
@@ -108,6 +110,19 @@ class LexerTest {
 				.map(s -> new SyntaxTuple(SyntaxKind.WhitespaceToken, s));
 	}
 
+	@Test
+	void EnsureKindsTested() {
+		var excludes = Set.of(SyntaxKind.BadToken, SyntaxKind.EndOfFileToken);
+		var kindsTested = Stream.concat(getSeparatorsData(), getTokenData())
+				.map(t -> t.kind).collect(Collectors.toSet());
+	
+		for (var kind : SyntaxKind.values()) {
+			if ((kind.toString().endsWith("Keyword") || kind.toString().endsWith("Token")) && !excludes.contains(kind)) {
+				assertTrue(kindsTested.contains(kind), "Must test " + kind);
+			}
+		}
+	}
+	
 	@ParameterizedTest
 	@MethodSource("getTokenData")
 	void TestSingleTokens(SyntaxTuple a) {
