@@ -1,5 +1,9 @@
 package minsk.codeanalysis.syntax;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import minsk.diagnostics.*;
 
 public class SyntaxTree implements Diagnosable {
@@ -11,6 +15,14 @@ public class SyntaxTree implements Diagnosable {
 		var parser = new Parser(text);
 		return parser.parse();
 	}
+	
+	public static List<SyntaxToken> parseTokens(String text) {
+		var lexer = new Lexer(text);
+		return Stream
+				.generate(lexer::lex)
+				.takeWhile(t -> t.getKind() != SyntaxKind.EndOfFileToken)
+				.collect(Collectors.toList());
+		}
 
 	public SyntaxTree(DiagnosticsBag diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
 		this.diagnostics = diagnostics;
