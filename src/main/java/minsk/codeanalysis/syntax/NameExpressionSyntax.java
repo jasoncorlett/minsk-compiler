@@ -14,7 +14,7 @@ public class NameExpressionSyntax extends ExpressionSyntax {
 	}
 	
 	@Override
-	public Iterable<SyntaxNode> getChildren() {
+	public List<SyntaxNode> getChildren() {
 		return List.of(identifierToken);
 	}
 

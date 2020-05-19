@@ -18,6 +18,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class LexerTest {
 	
+	/**
+	 * SyntaxTuple - holds basic information about a token required to test
+	 * Saves the hassle of passing values separately or constructing a token 
+	 */
 	private static class SyntaxTuple {
 		final SyntaxKind kind;
 		final String text;
@@ -33,6 +37,14 @@ class LexerTest {
 		}
 	}
 	
+	/**
+	 * Determine if two kinds of syntax must be separated by whitespace
+	 * to produce valid language syntax
+	 * 
+	 * @param aKind
+	 * @param bKind
+	 * @return if these two kinds of syntax must be separated by whitespace
+	 */
 	private static boolean pairRequiresSeparator(SyntaxKind aKind, SyntaxKind bKind) {
 		var aIsKeyword = aKind.toString().endsWith("Keyword");
 		var bIsKeyword = bKind.toString().endsWith("Keyword");
@@ -49,38 +61,20 @@ class LexerTest {
 	}
 	
 	private static Stream<Arguments> getTokenPairsWithSeparator() {
-		var tokens = getTokenData().toArray(SyntaxTuple[]::new);
-		var separators = getSeparatorsData().toArray(SyntaxTuple[]::new);
-		
-		Stream.Builder<Arguments> result = Stream.builder();
-		
-		for (var a : tokens) {
-			for (var b : tokens) {
-				if (pairRequiresSeparator(a.kind, b.kind)) {
-					for (var sep : separators) {
-						result.accept(Arguments.of(a, sep, b));
-					}
-				}
-			}
-		}
-		
-		return result.build();
+		return getTokenData()
+		.flatMap(
+				a -> getTokenData()
+				.filter(b -> pairRequiresSeparator(a.kind, b.kind))
+				.flatMap(b -> getSeparatorsData().map(s -> Arguments.of(a, s, b)))
+			);
 	}
 
 	private static Stream<Arguments> getTokenPairsData() {
-		var tokens = getTokenData().toArray(SyntaxTuple[]::new);
-		
-		Stream.Builder<Arguments> result = Stream.builder();
-
-		for (var a : tokens) {
-			for (var b : tokens) {
-				if (!pairRequiresSeparator(a.kind, b.kind)) {
-					result.accept(Arguments.of(a, b));
-				}
-			}
-		}
-		
-		return result.build();
+		return getTokenData().flatMap(
+				a -> getTokenData()
+				.filter(b -> !pairRequiresSeparator(a.kind, b.kind))
+				.map(b -> Arguments.of(a, b))
+		);
 	}
 	
 	private static Stream<SyntaxTuple> getTokenData() {
@@ -114,6 +108,11 @@ class LexerTest {
 				.map(s -> new SyntaxTuple(SyntaxKind.WhitespaceToken, s));
 	}
 
+	/** 
+	 * Theory - all individual syntax elements should produce a single, valid token
+	 * 
+	 * @param a
+	 */
 	@ParameterizedTest
 	@MethodSource("getTokenData")
 	void TestSingleTokens(SyntaxTuple a) {
@@ -126,6 +125,14 @@ class LexerTest {
 		assertEquals(a.text, token.getText());
 	}
 	
+	/**
+	 * Theory - A combination of two syntax tokens should produce two valid tokens
+	 * The data method will filter out syntax that cannot be combined
+	 * 
+	 * @param a
+	 * @param b
+	 * @see #TestTokenPairsWithSeparator(SyntaxTuple, SyntaxTuple, SyntaxTuple)
+	 */
 	@ParameterizedTest
 	@MethodSource("getTokenPairsData")
 	void TestTokenPairs(SyntaxTuple a, SyntaxTuple b) {
@@ -143,6 +150,13 @@ class LexerTest {
 		assertEquals(b.text, bToken.getText());
 	}
 	
+	/**
+	 * Theory - two syntax elements separated by whitespace should produce three valid tokens
+	 * 
+	 * @param a
+	 * @param sep
+	 * @param b
+	 */
 	@ParameterizedTest
 	@MethodSource("getTokenPairsWithSeparator")
 	void TestTokenPairsWithSeparator(SyntaxTuple a, SyntaxTuple sep, SyntaxTuple b) {

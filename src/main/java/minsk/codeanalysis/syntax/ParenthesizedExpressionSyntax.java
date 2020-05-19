@@ -26,7 +26,7 @@ public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
 	}
 
 	@Override
-	public Iterable<SyntaxNode> getChildren() {
+	public List<SyntaxNode> getChildren() {
 		return List.of(getOpenParenToken(), getExpression(), getCloseParenToken());
 	}
 

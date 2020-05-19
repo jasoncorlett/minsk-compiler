@@ -6,6 +6,12 @@ import java.util.stream.Stream;
 
 import minsk.diagnostics.*;
 
+/**
+ * Helper stuff for parsing
+ * 
+ * @author Jason Corlett
+ *
+ */
 public class SyntaxTree implements Diagnosable {
 	private final ExpressionSyntax root;
 	private final SyntaxToken endOfFileToken;

@@ -1,6 +1,7 @@
 package minsk.codeanalysis.syntax;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import minsk.codeanalysis.TextSpan;
 
@@ -34,7 +35,7 @@ public class SyntaxToken extends SyntaxNode {
 	}
 	
 	@Override
-	public Iterable<SyntaxNode> getChildren() {
+	public List<SyntaxNode> getChildren() {
 		return new ArrayList<SyntaxNode>();
 	}
 	

@@ -26,7 +26,7 @@ public class AssignmentExpressionSyntax extends ExpressionSyntax {
 	}
 
 	@Override
-	public Iterable<SyntaxNode> getChildren() {
+	public List<SyntaxNode> getChildren() {
 		// TODO Auto-generated method stub
 		return List.of(identifierToken, equalsToken, expression);
 	}
