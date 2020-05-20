@@ -78,29 +78,19 @@ class LexerTest {
 	}
 	
 	private static Stream<SyntaxTuple> getTokenData() {
-		return Stream.concat(
-				Stream.of(
-						SyntaxKind.PlusToken,
-						SyntaxKind.SlashToken, 
-						SyntaxKind.StarToken, 
-						SyntaxKind.MinusToken,
-						SyntaxKind.OpenParenthesisToken, 
-						SyntaxKind.CloseParenthesisToken, 
-						SyntaxKind.BangToken,
-						SyntaxKind.AmpersandAmpersandToken, 
-						SyntaxKind.PipePipeToken, 
-						SyntaxKind.EqualsEqualsToken,
-						SyntaxKind.BangEqualsToken, 
-						SyntaxKind.TrueKeyword, 
-						SyntaxKind.FalseKeyword,
-						SyntaxKind.EqualsToken)
-					.map(kind -> new SyntaxTuple(kind, SyntaxFacts.getFixedText(kind))),
-				Stream.of(
-						new SyntaxTuple(SyntaxKind.IdentifierToken, "a"),
-						new SyntaxTuple(SyntaxKind.IdentifierToken, "count"),
-						new SyntaxTuple(SyntaxKind.LiteralToken, "2"),
-						new SyntaxTuple(SyntaxKind.LiteralToken, "12")
-				));
+		var fixedTokens = Arrays.stream(SyntaxKind.values())
+				.map(k -> new SyntaxTuple(k, SyntaxFacts.getFixedText(k)))
+				.filter(t -> t.text != null);
+		
+		var dynamicTokens = Stream.of(
+				new SyntaxTuple(SyntaxKind.IdentifierToken, "a"),
+				new SyntaxTuple(SyntaxKind.IdentifierToken, "count"),
+				new SyntaxTuple(SyntaxKind.LiteralToken, "2"),
+				new SyntaxTuple(SyntaxKind.LiteralToken, "12")
+		);
+		
+		return Stream.concat(fixedTokens, dynamicTokens);
+				
 	}
 	
 	public static Stream<SyntaxTuple> getSeparatorsData() {
@@ -114,7 +104,7 @@ class LexerTest {
 	 * @param a
 	 */
 	@ParameterizedTest
-	@MethodSource("getTokenData")
+	@MethodSource({"getTokenData", "getSeparatorsData"})
 	void TestSingleTokens(SyntaxTuple a) {
 		var tokens = SyntaxTree.parseTokens(a.text);
 		
