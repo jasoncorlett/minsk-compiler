@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.function.Function;
-
 import minsk.codeanalysis.TextSpan;
 import minsk.diagnostics.*;
 
@@ -10,126 +8,144 @@ public class Lexer implements Diagnosable {
 	
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	
-	private final String text;
+	private final String program;
+	
 	private int position;
+	private Object value;
 	
 	public Lexer(String text) {
-		this.text = text;
+		this.program = text;
 	}
 
 	private char current() {
-		return peek(0);
-	}
-	
-	private char lookahead() {
-		return peek(1);
-	}
-	
-	private char peek(int offset) {
-		var index = position + offset;
-		
-		if (index >= text.length()) {
+		if (position >= program.length())
 			return EOF;
-		}
-		
-		return text.charAt(index);
-	}
-	
-	private boolean match(Function<Character, Boolean> fn) {
-		return fn.apply(current());
-	}
-	
-	private void next() {
-		position++;
+		return program.charAt(position);
 	}
 	
 	public SyntaxToken lex() {
-		if (position >= text.length()) {
-			return SyntaxKind.EndOfFileToken.newToken(position, "" + EOF, null);
-		}
-		
 		final var start = position;
-		
-		if (match(Character::isDigit)) {
-			while (match(Character::isDigit)) {
-				next();
-			}
-			
-			var t = text.substring(start, position);
-			Integer value = null;
-			
-			try {
-				value = Integer.parseInt(t);
-			} catch (NumberFormatException e) {
-				diagnostics.reportInvalidNumber(new TextSpan(start, position), text, Integer.class);
-			}
-			
-			return SyntaxKind.LiteralToken.newToken(start, t, value);
-		}
-		
-		if (match(Character::isWhitespace)) {
-			while (match(Character::isWhitespace)) {
-				next();
-			}
-			
-			var t = text.substring(start, position);
-			
-			return SyntaxKind.WhitespaceToken.newToken(position, t, t);
-		}
-		
-		if (match(Character::isLetter)) {
-			while (match(Character::isLetter)) {
-				next();
-			}
-			
-			var t = text.substring(start, position);
-			var kind = SyntaxFacts.lookupKeywordKind(t);
-			
-			return kind.newToken(start, t, null);
-		}
+		SyntaxKind kind = SyntaxKind.BadToken;
+		value = null;
 		
 		switch (current()) {
+		case EOF:
+			kind = SyntaxKind.EndOfFileToken;
+			position++;
+			break;
 		case '+':
-			return SyntaxKind.PlusToken.newToken(position++, "+", null);
+			kind = SyntaxKind.PlusToken;
+			position++;
+			break;
 		case '-':
-			return SyntaxKind.MinusToken.newToken(position++, "-", null);
+			kind = SyntaxKind.MinusToken;
+			position++;
+			break;
 		case '*':
-			return SyntaxKind.StarToken.newToken(position++, "*", null);
+			kind = SyntaxKind.StarToken;
+			position++;
+			break;
 		case '/':
-			return SyntaxKind.SlashToken.newToken(position++, "/", null);
+			kind = SyntaxKind.SlashToken;
+			position++;
+			break;
 		case '(':
-			return SyntaxKind.OpenParenthesisToken.newToken(position++, "(", null);
+			kind = SyntaxKind.OpenParenthesisToken;
+			position++;
+			break;
 		case ')':
-			return SyntaxKind.CloseParenthesisToken.newToken(position++, ")", null);
+			kind = SyntaxKind.CloseParenthesisToken;
+			position++;
+			break;
 		case '!':
-			if (lookahead() == '=') {
-				position += 2;
-				return SyntaxKind.BangEqualsToken.newToken(start, "!=", null);
+			position++;
+			if (current() == '=') {
+				kind = SyntaxKind.BangEqualsToken;
+				position++;
+			} else {
+				kind = SyntaxKind.BangToken;
 			}
-			return SyntaxKind.BangToken.newToken(position++, "!", null);
+			break;
 		case '&':
-			if (lookahead() == '&') {
-				position += 2;
-				return SyntaxKind.AmpersandAmpersandToken.newToken(start, "&&", null);
+			position++;
+			if (current() == '&') {
+				kind = SyntaxKind.AmpersandAmpersandToken;
+				position++;
 			}
 			break;
 		case '|':
-			if (lookahead() == '|') {
-				position += 2;
-				return SyntaxKind.PipePipeToken.newToken(start, "||", null);
+			position++;
+			if (current() == '|') {
+				kind = SyntaxKind.PipePipeToken;
+				position++;
 			}
 			break;
 		case '=':
-			if (lookahead() == '=') {
-				position += 2;
-				return SyntaxKind.EqualsEqualsToken.newToken(start, "==", null);
+			position++;
+			if (current() == '=') {
+				kind = SyntaxKind.EqualsEqualsToken;
+				position++;
+			} else {
+				kind = SyntaxKind.EqualsToken;
 			}
-			return SyntaxKind.EqualsToken.newToken(position++, "=", null);
+			break;
+		default:
+			if (Character.isDigit(current())) {
+				kind = readNumber(start);
+				break;
+			}
+			else if (Character.isWhitespace(current())) {
+				kind = readWhitespace();
+				break;
+			}
+			else if (Character.isLetter(current())) {
+				kind = readIdentifierOrKeyword(start);
+				break;
+			} else {
+				diagnostics.reportBadCharacter(position, current());
+				position++;
+			}
+		}
+
+		var text = SyntaxFacts.getFixedText(kind);
+		
+		if (text == null && start < program.length() && position <= program.length()) {
+			text = program.substring(start, position);
 		}
 		
-		diagnostics.reportBadCharacter(position, current());
-		position++;
-		return SyntaxKind.BadToken.newToken(position - 1, text.substring(position - 1, position), null);	
+		return new SyntaxToken(kind, start, text, value);
+	}
+
+	private SyntaxKind readIdentifierOrKeyword(final int start) {
+		while (Character.isLetter(current())) {
+			position++;
+		}
+		
+		return SyntaxFacts.lookupKeywordKind(program.substring(start, position));
+	}
+
+	private SyntaxKind readWhitespace() {
+		while (Character.isWhitespace(current())) {
+			position++;
+		}
+		
+		return SyntaxKind.WhitespaceToken;
+	}
+
+	private SyntaxKind readNumber(final int start) {
+		while (Character.isDigit(current())) {
+			position++;
+		}
+		
+		var text = program.substring(start, position);
+		
+		try {
+			value = Integer.parseInt(text);
+		} catch (NumberFormatException e) {
+			diagnostics.reportInvalidNumber(new TextSpan(start, position), program, Integer.class);
+		}
+		
+		return SyntaxKind.LiteralToken;
 	}
 
 	public DiagnosticsBag getDiagnostics() {

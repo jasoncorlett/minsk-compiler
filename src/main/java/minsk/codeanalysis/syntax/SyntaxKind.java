@@ -16,8 +16,4 @@ public enum SyntaxKind {
 	// Expressions
 	UnaryExpression, BinaryExpression,
 	LiteralExpression, ParenthesizedExpression, NameExpression, AssignmentExpression;
-	
-	public SyntaxToken newToken(int position, String text, Object value) {
-		return new SyntaxToken(this, position, text, value);		
-	}
 }
