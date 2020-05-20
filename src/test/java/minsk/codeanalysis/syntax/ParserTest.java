@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,7 +21,7 @@ class ParserTest {
 	 * @param op2
 	 */
 	@ParameterizedTest
-	@MethodSource("getBinaryOperatorData")
+	@MethodSource("getBinaryOperatorPairsData")
 	public void ParserBinaryExpressionHonoursPrecedencesTest(SyntaxKind op1, SyntaxKind op2) {
 		var op1Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op1);
 		var op2Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op2);
@@ -28,12 +30,13 @@ class ParserTest {
 		var op2Text = SyntaxFacts.getFixedText(op2);
 		
 		var text = String.format("a %s b %s c", op1Text, op2Text);
-		var tree = SyntaxTree.parse(text);
-		var root = tree.getRoot();
+		var expression = SyntaxTree.parse(text);
+		var root = expression.getRoot();
 		
-		assertTrue(tree.getDiagnostics().isEmpty(), "No diagnostic messages should be found");
-		
-		
+		if (!expression.getDiagnostics().isEmpty()) {
+			fail(StreamSupport.stream(expression.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
+					.collect(Collectors.joining("\n")));
+		}
 		
 		//     op1
 		//    /   \
@@ -75,15 +78,72 @@ class ParserTest {
 		}
 		
 	}
+	
+	@ParameterizedTest
+	@MethodSource("getUnaryOperatorPairsData")
+	public void ParserUnaryExpressionHonoursPrecedencesTest(SyntaxKind unaryKind, SyntaxKind binaryKind) {
+		
+		var unaryPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(unaryKind);
+		var binaryPrecedence = SyntaxFacts.lookupBinaryOperatorPrecedence(binaryKind);
+		
+		var unaryText = SyntaxFacts.getFixedText(unaryKind);
+		var binaryText = SyntaxFacts.getFixedText(binaryKind);
+		
+		var text = String.format("%s a %s b", unaryText, binaryText);
+		
+		var expression = SyntaxTree.parse(text);
+		
+		if (!expression.getDiagnostics().isEmpty()) {
+			fail(StreamSupport.stream(expression.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
+					.collect(Collectors.joining("\n")));
+		}
+		
+		var root = expression.getRoot();
+		
+		//       binary
+		//      /      \
+		//   unary      b
+		//     |
+		//     a
+		if (unaryPrecedence >= binaryPrecedence) {
+			new TreeAsserter(root)
+			.assertNode(SyntaxKind.BinaryExpression)
+				.assertNode(SyntaxKind.UnaryExpression)
+					.assertToken(unaryKind, unaryText)
+					.assertNode(SyntaxKind.NameExpression)
+						.assertToken(SyntaxKind.IdentifierToken, "a")
+				.assertToken(binaryKind, binaryText)
+				.assertNode(SyntaxKind.NameExpression)
+					.assertToken(SyntaxKind.IdentifierToken, "b")
+			.assertEmtpy();
+			
+		//    unary
+		//      |
+		//    binary
+		//   /      \
+		//  a        b
+		} else {
+			new TreeAsserter(root)
+			.assertNode(SyntaxKind.UnaryExpression)
+				.assertToken(unaryKind, unaryText)
+				.assertNode(SyntaxKind.BinaryExpression)
+					.assertNode(SyntaxKind.NameExpression)
+						.assertToken(SyntaxKind.IdentifierToken, "a")
+					.assertToken(binaryKind, binaryText)
+					.assertNode(SyntaxKind.NameExpression)
+						.assertToken(SyntaxKind.IdentifierToken, "b")
+			.assertEmtpy();
+		}
+	}
 
-	public static Stream<Arguments> getBinaryOperatorData() {
+	public static Stream<Arguments> getBinaryOperatorPairsData() {
 		return SyntaxFacts.getBinaryOperatorKinds().stream()
 				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
 	}
 	
-	public static Stream<Arguments> getUnaryOperatorData() {
+	public static Stream<Arguments> getUnaryOperatorPairsData() {
 		return SyntaxFacts.getUnaryOperatorKinds().stream()
-				.flatMap(a -> SyntaxFacts.getUnaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
+				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
 	}
 	
 	public static List<SyntaxNode> flatten(SyntaxNode node) {
