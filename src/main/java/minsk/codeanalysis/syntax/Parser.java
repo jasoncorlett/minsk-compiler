@@ -122,7 +122,7 @@ public class Parser implements Diagnosable {
 		switch (current().getKind()) {
 		case OpenParenthesisToken:
 			var left = nextToken();
-			var expression = parseBinaryExpression();
+			var expression = parseAssignmentExpression();
 			var right = match(SyntaxKind.CloseParenthesisToken);
 			return new ParenthesizedExpressionSyntax(left, expression, right);
 		case TrueKeyword:
