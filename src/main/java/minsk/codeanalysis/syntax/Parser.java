@@ -66,13 +66,6 @@ public class Parser implements Diagnosable {
 		return new SyntaxToken(kind, current().getPosition(), null, null);
 	}
 
-	public SyntaxTree parse() {
-		var expression = parseExpression();
-		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
-
-		return new SyntaxTree(source, getDiagnostics(), expression, endOfFileToken);
-	}
-
 	private ExpressionSyntax parseExpression() {
 		return parseAssignmentExpression();
 	}
@@ -169,5 +162,12 @@ public class Parser implements Diagnosable {
 
 	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
+	}
+
+	public CompilationUnitSyntax parseCompilationUnit() {
+		var expression = parseExpression();
+		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
+		
+		return new CompilationUnitSyntax(expression, endOfFileToken);
 	}
 }

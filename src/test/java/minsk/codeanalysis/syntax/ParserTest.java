@@ -45,17 +45,18 @@ class ParserTest {
 		// a     b
 		if (op1Precedence >= op2Precedence) {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.BinaryExpression)
+			.assertNode(SyntaxKind.CompilationUnit)
 				.assertNode(SyntaxKind.BinaryExpression)
+					.assertNode(SyntaxKind.BinaryExpression)
+						.assertNode(SyntaxKind.NameExpression)
+							.assertToken(SyntaxKind.IdentifierToken, "a")
+						.assertToken(op1, op1Text)
+						.assertNode(SyntaxKind.NameExpression)
+							.assertToken(SyntaxKind.IdentifierToken, "b")
+					.assertToken(op2, op2Text)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "a")
-					.assertToken(op1, op1Text)
-					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "b")
-				.assertToken(op2, op2Text)
-				.assertNode(SyntaxKind.NameExpression)
-					.assertToken(SyntaxKind.IdentifierToken, "c")
-			.assertEmtpy();
+						.assertToken(SyntaxKind.IdentifierToken, "c")
+				.assertEmtpy();
 			
 		//    op1
 		//   /  \
@@ -64,17 +65,18 @@ class ParserTest {
 		//     b   c
 		} else {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.BinaryExpression)
-				.assertNode(SyntaxKind.NameExpression)
-					.assertToken(SyntaxKind.IdentifierToken, "a")
-				.assertToken(op1, op1Text)
+			.assertNode(SyntaxKind.CompilationUnit)
 				.assertNode(SyntaxKind.BinaryExpression)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "b")
-					.assertToken(op2, op2Text)
-					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "c")
-			.assertEmtpy();					
+						.assertToken(SyntaxKind.IdentifierToken, "a")
+					.assertToken(op1, op1Text)
+					.assertNode(SyntaxKind.BinaryExpression)
+						.assertNode(SyntaxKind.NameExpression)
+							.assertToken(SyntaxKind.IdentifierToken, "b")
+						.assertToken(op2, op2Text)
+						.assertNode(SyntaxKind.NameExpression)
+							.assertToken(SyntaxKind.IdentifierToken, "c")
+				.assertEmtpy();					
 		}
 		
 	}
@@ -107,15 +109,16 @@ class ParserTest {
 		//     a
 		if (unaryPrecedence >= binaryPrecedence) {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.BinaryExpression)
-				.assertNode(SyntaxKind.UnaryExpression)
-					.assertToken(unaryKind, unaryText)
+			.assertNode(SyntaxKind.CompilationUnit)
+				.assertNode(SyntaxKind.BinaryExpression)
+					.assertNode(SyntaxKind.UnaryExpression)
+						.assertToken(unaryKind, unaryText)
+						.assertNode(SyntaxKind.NameExpression)
+							.assertToken(SyntaxKind.IdentifierToken, "a")
+					.assertToken(binaryKind, binaryText)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "a")
-				.assertToken(binaryKind, binaryText)
-				.assertNode(SyntaxKind.NameExpression)
-					.assertToken(SyntaxKind.IdentifierToken, "b")
-			.assertEmtpy();
+						.assertToken(SyntaxKind.IdentifierToken, "b")
+				.assertEmtpy();
 			
 		//    unary
 		//      |

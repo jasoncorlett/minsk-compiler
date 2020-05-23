@@ -15,5 +15,9 @@ public enum SyntaxKind {
 	
 	// Expressions
 	UnaryExpression, BinaryExpression,
-	LiteralExpression, ParenthesizedExpression, NameExpression, AssignmentExpression;
+	LiteralExpression, ParenthesizedExpression,
+	NameExpression, AssignmentExpression,
+
+	// Special nodes
+	CompilationUnit;
 }

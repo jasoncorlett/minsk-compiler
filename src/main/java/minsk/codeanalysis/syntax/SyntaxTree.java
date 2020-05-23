@@ -7,26 +7,39 @@ import java.util.stream.Stream;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.*;
 
-/**
- * Helper stuff for parsing
- * 
- * @author Jason Corlett
- *
- */
 public class SyntaxTree implements Diagnosable {
 	private final SourceText source;
-	private final ExpressionSyntax root;
+	private final CompilationUnitSyntax root;
 	private final DiagnosticsBag diagnostics;
-	private final SyntaxToken endOfFileToken;
+	
+	private SyntaxTree(SourceText source) {
+		var parser = new Parser(source);
+		var root = parser.parseCompilationUnit();
+		var diagnostics = parser.getDiagnostics();
+		
+		this.source = source;
+		this.diagnostics = diagnostics;
+		this.root = root;
+	}
+
+	public SourceText getSource() {
+		return source;
+	}
+
+	public CompilationUnitSyntax getRoot() {
+		return root;
+	}
+
+	public DiagnosticsBag getDiagnostics() {
+		return diagnostics;
+	}
 	
 	public static SyntaxTree parse(SourceText source) {
-		var parser = new Parser(source);
-		return parser.parse();
+		return new SyntaxTree(source);
 	}
 	
 	public static SyntaxTree parse(String text) {
-		var source = SourceText.from(text);
-		return parse(source);
+		return parse(SourceText.from(text));
 	}
 	
 	public static List<SyntaxToken> parseTokens(String text) {
@@ -40,31 +53,5 @@ public class SyntaxTree implements Diagnosable {
 				.generate(lexer::lex)
 				.takeWhile(t -> t.getKind() != SyntaxKind.EndOfFileToken)
 				.collect(Collectors.toList());
-		}
-
-	public SyntaxTree(SourceText source, DiagnosticsBag diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
-		this.source = source;
-		this.diagnostics = diagnostics;
-		this.root = root;
-		this.endOfFileToken = endOfFileToken;
-	}
-
-	/**
-	 * @return the source
-	 */
-	public SourceText getSource() {
-		return source;
-	}
-
-	public ExpressionSyntax getRoot() {
-		return root;
-	}
-
-	public SyntaxToken getEndOfFileToken() {
-		return endOfFileToken;
-	}
-
-	public DiagnosticsBag getDiagnostics() {
-		return diagnostics;
 	}
 }

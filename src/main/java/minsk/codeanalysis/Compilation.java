@@ -17,7 +17,7 @@ public class Compilation {
 
 	public EvaluationResult evaluate(Map<VariableSymbol, Object> variables) {
 		var binder = new Binder(variables);
-		var boundExpression = binder.bindExpression(syntax.getRoot());
+		var boundExpression = binder.bindExpression(syntax.getRoot().getExpression());
 		
 		var diagnostics = new DiagnosticsBag();
 		diagnostics.addFrom(syntax, binder);
