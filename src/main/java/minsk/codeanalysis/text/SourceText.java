@@ -25,6 +25,7 @@ public class SourceText {
 			}
 		}
 		
+		// TODO
 		return -1;
 	}
 	
@@ -60,7 +61,7 @@ public class SourceText {
 			}
 		}
 		
-		if (position > lineStart) {
+		if (position >= lineStart) {
 			result.add(new TextLine(text, lineStart, position, position));
 		}
 		
