@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class BinaryExpressionSyntax implements ExpressionSyntax {
 	private final ExpressionSyntax left;
 	private final ExpressionSyntax right;
@@ -13,22 +11,19 @@ public class BinaryExpressionSyntax implements ExpressionSyntax {
 		this.right = right;
 	}
 	
+	@SyntaxChild(order = 1)
 	public ExpressionSyntax getLeft() {
 		return left;
 	}
 
-	public ExpressionSyntax getRight() {
-		return right;
-	}
-
+	@SyntaxChild(order = 2)
 	public SyntaxToken getOperatorToken() {
 		return operatorToken;
 	}
-	
 
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(getLeft(), getOperatorToken(), getRight());
+	@SyntaxChild(order = 3)
+	public ExpressionSyntax getRight() {
+		return right;
 	}
 
 	@Override

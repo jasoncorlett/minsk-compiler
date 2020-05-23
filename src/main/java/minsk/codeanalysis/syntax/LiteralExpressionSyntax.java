@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class LiteralExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken literalToken;
 	private final Object value;
@@ -15,17 +13,13 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
 		this.value = value;
 	}
 	
+	@SyntaxChild
 	public SyntaxToken getLiteralToken() {
 		return literalToken;
 	}
 
 	public Object getValue() {
 		return value;
-	}
-
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(getLiteralToken());
 	}
 
 	@Override

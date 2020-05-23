@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken openParenToken;
 	private final ExpressionSyntax expression;
@@ -13,21 +11,19 @@ public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
 		this.closeParenToken = closeParenToken;
 	}
 
+	@SyntaxChild(order = 1)
 	public SyntaxToken getOpenParenToken() {
 		return openParenToken;
 	}
 
+	@SyntaxChild(order = 2)
 	public ExpressionSyntax getExpression() {
 		return expression;
 	}
 
+	@SyntaxChild(order = 3)
 	public SyntaxToken getCloseParenToken() {
 		return closeParenToken;
-	}
-
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(getOpenParenToken(), getExpression(), getCloseParenToken());
 	}
 
 	@Override

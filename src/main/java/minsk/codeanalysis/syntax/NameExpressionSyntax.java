@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class NameExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken identifierToken;
 
@@ -9,15 +7,11 @@ public class NameExpressionSyntax implements ExpressionSyntax {
 		this.identifierToken = identifierToken;
 	}
 
+	@SyntaxChild
 	public SyntaxToken getIdentifierToken() {
 		return identifierToken;
 	}
 	
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(identifierToken);
-	}
-
 	@Override
 	public SyntaxKind getKind() {
 		return SyntaxKind.NameExpression;

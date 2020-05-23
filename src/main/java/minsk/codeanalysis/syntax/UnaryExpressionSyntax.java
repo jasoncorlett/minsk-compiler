@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class UnaryExpressionSyntax implements ExpressionSyntax {
 	private final ExpressionSyntax operand;
 	private final SyntaxToken operatorToken;
@@ -11,19 +9,16 @@ public class UnaryExpressionSyntax implements ExpressionSyntax {
 		this.operand = operand;
 	}
 	
+	@SyntaxChild(order = 2)
 	public ExpressionSyntax getOperand() {
 		return operand;
 	}
 
+	@SyntaxChild(order = 1)
 	public SyntaxToken getOperatorToken() {
 		return operatorToken;
 	}
 	
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(getOperatorToken(), getOperand());
-	}
-
 	@Override
 	public SyntaxKind getKind() {
 		return SyntaxKind.UnaryExpression;

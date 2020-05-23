@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
-
 public class AssignmentExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken identifierToken;
 	private final SyntaxToken equalsToken;
@@ -13,21 +11,19 @@ public class AssignmentExpressionSyntax implements ExpressionSyntax {
 		this.expression = expression;
 	}
 
+	@SyntaxChild(order = 1)
 	public SyntaxToken getIdentifierToken() {
 		return identifierToken;
 	}
 
+	@SyntaxChild(order = 2)
 	public SyntaxToken getEqualsToken() {
 		return equalsToken;
 	}
 
+	@SyntaxChild(order = 3)
 	public ExpressionSyntax getExpression() {
 		return expression;
-	}
-
-	@Override
-	public List<SyntaxNode> getChildren() {
-		return List.of(identifierToken, equalsToken, expression);
 	}
 
 	@Override
