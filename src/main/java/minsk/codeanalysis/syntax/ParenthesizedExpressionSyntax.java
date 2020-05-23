@@ -2,7 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
-public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
+public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken openParenToken;
 	private final ExpressionSyntax expression;
 	private final SyntaxToken closeParenToken;

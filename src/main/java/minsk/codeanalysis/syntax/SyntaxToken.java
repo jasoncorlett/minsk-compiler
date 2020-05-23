@@ -1,11 +1,10 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import minsk.codeanalysis.TextSpan;
+import minsk.codeanalysis.text.TextSpan;
 
-public class SyntaxToken extends SyntaxNode {
+public class SyntaxToken implements SyntaxNode {
 	private final int position;
 	private final String text;
 	private final Object value;
@@ -30,13 +29,14 @@ public class SyntaxToken extends SyntaxNode {
 		return value;
 	}
 	
+	@Override
 	public TextSpan getSpan() {
 		return new TextSpan(position, position + text.length());
 	}
 	
 	@Override
 	public List<SyntaxNode> getChildren() {
-		return new ArrayList<SyntaxNode>();
+		return List.of();
 	}
 	
 	@Override

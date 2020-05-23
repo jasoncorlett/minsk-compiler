@@ -4,14 +4,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import minsk.codeanalysis.TextSpan;
 import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.text.SourceText;
+import minsk.codeanalysis.text.TextSpan;
 
 public class DiagnosticsBag implements Iterable<Diagnostic> {
 	private final List<Diagnostic> diagnostics = new LinkedList<>();
 
-	private void report(TextSpan span, String text, Object... args) {
-		var diagnostic = new Diagnostic(span, String.format(text, args));
+	private void report(TextSpan span, String message, Object... args) {
+		var diagnostic = new Diagnostic(span, String.format(message, args));
 		diagnostics.add(diagnostic);
 	}
 
@@ -30,8 +31,8 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 		return diagnostics.iterator();
 	}
 
-	public void reportInvalidNumber(TextSpan span, String text, Class<?> type) {
-		report(span, "The number '%s' is not a valid %s.", text, type);
+	public void reportInvalidNumber(TextSpan span, SourceText source, Class<?> type) {
+		report(span, "The number '%s' is not a valid %s.", source, type);
 	}
 
 	public void reportBadCharacter(int position, char bad) {

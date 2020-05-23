@@ -3,6 +3,7 @@ package minsk.codeanalysis.syntax;
 import java.util.ArrayList;
 import java.util.List;
 
+import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.DiagnosticsBag;
 
@@ -12,11 +13,11 @@ public class Parser implements Diagnosable {
 	private final List<SyntaxToken> tokens;
 
 	private int position = 0;
-
-	public Parser(String text) {
-		tokens = new ArrayList<SyntaxToken>();
-		var lexer = new Lexer(text);
-
+	
+	public Parser(SourceText source) {
+		tokens = new ArrayList<>();
+		var lexer = new Lexer(source);
+		
 		SyntaxToken token;
 		do {
 			token = lexer.lex();
@@ -54,7 +55,7 @@ public class Parser implements Diagnosable {
 		return peek(1);
 	}
 
-	private SyntaxToken match(SyntaxKind kind) {
+	private SyntaxToken matchToken(SyntaxKind kind) {
 		if (current().getKind() == kind) {
 			return nextToken();
 		}
@@ -65,7 +66,7 @@ public class Parser implements Diagnosable {
 
 	public SyntaxTree parse() {
 		var expression = parseExpression();
-		var endOfFileToken = match(SyntaxKind.EndOfFileToken);
+		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
 
 		return new SyntaxTree(getDiagnostics(), expression, endOfFileToken);
 	}
@@ -89,7 +90,6 @@ public class Parser implements Diagnosable {
 		return parseBinaryExpression(0);
 	}
 
-	// TODO: Naming??
 	private ExpressionSyntax parseBinaryExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 
@@ -121,22 +121,44 @@ public class Parser implements Diagnosable {
 	private ExpressionSyntax parsePrimaryExpression() {
 		switch (current().getKind()) {
 		case OpenParenthesisToken:
-			var left = nextToken();
-			var expression = parseAssignmentExpression();
-			var right = match(SyntaxKind.CloseParenthesisToken);
-			return new ParenthesizedExpressionSyntax(left, expression, right);
+			return parseParenthesizedExpression();
+			
 		case TrueKeyword:
 		case FalseKeyword:
-			var keywordToken = nextToken();
-			var value = keywordToken.getKind() == SyntaxKind.TrueKeyword;
-			return new LiteralExpressionSyntax(keywordToken, value);
+			return parseBooleanLiteral();
+
+		case LiteralToken:
+			return parseLiteralExpression();
+			
 		case IdentifierToken:
-			var identifierToken = nextToken();
-			return new NameExpressionSyntax(identifierToken);
 		default:
-			var numberToken = match(SyntaxKind.LiteralToken);
-			return new LiteralExpressionSyntax(numberToken);
+			return parseNameExpression();
 		}
+	}
+
+	private ExpressionSyntax parseParenthesizedExpression() {
+		var left = matchToken(SyntaxKind.OpenParenthesisToken);
+		var expression = parseAssignmentExpression();
+		var right = matchToken(SyntaxKind.CloseParenthesisToken);
+		return new ParenthesizedExpressionSyntax(left, expression, right);
+	}
+
+	private ExpressionSyntax parseBooleanLiteral() {
+		var isTrue = current().getKind() == SyntaxKind.TrueKeyword;
+		
+		var keywordToken = isTrue ? matchToken(SyntaxKind.TrueKeyword) : matchToken(SyntaxKind.FalseKeyword);
+		
+		return new LiteralExpressionSyntax(keywordToken, isTrue);
+	}
+
+	private ExpressionSyntax parseNameExpression() {
+		var identifierToken = matchToken(SyntaxKind.IdentifierToken);
+		return new NameExpressionSyntax(identifierToken);
+	}
+
+	private ExpressionSyntax parseLiteralExpression() {
+		var numberToken = matchToken(SyntaxKind.LiteralToken);
+		return new LiteralExpressionSyntax(numberToken);
 	}
 
 	public List<SyntaxToken> getTokens() {

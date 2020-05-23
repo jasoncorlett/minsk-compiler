@@ -2,7 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
-public class NameExpressionSyntax extends ExpressionSyntax {
+public class NameExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken identifierToken;
 
 	public NameExpressionSyntax(SyntaxToken identifierToken) {

@@ -1,4 +1,4 @@
-package minsk.codeanalysis;
+package minsk.codeanalysis.text;
 
 public class TextSpan {
 	private final int start;
@@ -19,5 +19,10 @@ public class TextSpan {
 	
 	public int getEnd() {
 		return end;
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + start + ", " + end + ")";
 	}
 }

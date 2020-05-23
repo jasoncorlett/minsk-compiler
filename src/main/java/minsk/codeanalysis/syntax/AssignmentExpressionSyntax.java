@@ -2,7 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
-public class AssignmentExpressionSyntax extends ExpressionSyntax {
+public class AssignmentExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken identifierToken;
 	private final SyntaxToken equalsToken;
 	private final ExpressionSyntax expression;
@@ -27,13 +27,11 @@ public class AssignmentExpressionSyntax extends ExpressionSyntax {
 
 	@Override
 	public List<SyntaxNode> getChildren() {
-		// TODO Auto-generated method stub
 		return List.of(identifierToken, equalsToken, expression);
 	}
 
 	@Override
 	public SyntaxKind getKind() {
-		// TODO Auto-generated method stub
 		return SyntaxKind.AssignmentExpression;
 	}
 	

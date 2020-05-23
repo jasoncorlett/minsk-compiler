@@ -13,7 +13,7 @@ import minsk.codeanalysis.binding.VariableSymbol;
 public class Evaluator  {
 	private final BoundExpression root;
 	private final Map<VariableSymbol, Object> variables;
-
+	
 	public Evaluator(BoundExpression root, Map<VariableSymbol, Object> variables) {
 		this.root = root;
 		this.variables = variables;
@@ -24,61 +24,75 @@ public class Evaluator  {
 	}
 	
 	public Object evaluateExpression(BoundExpression expr) {
-		if (expr instanceof BoundLiteralExpression) {
-			var n = (BoundLiteralExpression) expr;
-			return n.getValue();
-			
-		} else if (expr instanceof BoundVariableExpression) {
-			var v = (BoundVariableExpression) expr;
-			return variables.get(v.getVariable());
-		} else if (expr instanceof BoundAssignmentExpression) {
-			var a = (BoundAssignmentExpression) expr;
-			var value = evaluateExpression(a.getExpression());
-			variables.put(a.getVariable(), value);			
-			return value;
-		} else if (expr instanceof BoundUnaryExpression) {
-			var u = (BoundUnaryExpression) expr;
-			var operand = evaluateExpression(u.getOperand());
-			
-			switch (u.getOperator().getKind()) {
-			case Identity:
-				return (int) operand;
-			case Negation:
-				return -(int) operand;
-			case LogicalNegation:
-				return !(boolean) operand;
-			default:
-				throw new RuntimeException("Unexpected unary operator: " + u.getOperator());
-			}
-		} else if (expr instanceof BoundBinaryExpression) {
-			var binaryExpression = (BoundBinaryExpression) expr;
-			
-			var left = evaluateExpression(binaryExpression.getLeft());
-			var right = evaluateExpression(binaryExpression.getRight());
-			
-			switch (binaryExpression.getOperator().getKind()) {
-			case Addition:
-				return (int) left + (int) right;
-			case Subtraction:
-				return (int) left - (int) right;
-			case Multiplication:
-				return (int) left * (int) right;
-			case Division:
-				return (int) left / (int) right;
-			case LogicalAnd:
-				return (boolean) left && (boolean) right;
-			case LogicalOr:
-				return (boolean) left || (boolean) right;
-			case Equals:
-				return left.equals(right);
-			case NotEquals:
-				return !left.equals(right);
-			default:
-				throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
-			}
+		switch (expr.getKind()) {
+		case LiteralExpression:
+			return evaluateLiteralExpression((BoundLiteralExpression) expr);
+		case VariableExpression:
+			return evaluateVariableExpression((BoundVariableExpression) expr);
+		case AssignmentExpression:
+			return evaluateAssignmentExpression((BoundAssignmentExpression) expr);
+		case UnaryExpression:
+			return evaluateUnaryExpression((BoundUnaryExpression) expr);
+		case BinaryExpression:
+			return evaluateBinaryExpression((BoundBinaryExpression) expr);
 		}
 		
 		throw new RuntimeException("Invalid syntax node: " + expr.getKind());
+	}
+
+	private Object evaluateBinaryExpression(BoundBinaryExpression binaryExpression) {
+		var left = evaluateExpression(binaryExpression.getLeft());
+		var right = evaluateExpression(binaryExpression.getRight());
+		
+		switch (binaryExpression.getOperator().getKind()) {
+		case Addition:
+			return (int) left + (int) right;
+		case Subtraction:
+			return (int) left - (int) right;
+		case Multiplication:
+			return (int) left * (int) right;
+		case Division:
+			return (int) left / (int) right;
+		case LogicalAnd:
+			return (boolean) left && (boolean) right;
+		case LogicalOr:
+			return (boolean) left || (boolean) right;
+		case Equals:
+			return left.equals(right);
+		case NotEquals:
+			return !left.equals(right);
+		default:
+			throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
+		}
+	}
+
+	private Object evaluateUnaryExpression(BoundUnaryExpression expr) {
+		var operand = evaluateExpression(expr.getOperand());
+		
+		switch (expr.getOperator().getKind()) {
+		case Identity:
+			return (int) operand;
+		case Negation:
+			return -(int) operand;
+		case LogicalNegation:
+			return !(boolean) operand;
+		default:
+			throw new RuntimeException("Unexpected unary operator: " + expr.getOperator());
+		}
+	}
+
+	private Object evaluateAssignmentExpression(BoundAssignmentExpression a) {
+		var value = evaluateExpression(a.getExpression());
+		variables.put(a.getVariable(), value);			
+		return value;
+	}
+
+	private Object evaluateVariableExpression(BoundVariableExpression v) {
+		return variables.get(v.getVariable());
+	}
+
+	private Object evaluateLiteralExpression(BoundLiteralExpression expr) {
+		return expr.getValue();
 	}
 
 	public Map<VariableSymbol, Object> getVariables() {

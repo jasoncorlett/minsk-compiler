@@ -1,23 +1,18 @@
 package minsk;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import minsk.codeanalysis.*;
 import minsk.codeanalysis.binding.VariableSymbol;
-import minsk.codeanalysis.syntax.Parser;
-import minsk.codeanalysis.syntax.SyntaxNode;
-import minsk.codeanalysis.syntax.SyntaxToken;
+import minsk.codeanalysis.syntax.SyntaxTree;
 
 // https://www.youtube.com/watch?v=wgHIkdUQbp0
 
 public class Main {
-	// https://en.wikipedia.org/wiki/Tree_(command)
-
-	
 	private static final String SHOW_VARS_CMD = "#showvars";
 	private static final String SHOW_TREE_CMD = "#showtree";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
@@ -33,7 +28,7 @@ public class Main {
 		
 		Map<VariableSymbol, Object> variables = new HashMap<>(); 
 		
-		try (Scanner sc = new Scanner(System.in)) {
+		try (Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8)) {
 			while (true) {
 				System.out.print("> ");
 				
@@ -75,7 +70,7 @@ public class Main {
 					continue;
 				}
 				
-				var syntaxTree = new Parser(line).parse();
+				var syntaxTree = SyntaxTree.parse(line);
 				var comp = new Compilation(syntaxTree);
 				var result = comp.evaluate(variables);
 				

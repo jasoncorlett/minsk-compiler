@@ -1,6 +1,7 @@
 package minsk.codeanalysis.syntax;
 
-import minsk.codeanalysis.TextSpan;
+import minsk.codeanalysis.text.SourceText;
+import minsk.codeanalysis.text.TextSpan;
 import minsk.diagnostics.*;
 
 public class Lexer implements Diagnosable {
@@ -8,19 +9,19 @@ public class Lexer implements Diagnosable {
 	
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	
-	private final String program;
+	private final SourceText source;
 	
 	private int position;
 	private Object value;
 	
-	public Lexer(String text) {
-		this.program = text;
+	public Lexer(SourceText source) {
+		this.source = source;
 	}
 
 	private char current() {
-		if (position >= program.length())
+		if (position >= source.length())
 			return EOF;
-		return program.charAt(position);
+		return source.charAt(position);
 	}
 	
 	public SyntaxToken lex() {
@@ -109,8 +110,8 @@ public class Lexer implements Diagnosable {
 
 		var text = SyntaxFacts.getFixedText(kind);
 		
-		if (text == null && start < program.length() && position <= program.length()) {
-			text = program.substring(start, position);
+		if (text == null && start < source.length() && position <= source.length()) {
+			text = source.substring(start, position);
 		}
 		
 		return new SyntaxToken(kind, start, text, value);
@@ -121,7 +122,7 @@ public class Lexer implements Diagnosable {
 			position++;
 		}
 		
-		return SyntaxFacts.lookupKeywordKind(program.substring(start, position));
+		return SyntaxFacts.lookupKeywordKind(source.substring(start, position));
 	}
 
 	private SyntaxKind readWhitespace() {
@@ -137,12 +138,12 @@ public class Lexer implements Diagnosable {
 			position++;
 		}
 		
-		var text = program.substring(start, position);
+		var text = source.substring(start, position);
 		
 		try {
 			value = Integer.parseInt(text);
 		} catch (NumberFormatException e) {
-			diagnostics.reportInvalidNumber(new TextSpan(start, position), program, Integer.class);
+			diagnostics.reportInvalidNumber(new TextSpan(start, position), source, Integer.class);
 		}
 		
 		return SyntaxKind.LiteralToken;

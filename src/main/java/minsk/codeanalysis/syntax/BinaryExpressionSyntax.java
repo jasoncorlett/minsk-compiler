@@ -2,7 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
-public class BinaryExpressionSyntax extends ExpressionSyntax {
+public class BinaryExpressionSyntax implements ExpressionSyntax {
 	private final ExpressionSyntax left;
 	private final ExpressionSyntax right;
 	private final SyntaxToken operatorToken;

@@ -1,6 +1,6 @@
 package minsk.diagnostics;
 
-import minsk.codeanalysis.TextSpan;
+import minsk.codeanalysis.text.TextSpan;
 
 public class Diagnostic {
 	private final TextSpan span;

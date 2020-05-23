@@ -2,9 +2,11 @@ package minsk;
 
 import java.util.List;
 
+import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.SyntaxToken;
 
+// https://en.wikipedia.org/wiki/Tree_(command)
 class TreePrinter {
 	private static final String INDENT_BLANK = "    ";
 	private static final String INDENT_TREE  = "│   ";
@@ -18,7 +20,7 @@ class TreePrinter {
 	private static void prettyPrint(SyntaxNode node, String indent, boolean isLast) {
 		var marker = isLast ? INDENT_LAST : INDENT_CHILD;
 		
-		List.of((Object)indent, marker, node.getKind()).forEach(System.out::print);
+		List.of((Object)indent, marker, node.getKind(), node.getSpan()).forEach(System.out::print);
 		
 		if (node instanceof SyntaxToken) {
 			var token = (SyntaxToken) node;
@@ -26,6 +28,9 @@ class TreePrinter {
 			if (token.getValue() != null) {
 				System.out.print(" ");
 				System.out.print(token.getValue());
+			} else if (token.getKind() == SyntaxKind.IdentifierToken) {
+				System.out.print(" ");
+				System.out.print(token.getText());
 			}
 		}
 		

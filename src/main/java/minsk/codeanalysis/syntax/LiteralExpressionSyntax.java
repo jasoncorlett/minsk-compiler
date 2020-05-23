@@ -2,7 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import java.util.List;
 
-public class LiteralExpressionSyntax extends ExpressionSyntax {
+public class LiteralExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken literalToken;
 	private final Object value;
 	
