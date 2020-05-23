@@ -29,7 +29,8 @@ public class SyntaxToken implements SyntaxNode {
 	
 	@Override
 	public TextSpan getSpan() {
-		return new TextSpan(position, position + text.length());
+		var length = (text != null) ? text.length() : 0;
+		return new TextSpan(position, position + length);
 	}
 	
 	@Override
