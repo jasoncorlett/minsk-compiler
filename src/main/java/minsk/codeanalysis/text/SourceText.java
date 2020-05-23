@@ -18,22 +18,14 @@ public class SourceText {
 	}
 	
 	public int getLineIndex(int position) {
-		var lower = 0;
-		var upper = lines.size() - 1;
-		var index = 0;
-		
-		do {
-			index = lower + (upper - lower) / 2;
-			var line = lines.get(index);
-			
-			if (position > line.getEnd()) {
-				lower = index + 1;
-			} else if (position < line.getStart()) {
-				upper = index - 1;
-			} else {
-				return index;
+		for (int i = 0; i < lines.size(); i++) {
+			var line = lines.get(i);
+			if (line.getStart() <= position && line.getEnd() >= position) {
+				return i;
 			}
-		} while (true);
+		}
+		
+		return -1;
 	}
 	
 	public TextLine getLineAt(int position) {

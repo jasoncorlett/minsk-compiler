@@ -123,16 +123,17 @@ class ParserTest {
 		//   /      \
 		//  a        b
 		} else {
-			new TreeAsserter(root)
-			.assertNode(SyntaxKind.UnaryExpression)
-				.assertToken(unaryKind, unaryText)
-				.assertNode(SyntaxKind.BinaryExpression)
-					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "a")
-					.assertToken(binaryKind, binaryText)
-					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "b")
-			.assertEmtpy();
+			fail("Unary operator should always have higher precedence");
+//			new TreeAsserter(root)
+//			.assertNode(SyntaxKind.UnaryExpression)
+//				.assertToken(unaryKind, unaryText)
+//				.assertNode(SyntaxKind.BinaryExpression)
+//					.assertNode(SyntaxKind.NameExpression)
+//						.assertToken(SyntaxKind.IdentifierToken, "a")
+//					.assertToken(binaryKind, binaryText)
+//					.assertNode(SyntaxKind.NameExpression)
+//						.assertToken(SyntaxKind.IdentifierToken, "b")
+//			.assertEmtpy();
 		}
 	}
 
