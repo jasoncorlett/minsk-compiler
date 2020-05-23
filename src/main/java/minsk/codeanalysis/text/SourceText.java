@@ -29,6 +29,10 @@ public class SourceText {
 		return -1;
 	}
 	
+	public List<TextLine> getLines() {
+		return lines;
+	}
+	
 	public TextLine getLineAt(int position) {
 		return lines.get(getLineIndex(position));
 	}
