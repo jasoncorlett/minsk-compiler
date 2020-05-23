@@ -17,7 +17,7 @@ public class SourceText {
 		this.lines = parseLines(text);
 	}
 	
-	public int getLineAt(int position) {
+	public int getLineIndex(int position) {
 		var lower = 0;
 		var upper = lines.size() - 1;
 		var index = 0;
@@ -34,6 +34,18 @@ public class SourceText {
 				return index;
 			}
 		} while (true);
+	}
+	
+	public TextLine getLineAt(int position) {
+		return lines.get(getLineIndex(position));
+	}
+	
+	public String getLineText(int lineNumber) {
+		return lines.get(lineNumber).getText();
+	}
+	
+	public TextLine getLine(int lineNumber) {
+		return lines.get(lineNumber);
 	}
 	
 	private static List<TextLine> parseLines(String text) {

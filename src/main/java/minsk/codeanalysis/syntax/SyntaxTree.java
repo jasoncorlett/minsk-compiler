@@ -14,9 +14,10 @@ import minsk.diagnostics.*;
  *
  */
 public class SyntaxTree implements Diagnosable {
+	private final SourceText source;
 	private final ExpressionSyntax root;
-	private final SyntaxToken endOfFileToken;
 	private final DiagnosticsBag diagnostics;
+	private final SyntaxToken endOfFileToken;
 	
 	public static SyntaxTree parse(SourceText source) {
 		var parser = new Parser(source);
@@ -41,10 +42,18 @@ public class SyntaxTree implements Diagnosable {
 				.collect(Collectors.toList());
 		}
 
-	public SyntaxTree(DiagnosticsBag diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
+	public SyntaxTree(SourceText source, DiagnosticsBag diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken) {
+		this.source = source;
 		this.diagnostics = diagnostics;
 		this.root = root;
 		this.endOfFileToken = endOfFileToken;
+	}
+
+	/**
+	 * @return the source
+	 */
+	public SourceText getSource() {
+		return source;
 	}
 
 	public ExpressionSyntax getRoot() {

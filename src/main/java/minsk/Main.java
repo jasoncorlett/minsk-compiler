@@ -9,6 +9,8 @@ import java.util.Scanner;
 import minsk.codeanalysis.*;
 import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
+import minsk.codeanalysis.text.SourceText;
+import minsk.diagnostics.Diagnosable;
 
 // https://www.youtube.com/watch?v=wgHIkdUQbp0
 
@@ -19,10 +21,6 @@ public class Main {
 	private static final String QUIT_CMD = "#quit";
 	
 	public static void main(String[] args) {
-		new Main().run();
-	}
-	
-	public void run() {
 		var showTree = false;
 		var showVars = false;
 		
@@ -85,12 +83,7 @@ public class Main {
 				if (result.getDiagnostics().isEmpty()) {
 					System.out.println(result.getValue());
 				} else {
-					result.getDiagnostics().forEach(d -> {
-						System.err.println();
-						System.err.println(d.getMessage());
-						System.err.println("    " + line);
-						System.err.println("    " + " ".repeat(d.getSpan().getStart()) + "^".repeat(d.getSpan().getLength()));
-					});
+					printDiagnostics(result, syntaxTree.getSource());
 					
 					// Hack to prevent the next iteration's prompt from printing concurrently
 					// with the error messages
@@ -100,6 +93,19 @@ public class Main {
 					}
 				}
 			}
+		}
+	}
+	
+	private static void printDiagnostics(Diagnosable diagnosable, SourceText source) {
+		for (var diagnostic : diagnosable.getDiagnostics()) {
+			var lineNumber = source.getLineIndex(diagnostic.getSpan().getStart());
+			var line = source.getLine(lineNumber);
+			var position = diagnostic.getSpan().getStart() - line.getStart();
+			
+			System.err.printf("%n");
+			System.err.printf("[%d:%d] %s%n", lineNumber, position, diagnostic.getMessage());
+			System.err.printf("    %s%n", line.getText());
+			System.err.printf("    %s%s%n", " ".repeat(diagnostic.getSpan().getStart()), "^".repeat(diagnostic.getSpan().getLength()));
 		}
 	}
 

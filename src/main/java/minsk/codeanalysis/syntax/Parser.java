@@ -11,10 +11,12 @@ public class Parser implements Diagnosable {
 
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	private final List<SyntaxToken> tokens;
+	private final SourceText source;
 
 	private int position = 0;
 	
 	public Parser(SourceText source) {
+		this.source = source;
 		tokens = new ArrayList<>();
 		var lexer = new Lexer(source);
 		
@@ -68,7 +70,7 @@ public class Parser implements Diagnosable {
 		var expression = parseExpression();
 		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
 
-		return new SyntaxTree(getDiagnostics(), expression, endOfFileToken);
+		return new SyntaxTree(source, getDiagnostics(), expression, endOfFileToken);
 	}
 
 	private ExpressionSyntax parseExpression() {
