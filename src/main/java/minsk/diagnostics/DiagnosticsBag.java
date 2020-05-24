@@ -56,4 +56,8 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 	public void reportUndefinedName(TextSpan span, String name) {
 		report(span, "Variable '%s' is not defined.", name);
 	}
+
+	public void reportCannotConvert(TextSpan span, Class<?> from, Class<?> to) {
+		report(span, "Cannot convert from '%s' to '%s'", from.getSimpleName(), to.getSimpleName());
+	}
 }

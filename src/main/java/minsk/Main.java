@@ -19,6 +19,7 @@ public class Main {
 	private static final String SHOW_TREE_CMD = "#showtree";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
+	private static final String RESET_CMD = "#reset";
 	
 	public static void main(String[] args) {
 		var showTree = false;
@@ -26,6 +27,7 @@ public class Main {
 		
 		Map<VariableSymbol, Object> variables = new HashMap<>(); 
 		var stringBuilder = new StringBuilder();
+		Compilation previous = null;
 		
 		try (Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8)) {
 			while (true) {
@@ -74,6 +76,12 @@ public class Main {
 						}
 						continue;
 					}
+					
+					if (RESET_CMD.equalsIgnoreCase(line)) {
+						previous = null;
+						variables.clear();
+						continue;
+					}
 				}
 				
 				stringBuilder.append(line);
@@ -82,8 +90,11 @@ public class Main {
 				var syntaxTree = SyntaxTree.parse(stringBuilder.toString());
 				
 				if (syntaxTree.getDiagnostics().isEmpty() || isBlank) {
-					var comp = new Compilation(syntaxTree);
-					var result = comp.evaluate(variables);
+					var compilation = previous == null
+							? new Compilation(syntaxTree)
+							: previous.continueWith(syntaxTree);
+							
+					var result = compilation.evaluate(variables);
 					
 					if (showTree) {
 						TreePrinter.prettyPrint(syntaxTree.getRoot());
@@ -95,6 +106,7 @@ public class Main {
 					
 					if (result.getDiagnostics().isEmpty()) {
 						System.out.println(result.getValue());
+						previous = compilation;
 					} else {
 						printDiagnostics(result, syntaxTree.getSource());
 						

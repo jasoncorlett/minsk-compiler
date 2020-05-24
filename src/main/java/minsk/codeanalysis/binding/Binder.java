@@ -1,9 +1,10 @@
 package minsk.codeanalysis.binding;
 
-import java.util.Map;
+import java.util.LinkedList;
 
 import minsk.codeanalysis.syntax.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
+import minsk.codeanalysis.syntax.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.ExpressionSyntax;
 import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.NameExpressionSyntax;
@@ -13,11 +14,43 @@ import minsk.diagnostics.*;
 
 public class Binder implements Diagnosable {
 
-	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
-	private final Map<VariableSymbol, Object> variables;
+	public static BoundGlobalScope bindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax) {
+		var parentScope = createParentScope(previous);
+		var binder = new Binder(parentScope);
+		var expression = binder.bindExpression(syntax.getExpression());
+		var variables = binder.getScope().getDeclaredVariables();
+		var diagnostics = binder.getDiagnostics();
+		
+		if (previous != null)
+			diagnostics.addFrom(previous);
+		
+		return new BoundGlobalScope(previous, diagnostics, variables, expression);
+	}
+	
+	private static BoundScope createParentScope(BoundGlobalScope previous) {
+		var stack = new LinkedList<BoundGlobalScope>();
 
-	public Binder(Map<VariableSymbol, Object> variables) {
-		this.variables = variables;
+		while (previous != null) {
+			stack.push(previous);
+			previous = previous.getPrevious();
+		}
+		
+		BoundScope parent = null;
+		
+		while (!stack.isEmpty()) {
+			var scope = new BoundScope(parent);
+			stack.pop().getVariables().forEach(scope::declare);
+			parent = scope;
+		}
+		
+		return parent;
+	}
+
+	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
+	private BoundScope scope;
+
+	public Binder(BoundScope parent) {
+		this.scope = new BoundScope(parent);
 	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
@@ -42,28 +75,30 @@ public class Binder implements Diagnosable {
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
 		
-		var variable = variables.keySet().stream().filter(v -> name.equals(v.getName())).findFirst();
+		var variable = scope.lookup(name);
 		
-		if (variable.isEmpty()) {
+		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
 			return new BoundLiteralExpression(0);
 		}
 		
-		return new BoundVariableExpression(variable.get());
+		return new BoundVariableExpression(variable);
 	}
 	
 	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
 		var boundExpression = bindExpression(syntax.getExpression());
-		var variable = new VariableSymbol(name, boundExpression.getType()); 
 		
-		var existingVariable = variables.keySet().stream().filter(v -> name.equals(v.getName())).findFirst();
+		VariableSymbol variable = scope.lookup(name);
 		
-		if (existingVariable.isPresent()) {
-			variables.remove(existingVariable.get());
+		if (variable == null) {
+			variable = new VariableSymbol(name, boundExpression.getType());
+			scope.declare(variable);
 		}
-		
-		variables.put(variable, null);
+
+		if (boundExpression.getType() != variable.getType()) {
+			diagnostics.reportCannotConvert(syntax.getExpression().getSpan(), boundExpression.getType(), variable.getType());
+		}
 		
 		return new BoundAssignmentExpression(variable, boundExpression);
 	}
@@ -106,7 +141,8 @@ public class Binder implements Diagnosable {
 	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
 	}
-	public Map<VariableSymbol, Object> getVariables() {
-		return variables;
+	
+	public BoundScope getScope() {
+		return scope;
 	}
 }
