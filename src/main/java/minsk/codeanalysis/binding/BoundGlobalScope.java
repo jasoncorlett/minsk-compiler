@@ -9,13 +9,13 @@ public class BoundGlobalScope implements Diagnosable {
 	private final BoundGlobalScope previous;
 	private final DiagnosticsBag diagnostics;
 	private final Collection<VariableSymbol> variables;
-	private final BoundExpression expression;
+	private final BoundStatement statement;
 
-	public BoundGlobalScope(BoundGlobalScope previous, DiagnosticsBag diagnostics, Collection<VariableSymbol> variables, BoundExpression expression) {
+	public BoundGlobalScope(BoundGlobalScope previous, DiagnosticsBag diagnostics, Collection<VariableSymbol> variables, BoundStatement statement) {
 		this.previous = previous;
 		this.diagnostics = diagnostics;
 		this.variables = variables;
-		this.expression = expression;
+		this.statement = statement;
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public class BoundGlobalScope implements Diagnosable {
 		return diagnostics;
 	}
 
-	public BoundExpression getExpression() {
-		return expression;
+	public BoundStatement getStatement() {
+		return statement;
 	}
 
 	public BoundGlobalScope getPrevious() {

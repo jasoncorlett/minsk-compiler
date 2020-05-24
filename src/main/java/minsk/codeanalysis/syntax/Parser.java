@@ -1,6 +1,7 @@
 package minsk.codeanalysis.syntax;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import minsk.codeanalysis.text.SourceText;
@@ -64,6 +65,39 @@ public class Parser implements Diagnosable {
 
 		getDiagnostics().reportUnexpectedToken(current().getSpan(), current().getKind(), kind);
 		return new SyntaxToken(kind, current().getPosition(), null, null);
+	}
+
+	public CompilationUnitSyntax parseCompilationUnit() {
+		var expression = parseStatement();
+		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
+		
+		return new CompilationUnitSyntax(expression, endOfFileToken);
+	}
+	
+	private StatementSyntax parseStatement() {
+		if (current().getKind() == SyntaxKind.OpenBraceToken) {
+			return parseBlockStatement();
+		}
+		
+		return parseExpressionStatement();
+	}
+	
+	private BlockStatementSyntax parseBlockStatement() {
+		var statements = new LinkedList<StatementSyntax>();
+		
+		var openBraceToken = matchToken(SyntaxKind.OpenBraceToken);
+		
+		while (current().getKind() != SyntaxKind.CloseBraceToken && current().getKind() != SyntaxKind.EndOfFileToken) {
+			statements.add(parseStatement());
+		}
+		
+		var closeBraceToken = matchToken(SyntaxKind.CloseBraceToken);
+		
+		return new BlockStatementSyntax(openBraceToken, statements, closeBraceToken);
+	}
+
+	private ExpressionStatementSyntax parseExpressionStatement() {
+		return new ExpressionStatementSyntax(parseExpression());
 	}
 
 	private ExpressionSyntax parseExpression() {
@@ -162,12 +196,5 @@ public class Parser implements Diagnosable {
 
 	public DiagnosticsBag getDiagnostics() {
 		return diagnostics;
-	}
-
-	public CompilationUnitSyntax parseCompilationUnit() {
-		var expression = parseExpression();
-		var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
-		
-		return new CompilationUnitSyntax(expression, endOfFileToken);
 	}
 }

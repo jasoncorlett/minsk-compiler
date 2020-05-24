@@ -14,6 +14,20 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class ParserTest {
+	private static ExpressionSyntax assertParses(String fmt, Object ...args) {
+		var text = String.format(fmt, args);
+		var tree = SyntaxTree.parse(text);
+		
+		if (!tree.getDiagnostics().isEmpty()) {
+			fail(StreamSupport.stream(tree.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
+					.collect(Collectors.joining("\n")));
+		}
+		
+		var statement = (ExpressionStatementSyntax) tree.getRoot().getStatement();
+		
+		return statement.getExpression();
+	}
+	
 	/**
 	 * Theory - parsing trees should produce trees with valid precedence
 	 * 
@@ -29,15 +43,8 @@ class ParserTest {
 		var op1Text = op1.getFixedText();
 		var op2Text = op2.getFixedText();
 		
-		var text = String.format("a %s b %s c", op1Text, op2Text);
-		var expression = SyntaxTree.parse(text);
-		var root = expression.getRoot();
-		
-		if (!expression.getDiagnostics().isEmpty()) {
-			fail(StreamSupport.stream(expression.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
-					.collect(Collectors.joining("\n")));
-		}
-		
+		var root = assertParses("a %s b %s c", op1Text, op2Text);
+
 		//     op1
 		//    /   \
 		//   op2   c
@@ -45,18 +52,17 @@ class ParserTest {
 		// a     b
 		if (op1Precedence >= op2Precedence) {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.CompilationUnit)
+			.assertNode(SyntaxKind.BinaryExpression)
 				.assertNode(SyntaxKind.BinaryExpression)
-					.assertNode(SyntaxKind.BinaryExpression)
-						.assertNode(SyntaxKind.NameExpression)
-							.assertToken(SyntaxKind.IdentifierToken, "a")
-						.assertToken(op1, op1Text)
-						.assertNode(SyntaxKind.NameExpression)
-							.assertToken(SyntaxKind.IdentifierToken, "b")
-					.assertToken(op2, op2Text)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "c")
-				.assertEmtpy();
+						.assertToken(SyntaxKind.IdentifierToken, "a")
+					.assertToken(op1, op1Text)
+					.assertNode(SyntaxKind.NameExpression)
+						.assertToken(SyntaxKind.IdentifierToken, "b")
+				.assertToken(op2, op2Text)
+				.assertNode(SyntaxKind.NameExpression)
+					.assertToken(SyntaxKind.IdentifierToken, "c")
+			.assertEmtpy();
 			
 		//    op1
 		//   /  \
@@ -65,18 +71,17 @@ class ParserTest {
 		//     b   c
 		} else {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.CompilationUnit)
+			.assertNode(SyntaxKind.BinaryExpression)
+				.assertNode(SyntaxKind.NameExpression)
+					.assertToken(SyntaxKind.IdentifierToken, "a")
+				.assertToken(op1, op1Text)
 				.assertNode(SyntaxKind.BinaryExpression)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "a")
-					.assertToken(op1, op1Text)
-					.assertNode(SyntaxKind.BinaryExpression)
-						.assertNode(SyntaxKind.NameExpression)
-							.assertToken(SyntaxKind.IdentifierToken, "b")
-						.assertToken(op2, op2Text)
-						.assertNode(SyntaxKind.NameExpression)
-							.assertToken(SyntaxKind.IdentifierToken, "c")
-				.assertEmtpy();					
+						.assertToken(SyntaxKind.IdentifierToken, "b")
+					.assertToken(op2, op2Text)
+					.assertNode(SyntaxKind.NameExpression)
+						.assertToken(SyntaxKind.IdentifierToken, "c")
+			.assertEmtpy();					
 		}
 		
 	}
@@ -91,16 +96,7 @@ class ParserTest {
 		var unaryText = unaryKind.getFixedText();
 		var binaryText = binaryKind.getFixedText();
 		
-		var text = String.format("%s a %s b", unaryText, binaryText);
-		
-		var expression = SyntaxTree.parse(text);
-		
-		if (!expression.getDiagnostics().isEmpty()) {
-			fail(StreamSupport.stream(expression.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
-					.collect(Collectors.joining("\n")));
-		}
-		
-		var root = expression.getRoot();
+		var root = assertParses("%s a %s b", unaryText, binaryText);
 		
 		//       binary
 		//      /      \
@@ -109,17 +105,16 @@ class ParserTest {
 		//     a
 		if (unaryPrecedence >= binaryPrecedence) {
 			new TreeAsserter(root)
-			.assertNode(SyntaxKind.CompilationUnit)
-				.assertNode(SyntaxKind.BinaryExpression)
-					.assertNode(SyntaxKind.UnaryExpression)
-						.assertToken(unaryKind, unaryText)
-						.assertNode(SyntaxKind.NameExpression)
-							.assertToken(SyntaxKind.IdentifierToken, "a")
-					.assertToken(binaryKind, binaryText)
+			.assertNode(SyntaxKind.BinaryExpression)
+				.assertNode(SyntaxKind.UnaryExpression)
+					.assertToken(unaryKind, unaryText)
 					.assertNode(SyntaxKind.NameExpression)
-						.assertToken(SyntaxKind.IdentifierToken, "b")
-				.assertEmtpy();
-			
+						.assertToken(SyntaxKind.IdentifierToken, "a")
+				.assertToken(binaryKind, binaryText)
+				.assertNode(SyntaxKind.NameExpression)
+					.assertToken(SyntaxKind.IdentifierToken, "b")
+			.assertEmtpy();
+		
 		//    unary
 		//      |
 		//    binary

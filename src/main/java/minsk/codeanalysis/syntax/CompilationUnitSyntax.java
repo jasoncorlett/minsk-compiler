@@ -2,11 +2,11 @@ package minsk.codeanalysis.syntax;
 
 public class CompilationUnitSyntax implements SyntaxNode {
 
-	private final ExpressionSyntax expression;
+	private final StatementSyntax statement;
 	private final SyntaxToken endOfFileToken;
 
-	public CompilationUnitSyntax(ExpressionSyntax expression, SyntaxToken endOfFileToken) {
-		this.expression = expression;
+	public CompilationUnitSyntax(StatementSyntax statement, SyntaxToken endOfFileToken) {
+		this.statement = statement;
 		this.endOfFileToken = endOfFileToken;
 	}
 	
@@ -16,8 +16,8 @@ public class CompilationUnitSyntax implements SyntaxNode {
 	}
 
 	@SyntaxChild
-	public ExpressionSyntax getExpression() {
-		return expression;
+	public StatementSyntax getStatement() {
+		return statement;
 	}
 
 	public SyntaxToken getEndOfFileToken() {

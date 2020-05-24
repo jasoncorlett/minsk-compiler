@@ -33,7 +33,7 @@ public class Compilation {
 			return new EvaluationResult(diagnostics, null);
 		}
 		
-		var evaluator = new Evaluator(globalScope.getExpression(), variables);
+		var evaluator = new Evaluator(globalScope.getStatement(), variables);
 		var value = evaluator.evaluate();
 		
 		return new EvaluationResult(diagnostics, value);

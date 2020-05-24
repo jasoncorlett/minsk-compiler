@@ -4,25 +4,52 @@ import java.util.Map;
 
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
 import minsk.codeanalysis.binding.BoundBinaryExpression;
+import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundExpression;
+import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
+import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.VariableSymbol;
 
 public class Evaluator  {
-	private final BoundExpression root;
+	private final BoundStatement root;
 	private final Map<VariableSymbol, Object> variables;
+	private Object lastValue;
 	
-	public Evaluator(BoundExpression root, Map<VariableSymbol, Object> variables) {
+	public Evaluator(BoundStatement root, Map<VariableSymbol, Object> variables) {
 		this.root = root;
 		this.variables = variables;
 	}
 	
 	public Object evaluate() {
-		return evaluateExpression(root);
+		evaluateStatement(root);
+		return lastValue;
 	}
 	
+	private void evaluateStatement(BoundStatement node) {
+		switch (node.getKind()) {
+		case BlockStatement:
+			evaluateBlockStatement((BoundBlockStatement) node);
+			break;
+		case ExpressionStatement:
+			evaluateExpressionStatement((BoundExpressionStatement) node);
+			break;
+		default:
+			throw new RuntimeException("Unexpected statement node: " + node.getKind());
+		}
+	}
+
+	private void evaluateBlockStatement(BoundBlockStatement node) {
+		for (var statment : node.getStatements())
+			evaluateStatement(statment);
+	}
+
+	private void evaluateExpressionStatement(BoundExpressionStatement node) {
+		lastValue = evaluateExpression(node.getExpression());
+	}
+
 	public Object evaluateExpression(BoundExpression expr) {
 		switch (expr.getKind()) {
 		case LiteralExpression:
@@ -35,9 +62,9 @@ public class Evaluator  {
 			return evaluateUnaryExpression((BoundUnaryExpression) expr);
 		case BinaryExpression:
 			return evaluateBinaryExpression((BoundBinaryExpression) expr);
+		default:
+			throw new RuntimeException("Invalid syntax node: " + expr.getKind());
 		}
-		
-		throw new RuntimeException("Invalid syntax node: " + expr.getKind());
 	}
 
 	private Object evaluateBinaryExpression(BoundBinaryExpression binaryExpression) {

@@ -1,14 +1,18 @@
 package minsk.codeanalysis.binding;
 
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 import minsk.codeanalysis.syntax.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
+import minsk.codeanalysis.syntax.BlockStatementSyntax;
 import minsk.codeanalysis.syntax.CompilationUnitSyntax;
+import minsk.codeanalysis.syntax.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.ExpressionSyntax;
 import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
+import minsk.codeanalysis.syntax.StatementSyntax;
 import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
 import minsk.diagnostics.*;
 
@@ -17,16 +21,45 @@ public class Binder implements Diagnosable {
 	public static BoundGlobalScope bindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax) {
 		var parentScope = createParentScope(previous);
 		var binder = new Binder(parentScope);
-		var expression = binder.bindExpression(syntax.getExpression());
+		var statement = binder.bindStatement(syntax.getStatement());
 		var variables = binder.getScope().getDeclaredVariables();
 		var diagnostics = binder.getDiagnostics();
 		
 		if (previous != null)
 			diagnostics.addFrom(previous);
 		
-		return new BoundGlobalScope(previous, diagnostics, variables, expression);
+		return new BoundGlobalScope(previous, diagnostics, variables, statement);
 	}
 	
+	private BoundStatement bindStatement(StatementSyntax syntax) {
+		switch (syntax.getKind()) {
+		case BlockStatement:
+			return bindBlockStatement((BlockStatementSyntax) syntax);
+		case ExpressionStatement:
+			return bindExpressionStatement((ExpressionStatementSyntax) syntax);
+		default:
+			throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
+		}
+	}
+
+	private BoundBlockStatement bindBlockStatement(BlockStatementSyntax syntax) {
+		scope = new BoundScope(scope);
+		
+		var statements = syntax.getStatements().stream()
+				.map(this::bindStatement)
+				.collect(Collectors.toList()); 
+		
+		scope = scope.getParent();
+		
+		return new BoundBlockStatement(statements);
+	}
+	
+	
+	private BoundExpressionStatement bindExpressionStatement(ExpressionStatementSyntax syntax) {
+		var expression = bindExpression(syntax.getExpression());
+		return new BoundExpressionStatement(expression);
+	}
+
 	private static BoundScope createParentScope(BoundGlobalScope previous) {
 		var stack = new LinkedList<BoundGlobalScope>();
 
