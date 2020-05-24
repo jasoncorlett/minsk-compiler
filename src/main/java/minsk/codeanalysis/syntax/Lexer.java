@@ -58,6 +58,14 @@ public class Lexer implements Diagnosable {
 			kind = SyntaxKind.CloseParenthesisToken;
 			position++;
 			break;
+		case '{':
+			kind = SyntaxKind.OpenBraceToken;
+			position++;
+			break;
+		case '}':
+			kind = SyntaxKind.CloseBraceToken;
+			position++;
+			break;
 		case '!':
 			position++;
 			if (current() == '=') {
@@ -108,7 +116,7 @@ public class Lexer implements Diagnosable {
 			}
 		}
 
-		var text = SyntaxFacts.getFixedText(kind);
+		var text = kind.getFixedText();
 		
 		if (text == null && start < source.length() && position <= source.length()) {
 			text = source.substring(start, position);

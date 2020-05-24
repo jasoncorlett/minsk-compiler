@@ -53,40 +53,4 @@ public class SyntaxFacts {
 	public static SyntaxKind lookupKeywordKind(String text) {
 		return keywords.getOrDefault(text, IdentifierToken);
 	}
-	
-	public static String getFixedText(SyntaxKind kind) {
-		switch(kind) {
-		case PlusToken:
-			return "+";
-		case SlashToken:
-			return "/";
-		case StarToken:
-			return "*";
-		case MinusToken:
-			return "-";
-		case OpenParenthesisToken:
-			return "(";
-		case CloseParenthesisToken:
-			return ")";
-		case BangToken:
-			return "!";
-		case AmpersandAmpersandToken:
-			return "&&";
-		case PipePipeToken:
-			return "||";
-		case EqualsEqualsToken:
-			return "==";
-		case BangEqualsToken:
-			return "!=";
-		case TrueKeyword:
-			return "true";
-		case FalseKeyword:
-			return "false";
-		case EqualsToken:
-			return "=";
-		default:
-			return null;
-		}
-	}
-	
 }

@@ -79,7 +79,7 @@ class LexerTest {
 	
 	private static Stream<SyntaxTuple> getTokenData() {
 		var fixedTokens = Arrays.stream(SyntaxKind.values())
-				.map(k -> new SyntaxTuple(k, SyntaxFacts.getFixedText(k)))
+				.map(k -> new SyntaxTuple(k, k.getFixedText()))
 				.filter(t -> t.text != null);
 		
 		var dynamicTokens = Stream.of(

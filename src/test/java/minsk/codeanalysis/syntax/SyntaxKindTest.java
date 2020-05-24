@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class SyntaxFactsTest {
+class SyntaxKindTest {
 
 	@ParameterizedTest
 	@MethodSource("GetTextRoutTripsData")
 	public void GetTextRoundTrips(SyntaxKind kind) {
-		var text = SyntaxFacts.getFixedText(kind);
+		var text = kind.getFixedText();
 		
 		if (text == null)
 			return;
@@ -22,6 +22,9 @@ class SyntaxFactsTest {
 		
 		assertEquals(text, token.getText());
 		assertEquals(kind, token.getKind());
+		
+		if (token.getKind().getFixedText() != null)
+			assertEquals(token.getText(), token.getKind().getFixedText());
 	}
 	
 	public static SyntaxKind[] GetTextRoutTripsData() {

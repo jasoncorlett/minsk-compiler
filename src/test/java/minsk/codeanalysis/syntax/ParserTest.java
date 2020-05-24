@@ -26,8 +26,8 @@ class ParserTest {
 		var op1Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op1);
 		var op2Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op2);
 		
-		var op1Text = SyntaxFacts.getFixedText(op1);
-		var op2Text = SyntaxFacts.getFixedText(op2);
+		var op1Text = op1.getFixedText();
+		var op2Text = op2.getFixedText();
 		
 		var text = String.format("a %s b %s c", op1Text, op2Text);
 		var expression = SyntaxTree.parse(text);
@@ -88,8 +88,8 @@ class ParserTest {
 		var unaryPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(unaryKind);
 		var binaryPrecedence = SyntaxFacts.lookupBinaryOperatorPrecedence(binaryKind);
 		
-		var unaryText = SyntaxFacts.getFixedText(unaryKind);
-		var binaryText = SyntaxFacts.getFixedText(binaryKind);
+		var unaryText = unaryKind.getFixedText();
+		var binaryText = binaryKind.getFixedText();
 		
 		var text = String.format("%s a %s b", unaryText, binaryText);
 		
