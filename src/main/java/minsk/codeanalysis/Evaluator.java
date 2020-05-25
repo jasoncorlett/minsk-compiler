@@ -80,6 +80,8 @@ public class Evaluator  {
 			return (int) left * (int) right;
 		case Division:
 			return (int) left / (int) right;
+		case Modulo:
+			return (int) left % (int) right;
 		case LogicalAnd:
 			return (boolean) left && (boolean) right;
 		case LogicalOr:

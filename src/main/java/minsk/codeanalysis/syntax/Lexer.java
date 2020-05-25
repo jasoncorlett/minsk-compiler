@@ -50,6 +50,10 @@ public class Lexer implements Diagnosable {
 			kind = SyntaxKind.SlashToken;
 			position++;
 			break;
+		case '%':
+			kind = SyntaxKind.PercentToken;
+			position++;
+			break;
 		case '(':
 			kind = SyntaxKind.OpenParenthesisToken;
 			position++;
