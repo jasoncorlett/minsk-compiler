@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class LexerTest {
-	
 	/**
 	 * SyntaxTuple - holds basic information about a token required to test
 	 * Saves the hassle of passing values separately or constructing a token 
@@ -46,8 +45,8 @@ class LexerTest {
 	 * @return if these two kinds of syntax must be separated by whitespace
 	 */
 	private static boolean pairRequiresSeparator(SyntaxKind aKind, SyntaxKind bKind) {
-		var aIsKeyword = aKind.toString().endsWith("Keyword");
-		var bIsKeyword = bKind.toString().endsWith("Keyword");
+		var aIsKeyword = aKind.isKeyword();
+		var bIsKeyword = bKind.isKeyword();
 		var aIsEquals  = aKind.toString().startsWith("Equals");
 		var bIsEquals  = bKind.toString().startsWith("Equals");
 		
@@ -58,24 +57,7 @@ class LexerTest {
 				|| (aKind == SyntaxKind.LiteralToken && bKind == SyntaxKind.LiteralToken)
 				|| (aKind == SyntaxKind.BangToken && bIsEquals)
 				|| (aIsEquals && bIsEquals);
-	}
-	
-	private static Stream<Arguments> getTokenPairsWithSeparator() {
-		return getTokenData()
-		.flatMap(
-				a -> getTokenData()
-				.filter(b -> pairRequiresSeparator(a.kind, b.kind))
-				.flatMap(b -> getSeparatorsData().map(s -> Arguments.of(a, s, b)))
-			);
-	}
-
-	private static Stream<Arguments> getTokenPairsData() {
-		return getTokenData().flatMap(
-				a -> getTokenData()
-				.filter(b -> !pairRequiresSeparator(a.kind, b.kind))
-				.map(b -> Arguments.of(a, b))
-		);
-	}
+	}	
 	
 	private static Stream<SyntaxTuple> getTokenData() {
 		var fixedTokens = Arrays.stream(SyntaxKind.values())
@@ -96,6 +78,23 @@ class LexerTest {
 	public static Stream<SyntaxTuple> getSeparatorsData() {
 		return Stream.of(" ", "  ", "\t", "\r", "\n", "\r\n")
 				.map(s -> new SyntaxTuple(SyntaxKind.WhitespaceToken, s));
+	}
+
+	private static Stream<Arguments> getTokenPairsData() {
+		return getTokenData().flatMap(
+				a -> getTokenData()
+				.filter(b -> !pairRequiresSeparator(a.kind, b.kind))
+				.map(b -> Arguments.of(a, b))
+		);
+	}
+	
+	private static Stream<Arguments> getTokenPairsWithSeparator() {
+		return getTokenData()
+		.flatMap(
+				a -> getTokenData()
+				.filter(b -> pairRequiresSeparator(a.kind, b.kind))
+				.flatMap(b -> getSeparatorsData().map(s -> Arguments.of(a, s, b)))
+			);
 	}
 
 	/** 

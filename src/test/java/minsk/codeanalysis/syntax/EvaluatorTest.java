@@ -15,27 +15,8 @@ import minsk.codeanalysis.Compilation;
 import minsk.codeanalysis.binding.VariableSymbol;
 
 class EvaluatorTest {
-
-	@ParameterizedTest(name = "{0} = {1}")
-	@MethodSource
-	void TestIntegerExpression(String text, Object expectedResult) {
-		var tree = SyntaxTree.parse(text);
-		var compilation = new Compilation(tree);
-		var variables = new HashMap<VariableSymbol, Object>();
-		var actualResult = compilation.evaluate(variables);
-		
-		if (!actualResult.getDiagnostics().isEmpty()) {
-			fail(StreamSupport.stream(actualResult.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
-					.collect(Collectors.joining("\n")));
-		}
-		assertEquals(expectedResult, actualResult.getValue());
-	}
 	
-	private static Arguments a(String expr, Object result) {
-		return Arguments.of(expr, result);
-	}
-
-	private static Stream<Arguments> TestIntegerExpression() {
+	private static Stream<Arguments> TestExpressionResults() {
 		return Stream.of(
 			a("1", 1),
 			a("+1", 1),
@@ -70,4 +51,25 @@ class EvaluatorTest {
 			a("{ var x = 10 (x+10)*x }", 200)
 		);
 	}
+	
+	@ParameterizedTest(name = "{0} = {1}")
+	@MethodSource
+	void TestExpressionResults(String text, Object expectedResult) {
+		var tree = SyntaxTree.parse(text);
+		var compilation = new Compilation(tree);
+		var variables = new HashMap<VariableSymbol, Object>();
+		var actualResult = compilation.evaluate(variables);
+		
+		if (!actualResult.getDiagnostics().isEmpty()) {
+			fail(StreamSupport.stream(actualResult.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
+					.collect(Collectors.joining("\n")));
+		}
+		assertEquals(expectedResult, actualResult.getValue());
+	}
+	
+	private static Arguments a(String expr, Object result) {
+		return Arguments.of(expr, result);
+	}
+
+
 }

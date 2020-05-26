@@ -28,6 +28,11 @@ class ParserTest {
 		return statement.getExpression();
 	}
 	
+	public static Stream<Arguments> BinaryPrecedenceTest() {
+		return SyntaxFacts.getBinaryOperatorKinds().stream()
+				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
+	}
+	
 	/**
 	 * Theory - parsing trees should produce trees with valid precedence
 	 * 
@@ -35,8 +40,8 @@ class ParserTest {
 	 * @param op2
 	 */
 	@ParameterizedTest
-	@MethodSource("getBinaryOperatorPairsData")
-	public void ParserBinaryExpressionHonoursPrecedencesTest(SyntaxKind op1, SyntaxKind op2) {
+	@MethodSource
+	public void BinaryPrecedenceTest(SyntaxKind op1, SyntaxKind op2) {
 		var op1Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op1);
 		var op2Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op2);
 		
@@ -86,9 +91,14 @@ class ParserTest {
 		
 	}
 	
+	public static Stream<Arguments> UnaryPrecedenceTest() {
+		return SyntaxFacts.getUnaryOperatorKinds().stream()
+				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
+	}
+	
 	@ParameterizedTest
-	@MethodSource("getUnaryOperatorPairsData")
-	public void ParserUnaryExpressionHonoursPrecedencesTest(SyntaxKind unaryKind, SyntaxKind binaryKind) {
+	@MethodSource
+	public void UnaryPrecedenceTest(SyntaxKind unaryKind, SyntaxKind binaryKind) {
 		
 		var unaryPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(unaryKind);
 		var binaryPrecedence = SyntaxFacts.lookupBinaryOperatorPrecedence(binaryKind);
@@ -134,18 +144,8 @@ class ParserTest {
 //			.assertEmtpy();
 		}
 	}
-
-	public static Stream<Arguments> getBinaryOperatorPairsData() {
-		return SyntaxFacts.getBinaryOperatorKinds().stream()
-				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
-	}
 	
-	public static Stream<Arguments> getUnaryOperatorPairsData() {
-		return SyntaxFacts.getUnaryOperatorKinds().stream()
-				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
-	}
-	
-	public static List<SyntaxNode> flatten(SyntaxNode node) {
+	private static List<SyntaxNode> flatten(SyntaxNode node) {
 		var list = new LinkedList<SyntaxNode>();
 		list.add(node);
 		
@@ -156,7 +156,7 @@ class ParserTest {
 		return list;
 	}
 	
-	class TreeAsserter {
+	private class TreeAsserter {
 		final Iterator<SyntaxNode> iter;
 		
 		TreeAsserter(SyntaxNode node) {

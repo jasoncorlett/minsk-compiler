@@ -7,8 +7,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class SyntaxKindTest {
 
+	public static SyntaxKind[] GetTextRoundTrips() {
+		return SyntaxKind.values();		
+	}
+	
 	@ParameterizedTest
-	@MethodSource("GetTextRoutTripsData")
+	@MethodSource
 	public void GetTextRoundTrips(SyntaxKind kind) {
 		var text = kind.getFixedText();
 		
@@ -27,7 +31,4 @@ class SyntaxKindTest {
 			assertEquals(token.getText(), token.getKind().getFixedText());
 	}
 	
-	public static SyntaxKind[] GetTextRoutTripsData() {
-		return SyntaxKind.values();		
-	}
 }
