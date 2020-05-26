@@ -10,6 +10,7 @@ import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
+import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.VariableSymbol;
 
@@ -33,12 +34,20 @@ public class Evaluator  {
 		case BlockStatement:
 			evaluateBlockStatement((BoundBlockStatement) node);
 			break;
+		case VariableDeclaration:
+			evaluateVariableDeclaration((BoundVariableDeclaration) node);
+			break;
 		case ExpressionStatement:
 			evaluateExpressionStatement((BoundExpressionStatement) node);
 			break;
 		default:
 			throw new RuntimeException("Unexpected statement node: " + node.getKind());
 		}
+	}
+
+	private void evaluateVariableDeclaration(BoundVariableDeclaration node) {
+		lastValue = evaluateExpression(node.getInitializer());
+		variables.put(node.getVariable(), lastValue);
 	}
 
 	private void evaluateBlockStatement(BoundBlockStatement node) {

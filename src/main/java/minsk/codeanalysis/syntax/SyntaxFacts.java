@@ -18,7 +18,7 @@ public class SyntaxFacts {
 			.collect(Collectors.toMap(Function.identity(), SyntaxKind::getBinaryPrecedence));
 	
 	private static final Map<String, SyntaxKind> keywords = Arrays.stream(SyntaxKind.values())
-			.filter(k -> k.name().endsWith("Keyword") && k.getFixedText() != null)
+			.filter(SyntaxKind::isKeyword)
 			.collect(Collectors.toMap(SyntaxKind::getFixedText, Function.identity()));
 
 	private static final Map<SyntaxKind, String> fixedText = Arrays.stream(SyntaxKind.values())

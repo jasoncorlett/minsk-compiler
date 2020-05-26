@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@SuppressWarnings("java:S115")
+@SuppressWarnings("java:S115") // Sonar rule about case of enum constants
 public enum SyntaxKind {
 	// Tokens
 	BadToken, 
@@ -39,6 +39,7 @@ public enum SyntaxKind {
 	BlockStatement,
 	ExpressionStatement,
 	AssignmentStatement,
+	VariableDeclaration,
 	
 	// Expressions
 	UnaryExpression,
@@ -67,6 +68,10 @@ public enum SyntaxKind {
 	@Target(ElementType.FIELD)
 	private @interface Unary {
 		int value() default 0;
+	}
+	
+	public boolean isKeyword() {
+		return this.name().endsWith("Keyword");
 	}
 	
 	public String getFixedText() {

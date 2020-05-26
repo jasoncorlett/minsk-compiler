@@ -12,12 +12,10 @@ public class Parser implements Diagnosable {
 
 	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
 	private final List<SyntaxToken> tokens;
-	private final SourceText source;
 
 	private int position = 0;
 	
 	public Parser(SourceText source) {
-		this.source = source;
 		tokens = new ArrayList<>();
 		var lexer = new Lexer(source);
 		
@@ -75,13 +73,17 @@ public class Parser implements Diagnosable {
 	}
 	
 	private StatementSyntax parseStatement() {
-		if (current().getKind() == SyntaxKind.OpenBraceToken) {
+		switch (current().getKind()) {
+		case OpenBraceToken:
 			return parseBlockStatement();
-		}
-		
+		case LetKeyword:
+		case VarKeyword:
+			return parseVariableDeclaration();
+		default:
 		return parseExpressionStatement();
+		}
 	}
-	
+
 	private BlockStatementSyntax parseBlockStatement() {
 		var statements = new LinkedList<StatementSyntax>();
 		
@@ -94,6 +96,16 @@ public class Parser implements Diagnosable {
 		var closeBraceToken = matchToken(SyntaxKind.CloseBraceToken);
 		
 		return new BlockStatementSyntax(openBraceToken, statements, closeBraceToken);
+	}	
+	
+	private StatementSyntax parseVariableDeclaration() {
+		var expected = current().getKind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+		var keyword = matchToken(expected);
+		var identifier = matchToken(SyntaxKind.IdentifierToken);
+		var equals = matchToken(SyntaxKind.EqualsToken);
+		var initializer = parseExpression();
+		
+		return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
 	}
 
 	private ExpressionStatementSyntax parseExpressionStatement() {

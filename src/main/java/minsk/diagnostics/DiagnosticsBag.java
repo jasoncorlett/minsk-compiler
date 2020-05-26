@@ -50,7 +50,7 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 
 	public void reportUndefinedBinaryOperator(TextSpan operatorSpan, String operatorText, Class<?> leftType,
 			Class<?> rightType) {
-		report(operatorSpan, "Binary operator '%s' is not defined for types %s and %s", operatorText, leftType, rightType);
+		report(operatorSpan, "Binary operator '%s' is not defined for types %s and %s.", operatorText, leftType, rightType);
 	}
 
 	public void reportUndefinedName(TextSpan span, String name) {
@@ -58,6 +58,15 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 	}
 
 	public void reportCannotConvert(TextSpan span, Class<?> from, Class<?> to) {
-		report(span, "Cannot convert from '%s' to '%s'", from.getSimpleName(), to.getSimpleName());
+		report(span, "Cannot convert from '%s' to '%s'.", from.getSimpleName(), to.getSimpleName());
+	}
+
+	public void reportVariableAlreadyDeclared(TextSpan span, String name) {
+		report(span, "Variable '%s' already exists.", name);
+	}
+
+	public void reportCannotAssign(TextSpan span, String name) {
+		report(span, "Cannot assign variable '%s'.", name);
+		
 	}
 }

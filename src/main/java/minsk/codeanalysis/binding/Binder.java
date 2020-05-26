@@ -13,7 +13,9 @@ import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.StatementSyntax;
+import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
+import minsk.codeanalysis.syntax.VariableDeclarationSyntax;
 import minsk.diagnostics.*;
 
 public class Binder implements Diagnosable {
@@ -35,6 +37,8 @@ public class Binder implements Diagnosable {
 		switch (syntax.getKind()) {
 		case BlockStatement:
 			return bindBlockStatement((BlockStatementSyntax) syntax);
+		case VariableDeclaration:
+			return bindVariableDeclaration((VariableDeclarationSyntax) syntax);
 		case ExpressionStatement:
 			return bindExpressionStatement((ExpressionStatementSyntax) syntax);
 		default:
@@ -53,7 +57,19 @@ public class Binder implements Diagnosable {
 		
 		return new BoundBlockStatement(statements);
 	}
-	
+
+	private BoundStatement bindVariableDeclaration(VariableDeclarationSyntax syntax) {
+		var name = syntax.getIdentifier().getText();
+		var isReadOnly = syntax.getKeyword().getKind() == SyntaxKind.LetKeyword;
+		var initializer = bindExpression(syntax.getInitializer());
+		var variable = new VariableSymbol(name, isReadOnly, initializer.getType());
+		
+		if (!scope.declare(variable)) {
+			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
+		}
+		
+		return new BoundVariableDeclaration(variable, initializer);
+	}
 	
 	private BoundExpressionStatement bindExpressionStatement(ExpressionStatementSyntax syntax) {
 		var expression = bindExpression(syntax.getExpression());
@@ -125,8 +141,12 @@ public class Binder implements Diagnosable {
 		VariableSymbol variable = scope.lookup(name);
 		
 		if (variable == null) {
-			variable = new VariableSymbol(name, boundExpression.getType());
-			scope.declare(variable);
+			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
+			return boundExpression;
+		}
+		
+		if (variable.isReadOnly()) {
+			diagnostics.reportCannotAssign(syntax.getEqualsToken().getSpan(), name);
 		}
 
 		if (boundExpression.getType() != variable.getType()) {

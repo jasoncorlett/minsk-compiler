@@ -17,7 +17,7 @@ import minsk.codeanalysis.binding.VariableSymbol;
 class EvaluatorTest {
 
 	@ParameterizedTest(name = "{0} = {1}")
-	@MethodSource("getExpressionData")
+	@MethodSource
 	void TestIntegerExpression(String text, Object expectedResult) {
 		var tree = SyntaxTree.parse(text);
 		var compilation = new Compilation(tree);
@@ -35,7 +35,7 @@ class EvaluatorTest {
 		return Arguments.of(expr, result);
 	}
 
-	private static Stream<Arguments> getExpressionData() {
+	private static Stream<Arguments> TestIntegerExpression() {
 		return Stream.of(
 			a("1", 1),
 			a("+1", 1),
@@ -67,7 +67,7 @@ class EvaluatorTest {
 			a("false || false", false),
 			a("false || true", true),
 			
-			a("(a = 10) * a", 100)
+			a("{ var x = 10 (x+10)*x }", 200)
 		);
 	}
 }
