@@ -1,6 +1,8 @@
 package minsk.codeanalysis.syntax;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -18,37 +20,37 @@ class EvaluatorTest {
 	
 	private static Stream<Arguments> TestExpressionResults() {
 		return Stream.of(
-			a("1", 1),
-			a("+1", 1),
-			a("-1", -1),
-			a("1 + 2", 3),
-			a("7 - 3", 4),
-			a("4 /2", 2),
-			a("5 * 3", 15),
-			a("22 % 5", 2),
-			a("12 == 3", false),
-			a("12 == 12", true),
-			a("12 != 3", true),
-			a("12 != 12", false),
+			arguments("1", 1),
+			arguments("+1", 1),
+			arguments("-1", -1),
+			arguments("1 + 2", 3),
+			arguments("7 - 3", 4),
+			arguments("4 /2", 2),
+			arguments("5 * 3", 15),
+			arguments("22 % 5", 2),
+			arguments("12 == 3", false),
+			arguments("12 == 12", true),
+			arguments("12 != 3", true),
+			arguments("12 != 12", false),
 			
-			a("true", true),
-			a("false", false),
-			a("!true", false),
-			a("!false", true),
-			a("true == true", true),
-			a("true == false", false),
-			a("false == false", true),
-			a("false == true", false),
-			a("true && true", true),
-			a("true && false", false),
-			a("false && false", false),
-			a("false && true", false),
-			a("true || true", true),
-			a("true || false", true),
-			a("false || false", false),
-			a("false || true", true),
+			arguments("true", true),
+			arguments("false", false),
+			arguments("!true", false),
+			arguments("!false", true),
+			arguments("true == true", true),
+			arguments("true == false", false),
+			arguments("false == false", true),
+			arguments("false == true", false),
+			arguments("true && true", true),
+			arguments("true && false", false),
+			arguments("false && false", false),
+			arguments("false && true", false),
+			arguments("true || true", true),
+			arguments("true || false", true),
+			arguments("false || false", false),
+			arguments("false || true", true),
 			
-			a("{ var x = 10 (x+10)*x }", 200)
+			arguments("{ var x = 10 (x+10)*x }", 200)
 		);
 	}
 	
@@ -66,10 +68,4 @@ class EvaluatorTest {
 		}
 		assertEquals(expectedResult, actualResult.getValue());
 	}
-	
-	private static Arguments a(String expr, Object result) {
-		return Arguments.of(expr, result);
-	}
-
-
 }

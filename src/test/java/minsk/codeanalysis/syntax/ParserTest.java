@@ -31,8 +31,8 @@ class ParserTest {
 	}
 	
 	public static Stream<Arguments> BinaryPrecedenceTest() {
-		return SyntaxFacts.getBinaryOperatorKinds().stream()
-				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
+		return SyntaxFacts.getBinaryOperatorStream()
+				.flatMap(a -> SyntaxFacts.getBinaryOperatorStream().map(b -> Arguments.of(a, b)));
 	}
 	
 	/**
@@ -94,8 +94,8 @@ class ParserTest {
 	}
 	
 	public static Stream<Arguments> UnaryPrecedenceTest() {
-		return SyntaxFacts.getUnaryOperatorKinds().stream()
-				.flatMap(a -> SyntaxFacts.getBinaryOperatorKinds().stream().map(b -> Arguments.of(a, b)));
+		return SyntaxFacts.getUnaryOperatorStream()
+				.flatMap(a -> SyntaxFacts.getBinaryOperatorStream().map(b -> Arguments.of(a, b)));
 	}
 	
 	@ParameterizedTest
