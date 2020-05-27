@@ -134,7 +134,7 @@ public class Parser implements Diagnosable {
 	private ExpressionSyntax parseBinaryExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 
-		var unaryOperatorPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(current().getKind());
+		var unaryOperatorPrecedence = current().getKind().getUnaryPrecedence();
 
 		if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
 			var operatorToken = nextToken();
@@ -145,7 +145,7 @@ public class Parser implements Diagnosable {
 		}
 
 		while (true) {
-			var precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(current().getKind());
+			var precedence = current().getKind().getBinaryPrecedence();
 			if (precedence == 0 || precedence <= parentPrecedence) {
 				break;
 			}

@@ -3,6 +3,7 @@ package minsk.diagnostics;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.text.SourceText;
@@ -29,6 +30,10 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 	@Override
 	public Iterator<Diagnostic> iterator() {
 		return diagnostics.iterator();
+	}
+	
+	public Stream<Diagnostic> stream() {
+		return diagnostics.stream();
 	}
 
 	public void reportInvalidNumber(TextSpan span, SourceText source, Class<?> type) {

@@ -70,34 +70,49 @@ public enum SyntaxKind {
 		int value() default 0;
 	}
 	
+	private final String fixedText;
+	private final boolean isKeyword;
+	private final int binaryPrecedence;
+	private final int unaryPrecedence;
+	
+	private SyntaxKind() {
+		isKeyword = this.toString().endsWith("Keyword");
+		
+		try {
+			var fixedAnnotation = this.getClass().getField(this.name()).getAnnotation(Fixed.class); 
+			fixedText = fixedAnnotation == null ? null : fixedAnnotation.value();
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+		
+		try {
+			var unaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Unary.class);
+			unaryPrecedence = unaryAnnotation == null ? 0 : unaryAnnotation.value();
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+		
+		try {
+			var binaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Binary.class);
+			binaryPrecedence = binaryAnnotation == null ? 0 : binaryAnnotation.value();
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public boolean isKeyword() {
-		return this.name().endsWith("Keyword");
+		return isKeyword;
 	}
 	
 	public String getFixedText() {
-		try {
-			var fixed = this.getClass().getField(this.name()).getAnnotation(Fixed.class); 
-			return fixed == null ? null : fixed.value();
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
+		return fixedText;
 	}
 	
 	public int getUnaryPrecedence() {
-		try {
-			var unary = this.getClass().getField(this.name()).getAnnotation(Unary.class);
-			return unary == null ? 0 : unary.value();
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
+		return unaryPrecedence;
 	}
 	
 	public int getBinaryPrecedence() {
-		try {
-			var binary = this.getClass().getField(this.name()).getAnnotation(Binary.class);
-			return binary == null ? 0 : binary.value();
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
+		return binaryPrecedence;
 	}
 }

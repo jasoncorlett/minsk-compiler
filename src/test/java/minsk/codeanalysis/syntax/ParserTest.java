@@ -7,11 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import minsk.diagnostics.Diagnostic;
 
 class ParserTest {
 	private static ExpressionSyntax assertParses(String fmt, Object ...args) {
@@ -19,7 +20,8 @@ class ParserTest {
 		var tree = SyntaxTree.parse(text);
 		
 		if (!tree.getDiagnostics().isEmpty()) {
-			fail(StreamSupport.stream(tree.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
+			fail(tree.getDiagnostics().stream()
+					.map(Diagnostic::getMessage)
 					.collect(Collectors.joining("\n")));
 		}
 		
@@ -42,8 +44,8 @@ class ParserTest {
 	@ParameterizedTest
 	@MethodSource
 	public void BinaryPrecedenceTest(SyntaxKind op1, SyntaxKind op2) {
-		var op1Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op1);
-		var op2Precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(op2);
+		var op1Precedence = op1.getBinaryPrecedence();
+		var op2Precedence = op2.getBinaryPrecedence(); 
 		
 		var op1Text = op1.getFixedText();
 		var op2Text = op2.getFixedText();
@@ -100,8 +102,8 @@ class ParserTest {
 	@MethodSource
 	public void UnaryPrecedenceTest(SyntaxKind unaryKind, SyntaxKind binaryKind) {
 		
-		var unaryPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(unaryKind);
-		var binaryPrecedence = SyntaxFacts.lookupBinaryOperatorPrecedence(binaryKind);
+		var unaryPrecedence = unaryKind.getUnaryPrecedence();
+		var binaryPrecedence = binaryKind.getBinaryPrecedence();
 		
 		var unaryText = unaryKind.getFixedText();
 		var binaryText = binaryKind.getFixedText();
