@@ -24,11 +24,11 @@ class SyntaxKindTest {
 		
 		var token = tokens.get(0);
 		
-		assertEquals(text, token.getText());
-		assertEquals(kind, token.getKind());
+		assertEquals(text, token.text());
+		assertEquals(kind, token.kind());
 		
-		if (token.getKind().getFixedText() != null)
-			assertEquals(token.getText(), token.getKind().getFixedText());
+		if (token.kind().getFixedText() != null)
+			assertEquals(token.text(), token.kind().getFixedText());
 	}
 	
 }

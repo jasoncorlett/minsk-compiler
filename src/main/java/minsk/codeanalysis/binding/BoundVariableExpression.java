@@ -12,8 +12,8 @@ public class BoundVariableExpression extends BoundExpression {
 	}
 	
 	@Override
-	Class<? extends Object> getType() {
-		return variable.getType();
+	Class<?> getType() {
+		return variable.type();
 	}
 
 	@Override

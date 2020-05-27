@@ -19,23 +19,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 class LexerTest {
 	/**
 	 * SyntaxTuple - holds basic information about a token required to test
-	 * Saves the hassle of passing values separately or constructing a token 
+	 * Saves the hassle of passing values separately or constructing a token
 	 */
-	private static class SyntaxTuple {
-		final SyntaxKind kind;
-		final String text;
-		
-		SyntaxTuple(SyntaxKind kind, String text) {
-			this.kind = kind;
-			this.text = text;
-		}
-		
-		@Override
-		public String toString() {
-			return String.format("%s '%s'", kind, text);
-		}
+	private record SyntaxTuple(SyntaxKind kind, String text) {
 	}
-	
+
 	/**
 	 * Determine if two kinds of syntax must be separated by whitespace
 	 * to produce valid language syntax
@@ -49,7 +37,7 @@ class LexerTest {
 		var bIsKeyword = bKind.isKeyword();
 		var aIsEquals  = aKind.toString().startsWith("Equals");
 		var bIsEquals  = bKind.toString().startsWith("Equals");
-		
+
 		return (aKind == SyntaxKind.IdentifierToken && bKind == SyntaxKind.IdentifierToken)
 				|| (aIsKeyword && bIsKeyword)
 				|| (aIsKeyword && bKind == SyntaxKind.IdentifierToken)
@@ -110,8 +98,8 @@ class LexerTest {
 		assertEquals(1, tokens.size());
 		var token = tokens.get(0);
 		
-		assertEquals(a.kind, token.getKind());
-		assertEquals(a.text, token.getText());
+		assertEquals(a.kind, token.kind());
+		assertEquals(a.text, token.text());
 	}
 	
 	/**
@@ -133,10 +121,10 @@ class LexerTest {
 		var aToken = tokens.get(0);
 		var bToken = tokens.get(1);
 		
-		assertEquals(a.kind, aToken.getKind());
-		assertEquals(a.text, aToken.getText());
-		assertEquals(b.kind, bToken.getKind());
-		assertEquals(b.text, bToken.getText());
+		assertEquals(a.kind, aToken.kind());
+		assertEquals(a.text, aToken.text());
+		assertEquals(b.kind, bToken.kind());
+		assertEquals(b.text, bToken.text());
 	}
 	
 	/**
@@ -154,12 +142,12 @@ class LexerTest {
 		
 		assertEquals(3, tokens.size());
 		
-		assertEquals(a.kind, 	tokens.get(0).getKind());
-		assertEquals(a.text, 	tokens.get(0).getText());
-		assertEquals(sep.kind,	tokens.get(1).getKind());
-		assertEquals(sep.text, 	tokens.get(1).getText());
-		assertEquals(b.kind, 	tokens.get(2).getKind());
-		assertEquals(b.text, 	tokens.get(2).getText());
+		assertEquals(a.kind, 	tokens.get(0).kind());
+		assertEquals(a.text, 	tokens.get(0).text());
+		assertEquals(sep.kind,	tokens.get(1).kind());
+		assertEquals(sep.text, 	tokens.get(1).text());
+		assertEquals(b.kind, 	tokens.get(2).kind());
+		assertEquals(b.text, 	tokens.get(2).text());
 	}
 	
 	@Nested

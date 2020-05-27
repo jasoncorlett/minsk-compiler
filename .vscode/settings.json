@@ -1,0 +1,5 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "abl.checkProgressBinary": false,
+    "abl.warnConfigFile": false
+}

@@ -1,15 +1,17 @@
 package minsk.codeanalysis.syntax;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import minsk.codeanalysis.text.TextSpan;
 
 public interface SyntaxNode {
-	public abstract SyntaxKind getKind();
+	public abstract SyntaxKind kind();
 	
 	public default TextSpan getSpan() {
 		var children = getChildren();
@@ -36,12 +38,16 @@ public interface SyntaxNode {
 		return SyntaxNode.class.isAssignableFrom(method.getReturnType()) && method.getAnnotation(SyntaxChild.class) != null;
 	}
 	
+	private static boolean isChild(RecordComponent component) {
+		return SyntaxNode.class.isAssignableFrom(component.getAccessor().getReturnType()) && component.getAnnotation(SyntaxChild.class) != null;
+	}
+	
 	private static int getMethodOrder(Method method) {
-		return method.getAnnotation(SyntaxChild.class).order();
+		return method.getAnnotation(SyntaxChild.class).value();
 	}
 	
 	public default List<SyntaxNode> getChildren() {
-		return Arrays.stream(this.getClass().getDeclaredMethods())
+		return Stream.concat(Arrays.stream(this.getClass().getDeclaredMethods())
 				.filter(SyntaxNode::isChild)
 				.sorted(Comparator.comparingInt(SyntaxNode::getMethodOrder))
 				.map(m -> SyntaxNode.invoke(this, m))

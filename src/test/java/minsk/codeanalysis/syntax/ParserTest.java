@@ -167,11 +167,11 @@ class ParserTest {
 			assertTrue(iter.hasNext(), "Ran out of nodes looking for " + expectedKind + " " + expectedText);
 			
 			var actual = iter.next();
-			assertEquals(expectedKind, actual.getKind());
-			assertTrue(actual instanceof SyntaxToken, "" + actual.getKind() + " is not a SyntaxToken.");
+			assertEquals(expectedKind, actual.kind());
+			assertTrue(actual instanceof SyntaxToken, "" + actual.kind() + " is not a SyntaxToken.");
 			
 			var token = (SyntaxToken) actual;
-			assertEquals(expectedText, token.getText());
+			assertEquals(expectedText, token.text());
 			
 			return this;
 		}
@@ -180,7 +180,7 @@ class ParserTest {
 			assertTrue(iter.hasNext(), "Ran out of nodes looking for " + expectedKind);
 			
 			var actual = iter.next();
-			assertEquals(expectedKind, actual.getKind());
+			assertEquals(expectedKind, actual.kind());
 			
 			return this;
 		}

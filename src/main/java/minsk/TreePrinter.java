@@ -12,7 +12,7 @@ class TreePrinter {
 	private static final String INDENT_TREE  = "│   ";
 	private static final String INDENT_CHILD = "├── ";
 	private static final String INDENT_LAST  = "└── ";
-	
+
 	public static void prettyPrint(SyntaxNode node) {
 		prettyPrint(node, "", true);
 	}
@@ -20,17 +20,17 @@ class TreePrinter {
 	private static void prettyPrint(SyntaxNode node, String indent, boolean isLast) {
 		var marker = isLast ? INDENT_LAST : INDENT_CHILD;
 		
-		List.of((Object)indent, marker, node.getKind(), node.getSpan()).forEach(System.out::print);
+		List.of((Object)indent, marker, node.kind(), node.getSpan()).forEach(System.out::print);
 		
 		if (node instanceof SyntaxToken) {
 			var token = (SyntaxToken) node;
 			
-			if (token.getValue() != null) {
+			if (token.value() != null) {
 				System.out.print(" ");
-				System.out.print(token.getValue());
-			} else if (token.getKind() == SyntaxKind.IdentifierToken) {
+				System.out.print(token.value());
+			} else if (token.kind() == SyntaxKind.IdentifierToken) {
 				System.out.print(" ");
-				System.out.print(token.getText());
+				System.out.print(token.text());
 			}
 		}
 		

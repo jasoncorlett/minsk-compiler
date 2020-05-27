@@ -1,13 +1,12 @@
 package minsk.codeanalysis.syntax;
 
-import static java.lang.annotation.ElementType.METHOD;
-
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(METHOD)
+@Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SyntaxChild {
-	int order() default Integer.MAX_VALUE;
+	int value() default Integer.MAX_VALUE;
 }

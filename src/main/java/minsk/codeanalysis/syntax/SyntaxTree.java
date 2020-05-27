@@ -51,7 +51,7 @@ public class SyntaxTree implements Diagnosable {
 		var lexer = new Lexer(source);
 		return Stream
 				.generate(lexer::lex)
-				.takeWhile(t -> t.getKind() != SyntaxKind.EndOfFileToken)
+				.takeWhile(t -> t.kind() != SyntaxKind.EndOfFileToken)
 				.collect(Collectors.toList());
 	}
 }

@@ -1,6 +1,7 @@
 package minsk.codeanalysis.binding;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import minsk.codeanalysis.syntax.AssignmentExpressionSyntax;
@@ -24,7 +25,7 @@ public class Binder implements Diagnosable {
 		var parentScope = createParentScope(previous);
 		var binder = new Binder(parentScope);
 		var statement = binder.bindStatement(syntax.getStatement());
-		var variables = binder.getScope().getDeclaredVariables();
+		var<VariableSymbol> variables = binder.getScope().getDeclaredVariables();
 		var diagnostics = binder.getDiagnostics();
 		
 		if (previous != null)
@@ -34,7 +35,7 @@ public class Binder implements Diagnosable {
 	}
 	
 	private BoundStatement bindStatement(StatementSyntax syntax) {
-		switch (syntax.getKind()) {
+		switch (syntax.kind()) {
 		case BlockStatement:
 			return bindBlockStatement((BlockStatementSyntax) syntax);
 		case VariableDeclaration:
@@ -42,16 +43,20 @@ public class Binder implements Diagnosable {
 		case ExpressionStatement:
 			return bindExpressionStatement((ExpressionStatementSyntax) syntax);
 		default:
-			throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
+			throw new RuntimeException("Unexpected statement syntax: " + syntax.kind());
 		}
 	}
 
 	private BoundBlockStatement bindBlockStatement(BlockStatementSyntax syntax) {
 		scope = new BoundScope(scope);
 		
-		var statements = syntax.getStatements().stream()
-				.map(this::bindStatement)
-				.collect(Collectors.toList()); 
+		List<BoundStatement> statements = (List<BoundStatement>) syntax.statements().<StatementSyntax>stream()
+				.map(s -> (BoundStatement) bindStatement((StatementSyntax)s))
+				.collect(Collectors.toList());
+		
+//		var<BoundStatement> statements = syntax.statements().stream()
+//				.map(s -> bindStatement(s))
+//				.collect(Collectors.toList()); 
 		
 		scope = scope.getParent();
 		
@@ -59,13 +64,13 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundStatement bindVariableDeclaration(VariableDeclarationSyntax syntax) {
-		var name = syntax.getIdentifier().getText();
-		var isReadOnly = syntax.getKeyword().getKind() == SyntaxKind.LetKeyword;
-		var initializer = bindExpression(syntax.getInitializer());
+		var name = syntax.identifier().text();
+		var isReadOnly = syntax.keyword().kind() == SyntaxKind.LetKeyword;
+		var initializer = bindExpression(syntax.initializer());
 		var variable = new VariableSymbol(name, isReadOnly, initializer.getType());
 		
 		if (!scope.declare(variable)) {
-			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
+			diagnostics.reportVariableAlreadyDeclared(syntax.identifier().getSpan(), name);
 		}
 		
 		return new BoundVariableDeclaration(variable, initializer);
@@ -77,7 +82,7 @@ public class Binder implements Diagnosable {
 	}
 
 	private static BoundScope createParentScope(BoundGlobalScope previous) {
-		var stack = new LinkedList<BoundGlobalScope>();
+		var<BoundGlobalScope> stack = new LinkedList<BoundGlobalScope>();
 
 		while (previous != null) {
 			stack.push(previous);
@@ -103,7 +108,7 @@ public class Binder implements Diagnosable {
 	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
-		switch (syntax.getKind()) {
+		switch (syntax.kind()) {
 		case ParenthesizedExpression:
 			return bindParenthesizedExpression(((ParenthesizedExpressionSyntax)syntax));
 		case LiteralExpression:
@@ -117,12 +122,12 @@ public class Binder implements Diagnosable {
 		case BinaryExpression:
 			return bindBinaryExpression((BinaryExpressionSyntax) syntax);
 		default:
-			throw new RuntimeException("Unexpected syntax " + syntax.getKind());
+			throw new RuntimeException("Unexpected syntax " + syntax.kind());
 		}
 	}
 
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
-		var name = syntax.getIdentifierToken().getText();
+		var name = syntax.getIdentifierToken().text();
 		
 		var variable = scope.lookup(name);
 		
@@ -135,29 +140,29 @@ public class Binder implements Diagnosable {
 	}
 	
 	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
-		var name = syntax.getIdentifierToken().getText();
-		var boundExpression = bindExpression(syntax.getExpression());
+		var name = syntax.identifierToken().text();
+		var boundExpression = bindExpression(syntax.expression());
 		
 		VariableSymbol variable = scope.lookup(name);
 		
 		if (variable == null) {
-			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
+			diagnostics.reportUndefinedName(syntax.identifierToken().getSpan(), name);
 			return boundExpression;
 		}
 		
 		if (variable.isReadOnly()) {
-			diagnostics.reportCannotAssign(syntax.getEqualsToken().getSpan(), name);
+			diagnostics.reportCannotAssign(syntax.equalsToken().getSpan(), name);
 		}
 
-		if (boundExpression.getType() != variable.getType()) {
-			diagnostics.reportCannotConvert(syntax.getExpression().getSpan(), boundExpression.getType(), variable.getType());
+		if (boundExpression.getType() != variable.type()) {
+			diagnostics.reportCannotConvert(syntax.expression().getSpan(), boundExpression.getType(), variable.type());
 		}
 		
 		return new BoundAssignmentExpression(variable, boundExpression);
 	}
 
 	private BoundExpression bindParenthesizedExpression(ParenthesizedExpressionSyntax parenthesizedExpressionSyntax) {
-		return bindExpression(parenthesizedExpressionSyntax.getExpression());
+		return bindExpression(parenthesizedExpressionSyntax.expression());
 	}
 
 	private BoundExpression bindLiteralExpression(LiteralExpressionSyntax syntax) {
@@ -166,11 +171,11 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundExpression bindUnaryExpression(UnaryExpressionSyntax syntax) {
-		var boundOperand = bindExpression(syntax.getOperand());
-		var boundOperator = BoundUnaryOperator.bind(syntax.getOperatorToken().getKind(), boundOperand.getType());
+		var boundOperand = bindExpression(syntax.operand());
+		var boundOperator = BoundUnaryOperator.bind(syntax.operatorToken().kind(), boundOperand.getType());
 
 		if (boundOperator == null) {
-			diagnostics.reportUndefinedUnaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundOperand.getType());
+			diagnostics.reportUndefinedUnaryOperator(syntax.operatorToken().getSpan(), syntax.operatorToken().text(), boundOperand.getType());
 			return boundOperand;
 		}
 
@@ -178,12 +183,12 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundExpression bindBinaryExpression(BinaryExpressionSyntax syntax) {
-		var boundLeft = bindExpression(syntax.getLeft());
-		var boundRight = bindExpression(syntax.getRight());
-		var boundOperator = BoundBinaryOperator.bind(syntax.getOperatorToken().getKind(), boundLeft.getType(), boundRight.getType());
+		var boundLeft = bindExpression(syntax.left());
+		var boundRight = bindExpression(syntax.right());
+		var boundOperator = BoundBinaryOperator.bind(syntax.operatorToken().kind(), boundLeft.getType(), boundRight.getType());
 
 		if (boundOperator == null) {
-			diagnostics.reportUndefinedBinaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType());
+			diagnostics.reportUndefinedBinaryOperator(syntax.operatorToken().getSpan(), syntax.operatorToken().text(), boundLeft.getType(), boundRight.getType());
 			return boundLeft;
 		}
 

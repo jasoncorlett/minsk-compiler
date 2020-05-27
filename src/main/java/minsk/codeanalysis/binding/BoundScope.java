@@ -14,11 +14,11 @@ public class BoundScope {
 	}
 	
 	public boolean declare(VariableSymbol variable) {
-		if (variables.containsKey(variable.getName())) {
+		if (variables.containsKey(variable.name())) {
 			return false;
 		}
 		
-		variables.put(variable.getName(), variable);
+		variables.put(variable.name(), variable);
 		return true;
 	}
 	

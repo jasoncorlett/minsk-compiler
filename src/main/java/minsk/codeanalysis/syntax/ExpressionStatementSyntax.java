@@ -8,7 +8,7 @@ public class ExpressionStatementSyntax implements StatementSyntax {
 	}
 	
 	@Override
-	public SyntaxKind getKind() {
+	public SyntaxKind kind() {
 		return SyntaxKind.ExpressionStatement;
 	}
 

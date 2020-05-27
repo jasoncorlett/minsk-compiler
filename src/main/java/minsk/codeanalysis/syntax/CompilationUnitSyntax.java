@@ -11,7 +11,7 @@ public class CompilationUnitSyntax implements SyntaxNode {
 	}
 	
 	@Override
-	public SyntaxKind getKind() {
+	public SyntaxKind kind() {
 		return SyntaxKind.CompilationUnit;
 	}
 

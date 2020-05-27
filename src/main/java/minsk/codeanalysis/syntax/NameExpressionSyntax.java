@@ -13,7 +13,7 @@ public class NameExpressionSyntax implements ExpressionSyntax {
 	}
 	
 	@Override
-	public SyntaxKind getKind() {
+	public SyntaxKind kind() {
 		return SyntaxKind.NameExpression;
 	}
 }

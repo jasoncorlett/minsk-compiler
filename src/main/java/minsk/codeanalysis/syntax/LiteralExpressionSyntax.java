@@ -5,7 +5,7 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
 	private final Object value;
 	
 	public LiteralExpressionSyntax(SyntaxToken literalToken) {
-		this(literalToken, literalToken.getValue());
+		this(literalToken, literalToken.value());
 	}
 	
 	public LiteralExpressionSyntax(SyntaxToken literalToken, Object value) {
@@ -23,7 +23,7 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
 	}
 
 	@Override
-	public SyntaxKind getKind() {
+	public SyntaxKind kind() {
 		return SyntaxKind.LiteralExpression;
 	}
 }

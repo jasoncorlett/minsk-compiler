@@ -23,12 +23,12 @@ public class Parser implements Diagnosable {
 		do {
 			token = lexer.lex();
 
-			if (token.getKind() == SyntaxKind.WhitespaceToken || token.getKind() == SyntaxKind.BadToken) {
+			if (token.kind() == SyntaxKind.WhitespaceToken || token.kind() == SyntaxKind.BadToken) {
 				continue;
 			}
 
 			getTokens().add(token);
-		} while (token.getKind() != SyntaxKind.EndOfFileToken);
+		} while (token.kind() != SyntaxKind.EndOfFileToken);
 
 		getDiagnostics().addFrom(lexer);
 	}
@@ -57,12 +57,12 @@ public class Parser implements Diagnosable {
 	}
 
 	private SyntaxToken matchToken(SyntaxKind kind) {
-		if (current().getKind() == kind) {
+		if (current().kind() == kind) {
 			return nextToken();
 		}
 
-		getDiagnostics().reportUnexpectedToken(current().getSpan(), current().getKind(), kind);
-		return new SyntaxToken(kind, current().getPosition(), null, null);
+		getDiagnostics().reportUnexpectedToken(current().getSpan(), current().kind(), kind);
+		return new SyntaxToken(kind, current().position(), null, null);
 	}
 
 	public CompilationUnitSyntax parseCompilationUnit() {
@@ -73,7 +73,7 @@ public class Parser implements Diagnosable {
 	}
 	
 	private StatementSyntax parseStatement() {
-		switch (current().getKind()) {
+		switch (current().kind()) {
 		case OpenBraceToken:
 			return parseBlockStatement();
 		case LetKeyword:
@@ -89,7 +89,7 @@ public class Parser implements Diagnosable {
 		
 		var openBraceToken = matchToken(SyntaxKind.OpenBraceToken);
 		
-		while (current().getKind() != SyntaxKind.CloseBraceToken && current().getKind() != SyntaxKind.EndOfFileToken) {
+		while (current().kind() != SyntaxKind.CloseBraceToken && current().kind() != SyntaxKind.EndOfFileToken) {
 			statements.add(parseStatement());
 		}
 		
@@ -99,7 +99,7 @@ public class Parser implements Diagnosable {
 	}	
 	
 	private StatementSyntax parseVariableDeclaration() {
-		var expected = current().getKind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+		var expected = current().kind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
 		var keyword = matchToken(expected);
 		var identifier = matchToken(SyntaxKind.IdentifierToken);
 		var equals = matchToken(SyntaxKind.EqualsToken);
@@ -117,7 +117,7 @@ public class Parser implements Diagnosable {
 	}
 
 	private ExpressionSyntax parseAssignmentExpression() {
-		if (current().getKind() == SyntaxKind.IdentifierToken && lookahead().getKind() == SyntaxKind.EqualsToken) {
+		if (current().kind() == SyntaxKind.IdentifierToken && lookahead().kind() == SyntaxKind.EqualsToken) {
 			var identifierToken = nextToken();
 			var operatorToken = nextToken();
 			var right = parseAssignmentExpression();
@@ -134,7 +134,7 @@ public class Parser implements Diagnosable {
 	private ExpressionSyntax parseBinaryExpression(int parentPrecedence) {
 		ExpressionSyntax left;
 
-		var unaryOperatorPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(current().getKind());
+		var unaryOperatorPrecedence = SyntaxFacts.lookupUnaryOperatorPrecedence(current().kind());
 
 		if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
 			var operatorToken = nextToken();
@@ -145,7 +145,7 @@ public class Parser implements Diagnosable {
 		}
 
 		while (true) {
-			var precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(current().getKind());
+			var precedence = SyntaxFacts.lookupBinaryOperatorPrecedence(current().kind());
 			if (precedence == 0 || precedence <= parentPrecedence) {
 				break;
 			}
@@ -160,7 +160,7 @@ public class Parser implements Diagnosable {
 	}
 
 	private ExpressionSyntax parsePrimaryExpression() {
-		switch (current().getKind()) {
+		switch (current().kind()) {
 		case OpenParenthesisToken:
 			return parseParenthesizedExpression();
 			
@@ -185,7 +185,7 @@ public class Parser implements Diagnosable {
 	}
 
 	private ExpressionSyntax parseBooleanLiteral() {
-		var isTrue = current().getKind() == SyntaxKind.TrueKeyword;
+		var isTrue = current().kind() == SyntaxKind.TrueKeyword;
 		
 		var keywordToken = isTrue ? matchToken(SyntaxKind.TrueKeyword) : matchToken(SyntaxKind.FalseKeyword);
 		
