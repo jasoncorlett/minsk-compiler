@@ -4,8 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import minsk.codeanalysis.syntax.lexer.Lexer;
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
+import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
+import minsk.codeanalysis.syntax.parser.Parser;
 import minsk.codeanalysis.text.SourceText;
-import minsk.diagnostics.*;
+import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.DiagnosticsBag;
 
 public class SyntaxTree implements Diagnosable {
 	private final SourceText source;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.SyntaxNode;
-import minsk.codeanalysis.syntax.SyntaxToken;
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
 // https://en.wikipedia.org/wiki/Tree_(command)
 class TreePrinter {

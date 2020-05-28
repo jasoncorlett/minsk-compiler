@@ -1,9 +1,12 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis.syntax.parser;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.lexer.Lexer;
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.DiagnosticsBag;

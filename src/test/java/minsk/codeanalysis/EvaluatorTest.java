@@ -1,4 +1,4 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -13,8 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import minsk.codeanalysis.Compilation;
 import minsk.codeanalysis.binding.VariableSymbol;
+import minsk.codeanalysis.syntax.SyntaxTree;
 
 class EvaluatorTest {
 	

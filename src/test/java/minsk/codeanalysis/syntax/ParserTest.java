@@ -1,6 +1,9 @@
 package minsk.codeanalysis.syntax;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,6 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
+import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
+import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
 import minsk.diagnostics.Diagnostic;
 
 class ParserTest {

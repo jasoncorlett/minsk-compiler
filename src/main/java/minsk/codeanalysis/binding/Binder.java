@@ -3,20 +3,21 @@ package minsk.codeanalysis.binding;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-import minsk.codeanalysis.syntax.AssignmentExpressionSyntax;
-import minsk.codeanalysis.syntax.BinaryExpressionSyntax;
-import minsk.codeanalysis.syntax.BlockStatementSyntax;
-import minsk.codeanalysis.syntax.CompilationUnitSyntax;
-import minsk.codeanalysis.syntax.ExpressionStatementSyntax;
-import minsk.codeanalysis.syntax.ExpressionSyntax;
-import minsk.codeanalysis.syntax.LiteralExpressionSyntax;
-import minsk.codeanalysis.syntax.NameExpressionSyntax;
-import minsk.codeanalysis.syntax.ParenthesizedExpressionSyntax;
-import minsk.codeanalysis.syntax.StatementSyntax;
 import minsk.codeanalysis.syntax.SyntaxKind;
-import minsk.codeanalysis.syntax.UnaryExpressionSyntax;
-import minsk.codeanalysis.syntax.VariableDeclarationSyntax;
-import minsk.diagnostics.*;
+import minsk.codeanalysis.syntax.parser.AssignmentExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.BinaryExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
+import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
+import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
+import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.LiteralExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.NameExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.StatementSyntax;
+import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
+import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.DiagnosticsBag;
 
 public class Binder implements Diagnosable {
 

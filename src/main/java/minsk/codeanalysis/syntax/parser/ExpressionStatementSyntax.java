@@ -1,4 +1,6 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis.syntax.parser;
+
+import minsk.codeanalysis.syntax.SyntaxKind;
 
 public class ExpressionStatementSyntax implements StatementSyntax {
 	private final ExpressionSyntax expression;

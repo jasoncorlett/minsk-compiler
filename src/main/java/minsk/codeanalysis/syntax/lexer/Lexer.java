@@ -1,8 +1,11 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis.syntax.lexer;
 
+import minsk.codeanalysis.syntax.SyntaxFacts;
+import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.text.SourceText;
 import minsk.codeanalysis.text.TextSpan;
-import minsk.diagnostics.*;
+import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.DiagnosticsBag;
 
 public class Lexer implements Diagnosable {
 	public static final char EOF = '\0';

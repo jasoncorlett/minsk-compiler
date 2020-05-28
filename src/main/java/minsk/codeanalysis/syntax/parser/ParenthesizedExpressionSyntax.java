@@ -1,4 +1,8 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis.syntax.parser;
+
+import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
 public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
 	private final SyntaxToken openParenToken;

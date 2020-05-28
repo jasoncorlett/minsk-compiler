@@ -1,5 +1,7 @@
-package minsk.codeanalysis.syntax;
+package minsk.codeanalysis.syntax.lexer;
 
+import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.text.TextSpan;
 
 public class SyntaxToken implements SyntaxNode {

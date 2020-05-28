@@ -1,12 +1,12 @@
 package minsk.codeanalysis.syntax;
 
+import static minsk.codeanalysis.syntax.SyntaxKind.IdentifierToken;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static minsk.codeanalysis.syntax.SyntaxKind.*;
 
 public class SyntaxFacts {
 	
