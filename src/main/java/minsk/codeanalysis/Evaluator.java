@@ -1,5 +1,6 @@
 package minsk.codeanalysis;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
@@ -13,11 +14,25 @@ import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.VariableSymbol;
+import minsk.codeanalysis.syntax.SyntaxTree;
 
 public class Evaluator  {
 	private final BoundStatement root;
 	private final Map<VariableSymbol, Object> variables;
 	private Object lastValue;
+	
+	public static EvaluationResult evaluateProgram(String text) {
+		return evaluateProgram(text, null);
+	}
+	
+	public static EvaluationResult evaluateProgram(String text, Map<VariableSymbol, Object> variables) {
+		var syntaxTree = SyntaxTree.parse(text);
+		var compilation = new Compilation(syntaxTree);
+		if (variables == null) {
+			variables = new HashMap<>();
+		}
+		return compilation.evaluate(variables);
+	}
 	
 	public Evaluator(BoundStatement root, Map<VariableSymbol, Object> variables) {
 		this.root = root;

@@ -4,17 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.platform.engine.support.hierarchical.Node.SkipResult;
 
 import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
+import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.Diagnostic;
 
 class EvaluatorTest {
 	
@@ -57,15 +65,90 @@ class EvaluatorTest {
 	@ParameterizedTest(name = "{0} = {1}")
 	@MethodSource
 	void TestExpressionResults(String text, Object expectedResult) {
-		var tree = SyntaxTree.parse(text);
-		var compilation = new Compilation(tree);
-		var variables = new HashMap<VariableSymbol, Object>();
-		var actualResult = compilation.evaluate(variables);
+		var actualResult = Evaluator.evaluateProgram(text);
 		
 		if (!actualResult.getDiagnostics().isEmpty()) {
 			fail(StreamSupport.stream(actualResult.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
 					.collect(Collectors.joining("\n")));
 		}
+		
 		assertEquals(expectedResult, actualResult.getValue());
+	}
+	
+	@Test
+	public void VariableAlreadyDeclared() {
+		var text = """
+				{
+					let a = 5
+					var b = 7
+					{
+						var a = 2
+					}
+					var [a] = 3
+				}
+				""";
+		
+		assertDiagnostics(text, "Variable 'a' is already declared.");
+	}
+	
+	@Test
+	public void NameReportsUndefined() {
+		assertDiagnostics("[x] * 10", "Variable 'x' is not defined.");
+	}
+	
+	@Test
+	public void AssignReportsUndefined() {
+		assertDiagnostics("[x] = 10", "Variable 'x' is not defined.");
+	}
+	
+	@Test
+	public void AssignReportsCannotAssign() {
+		var text = """
+				{
+					let x = 10
+					x [=] 0
+				}
+				""";
+		
+		assertDiagnostics(text, "Cannot assign variable 'x'.");
+	}
+	
+	@Test
+	public void AssignReportsCannotConvert() {
+		var text = """
+				{
+					var z = 5
+					z = [true]
+				}
+				""";
+		
+		assertDiagnostics(text, "Cannot convert from 'Boolean' to 'Integer'.");
+	}
+	
+	@Test
+	public void UnaryOperatorReportsUndefined() {
+		assertDiagnostics("[+]true", "Unary operator '+' is not defined for 'Boolean'.");
+	}
+	
+	@Test
+	public void BinaryOperatorReportsUndefined() {
+		assertDiagnostics("10 [*] true", "Binary operator '*' is not defined for types 'Integer' and 'Boolean'.");
+	}
+	
+	private static void assertDiagnostics(String program, String... expectedMessages) {
+		var annotated = AnnotatedText.parse(program);
+		var result = Evaluator.evaluateProgram(annotated.getText());
+
+		var expectedSpans = annotated.getSpans();
+		
+		var actualSpans = makeList(result, Diagnostic::getSpan);
+		var actualMessages = makeList(result, Diagnostic::getMessage);
+		
+		assertEquals(expectedSpans, actualSpans);
+		assertEquals(Arrays.asList(expectedMessages), actualMessages);
+	}
+	
+	private static <T> List<T> makeList(Diagnosable source, Function<Diagnostic, T> mapper) {
+		return source.getDiagnostics().stream().map(mapper).collect(Collectors.toList());
 	}
 }
