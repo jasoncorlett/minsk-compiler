@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,19 +19,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
-import minsk.diagnostics.Diagnostic;
 
 class ParserTest {
 	private static ExpressionSyntax assertParses(String fmt, Object ...args) {
 		var text = String.format(fmt, args);
 		var tree = SyntaxTree.parse(text);
 		
-		if (!tree.getDiagnostics().isEmpty()) {
-			fail(tree.getDiagnostics().stream()
-					.map(Diagnostic::getMessage)
-					.collect(Collectors.joining("\n")));
-		}
-		
+		assertNoDiagnostics(tree);
+
 		var statement = (ExpressionStatementSyntax) tree.getRoot().getStatement();
 		
 		return statement.getExpression();

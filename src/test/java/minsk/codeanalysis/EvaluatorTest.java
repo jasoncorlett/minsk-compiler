@@ -1,29 +1,22 @@
 package minsk.codeanalysis;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.platform.engine.support.hierarchical.Node.SkipResult;
 
-import minsk.codeanalysis.binding.VariableSymbol;
-import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.Diagnostic;
-
+import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
 class EvaluatorTest {
 	
 	private static Stream<Arguments> TestExpressionResults() {
@@ -67,10 +60,7 @@ class EvaluatorTest {
 	void TestExpressionResults(String text, Object expectedResult) {
 		var actualResult = Evaluator.evaluateProgram(text);
 		
-		if (!actualResult.getDiagnostics().isEmpty()) {
-			fail(StreamSupport.stream(actualResult.getDiagnostics().spliterator(), false).map(d -> d.getMessage())
-					.collect(Collectors.joining("\n")));
-		}
+		assertNoDiagnostics(actualResult);
 		
 		assertEquals(expectedResult, actualResult.getValue());
 	}
