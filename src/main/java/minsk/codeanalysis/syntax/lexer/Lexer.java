@@ -105,6 +105,24 @@ public class Lexer implements Diagnosable {
 				kind = SyntaxKind.EqualsToken;
 			}
 			break;
+		case '>':
+			position++;
+			if (current() == '=') {
+				kind = SyntaxKind.GreaterEqualsToken;
+				position++;
+			} else {
+				kind = SyntaxKind.GreaterToken;
+			}
+			break;
+		case '<':
+			position++;
+			if (current() == '=') {
+				kind = SyntaxKind.LessEqualsToken;
+				position++;
+			} else {
+				kind = SyntaxKind.LessToken;
+			}
+			break;
 		default:
 			if (Character.isDigit(current())) {
 				kind = readNumber(start);

@@ -114,6 +114,14 @@ public class Evaluator  {
 			return left.equals(right);
 		case NotEquals:
 			return !left.equals(right);
+		case Less:
+			return (int) left < (int) right;
+		case LessEquals:
+			return (int) left <= (int) right;
+		case Greater:
+			return (int) left > (int) right;
+		case GreaterEquals:
+			return (int) left >= (int) right;
 		default:
 			throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
 		}

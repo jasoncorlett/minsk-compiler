@@ -19,6 +19,10 @@ public final class BoundBinaryOperator {
 			
 			new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, Integer.class, Boolean.class),
 			new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, Integer.class, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.GreaterToken, BoundBinaryOperatorKind.Greater, Integer.class, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.GreaterEqualsToken, BoundBinaryOperatorKind.GreaterEquals, Integer.class, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.LessToken, BoundBinaryOperatorKind.Less, Integer.class, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.LessEqualsToken, BoundBinaryOperatorKind.LessEquals, Integer.class, Boolean.class),
 	};
 	
 	public static BoundBinaryOperator bind(SyntaxKind syntaxKind, Class<?> leftType, Class<?> rightType) {

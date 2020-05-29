@@ -56,6 +56,10 @@ class LexerTest {
 				|| (aKind == SyntaxKind.IdentifierToken && bIsKeyword)
 				|| (aKind == SyntaxKind.LiteralToken && bKind == SyntaxKind.LiteralToken)
 				|| (aKind == SyntaxKind.BangToken && bIsEquals)
+				|| (aKind == SyntaxKind.LessToken && bIsEquals)
+				|| (aKind == SyntaxKind.LessToken && bIsEquals)
+				|| (aKind == SyntaxKind.GreaterToken && bIsEquals)
+				|| (aKind == SyntaxKind.GreaterToken && bIsEquals)
 				|| (aIsEquals && bIsEquals);
 	}	
 	
