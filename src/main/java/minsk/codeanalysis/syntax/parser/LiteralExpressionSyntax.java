@@ -17,7 +17,7 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
 		this.value = value;
 	}
 	
-	@SyntaxChild
+	@SyntaxChild(order = 1)
 	public SyntaxToken getLiteralToken() {
 		return literalToken;
 	}

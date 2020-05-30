@@ -82,8 +82,10 @@ public class Parser implements Diagnosable {
 		case LetKeyword:
 		case VarKeyword:
 			return parseVariableDeclaration();
+		case IfKeyword:
+			return parseIfStatement();
 		default:
-		return parseExpressionStatement();
+			return parseExpressionStatement();
 		}
 	}
 
@@ -101,7 +103,7 @@ public class Parser implements Diagnosable {
 		return new BlockStatementSyntax(openBraceToken, statements, closeBraceToken);
 	}	
 	
-	private StatementSyntax parseVariableDeclaration() {
+	private VariableDeclarationSyntax parseVariableDeclaration() {
 		var expected = current().getKind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
 		var keyword = matchToken(expected);
 		var identifier = matchToken(SyntaxKind.IdentifierToken);
@@ -111,6 +113,25 @@ public class Parser implements Diagnosable {
 		return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
 	}
 
+	private IfStatementSyntax parseIfStatement() {
+		var ifKeyword = matchToken(SyntaxKind.IfKeyword);
+		var condition = parseExpression();
+		var thenStatement = parseStatement();
+		var elseClause = parseElseClause();
+		
+		return new IfStatementSyntax(ifKeyword, condition, thenStatement, elseClause);
+	}
+	
+	private ElseClauseSyntax parseElseClause() {
+		if (current().getKind() != SyntaxKind.ElseKeyword)
+			return null;
+		
+		var keyword = nextToken();
+		var statement = parseStatement();
+		
+		return new ElseClauseSyntax(keyword, statement);
+	}
+	
 	private ExpressionStatementSyntax parseExpressionStatement() {
 		return new ExpressionStatementSyntax(parseExpression());
 	}

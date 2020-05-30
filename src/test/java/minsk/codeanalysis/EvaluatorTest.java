@@ -65,7 +65,12 @@ class EvaluatorTest {
 			arguments("false || false", false),
 			arguments("false || true", true),
 			
-			arguments("{ var x = 10 (x+10)*x }", 200)
+			arguments("{ var x = 10 (x+10)*x }", 200),
+			arguments("if 5 < 10 1 else 0", 1),
+			arguments("if 5 > 10 1 else 0", 0),
+			arguments("if true  1 else 0", 1),
+			arguments("if false 1 else 0", 0),
+			arguments("{ var a = 5 var b = 0 if a - 5 == b { b = a } b}", 5)
 		);
 	}
 	

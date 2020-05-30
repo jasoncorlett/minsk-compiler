@@ -1,5 +1,6 @@
 package minsk.codeanalysis.syntax.parser;
 
+import minsk.codeanalysis.syntax.SyntaxChild;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
 public class ExpressionStatementSyntax implements StatementSyntax {
@@ -14,6 +15,7 @@ public class ExpressionStatementSyntax implements StatementSyntax {
 		return SyntaxKind.ExpressionStatement;
 	}
 
+	@SyntaxChild
 	public ExpressionSyntax getExpression() {
 		return expression;
 	}

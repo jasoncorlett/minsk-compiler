@@ -38,12 +38,15 @@ public enum SyntaxKind {
 	@Fixed("false") FalseKeyword,
 	@Fixed("var") VarKeyword,
 	@Fixed("let") LetKeyword,
+	@Fixed("if") IfKeyword,
+	@Fixed("else") ElseKeyword,
 	
 	// Statements
 	BlockStatement,
 	ExpressionStatement,
 	AssignmentStatement,
 	VariableDeclaration,
+	IfStatement,
 	
 	// Expressions
 	UnaryExpression,
@@ -54,7 +57,8 @@ public enum SyntaxKind {
 	AssignmentExpression,
 
 	// Special nodes
-	CompilationUnit;
+	CompilationUnit,
+	ElseClause;
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)

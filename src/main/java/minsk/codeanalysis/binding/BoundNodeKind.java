@@ -2,7 +2,8 @@ package minsk.codeanalysis.binding;
 
 public enum BoundNodeKind {
 	// Statements
-	BlockStatement, 
+	BlockStatement,
+	IfStatement,
 	ExpressionStatement,
 	VariableDeclaration,
 	
@@ -11,5 +12,5 @@ public enum BoundNodeKind {
 	LiteralExpression, 
 	BinaryExpression, 
 	VariableExpression, 
-	AssignmentExpression
+	AssignmentExpression, 
 }

@@ -10,6 +10,7 @@ import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
 import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.IfStatementSyntax;
 import minsk.codeanalysis.syntax.parser.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
@@ -38,6 +39,8 @@ public class Binder implements Diagnosable {
 		switch (syntax.getKind()) {
 		case BlockStatement:
 			return bindBlockStatement((BlockStatementSyntax) syntax);
+		case IfStatement:
+			return bindIfStatement((IfStatementSyntax) syntax);
 		case VariableDeclaration:
 			return bindVariableDeclaration((VariableDeclarationSyntax) syntax);
 		case ExpressionStatement:
@@ -57,6 +60,14 @@ public class Binder implements Diagnosable {
 		scope = scope.getParent();
 		
 		return new BoundBlockStatement(statements);
+	}
+
+	private BoundIfStatement bindIfStatement(IfStatementSyntax syntax) {
+		var condition = bindExpression(syntax.getCondition(), Boolean.class);
+		var thenStatement = bindStatement(syntax.getThenStatement());
+		var elseClause = syntax.getElseClause() == null ? null : bindStatement(syntax.getElseClause().getElseStatement());
+		
+		return new BoundIfStatement(condition, thenStatement, elseClause);
 	}
 
 	private BoundStatement bindVariableDeclaration(VariableDeclarationSyntax syntax) {
@@ -101,6 +112,16 @@ public class Binder implements Diagnosable {
 
 	public Binder(BoundScope parent) {
 		this.scope = new BoundScope(parent);
+	}
+	
+	public BoundExpression bindExpression(ExpressionSyntax syntax, Class<?> targetType) {
+		var bound = bindExpression(syntax);
+		
+		if (bound.getType() != targetType) {
+			diagnostics.reportCannotConvert(syntax.getSpan(), bound.getType(), targetType);
+		}
+		
+		return bound;
 	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {

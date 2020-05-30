@@ -98,7 +98,7 @@ public class Main {
 					var result = compilation.evaluate(variables);
 					
 					if (showTree) {
-						TreePrinter.prettyPrint(syntaxTree.getRoot());
+						TreePrinter.prettyPrint(syntaxTree.getRoot().getStatement());
 					}
 					
 					if (showVars) {

@@ -8,6 +8,7 @@ import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
+import minsk.codeanalysis.binding.BoundIfStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
@@ -49,6 +50,9 @@ public class Evaluator  {
 		case BlockStatement:
 			evaluateBlockStatement((BoundBlockStatement) node);
 			break;
+		case IfStatement:
+			evaluateIfStatement((BoundIfStatement) node);
+			break;
 		case VariableDeclaration:
 			evaluateVariableDeclaration((BoundVariableDeclaration) node);
 			break;
@@ -60,16 +64,28 @@ public class Evaluator  {
 		}
 	}
 
-	private void evaluateVariableDeclaration(BoundVariableDeclaration node) {
-		lastValue = evaluateExpression(node.getInitializer());
-		variables.put(node.getVariable(), lastValue);
-	}
 
 	private void evaluateBlockStatement(BoundBlockStatement node) {
 		for (var statment : node.getStatements())
 			evaluateStatement(statment);
 	}
 
+	private void evaluateIfStatement(BoundIfStatement node) {
+		var condition = (boolean) evaluateExpression(node.getCondition());
+		
+		if (condition) {
+			evaluateStatement(node.getThenStatement());
+		}
+		else {
+			evaluateStatement(node.getElseStatement());
+		}
+	}
+
+	private void evaluateVariableDeclaration(BoundVariableDeclaration node) {
+		lastValue = evaluateExpression(node.getInitializer());
+		variables.put(node.getVariable(), lastValue);
+	}
+	
 	private void evaluateExpressionStatement(BoundExpressionStatement node) {
 		lastValue = evaluateExpression(node.getExpression());
 	}

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import minsk.codeanalysis.text.TextSpan;
@@ -45,6 +46,7 @@ public interface SyntaxNode {
 				.filter(SyntaxNode::isChild)
 				.sorted(Comparator.comparingInt(SyntaxNode::getMethodOrder))
 				.map(m -> SyntaxNode.invoke(this, m))
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 }
