@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundVariableExpression extends BoundExpression {
+public class BoundVariableExpression implements BoundExpression {
 	private final VariableSymbol variable;
 	
 	public BoundVariableExpression(VariableSymbol variable) {
@@ -12,7 +12,7 @@ public class BoundVariableExpression extends BoundExpression {
 	}
 	
 	@Override
-	Class<? extends Object> getType() {
+	public Class<?> getType() {
 		return variable.getType();
 	}
 

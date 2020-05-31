@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public final class BoundLiteralExpression extends BoundExpression {
+public final class BoundLiteralExpression implements BoundExpression {
 	private final Object value;
 
 	public BoundLiteralExpression(Object value) {
@@ -12,7 +12,7 @@ public final class BoundLiteralExpression extends BoundExpression {
 	}
 
 	@Override
-	public final Class<? extends Object> getType() {
+	public final Class<?> getType() {
 		if (getValue() == null) {
 			return null;
 		}

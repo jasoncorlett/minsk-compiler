@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundWhileStatement extends BoundStatement {
+public class BoundWhileStatement implements BoundStatement {
 
 	private final BoundExpression condition;
 	private final BoundStatement body;

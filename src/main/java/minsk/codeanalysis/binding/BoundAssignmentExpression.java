@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundAssignmentExpression extends BoundExpression {
+public class BoundAssignmentExpression implements BoundExpression {
 
 	private final VariableSymbol variable;
 	private final BoundExpression expression;
@@ -11,7 +11,7 @@ public class BoundAssignmentExpression extends BoundExpression {
 	}
 	
 	@Override
-	Class<? extends Object> getType() {
+	public Class<?> getType() {
 		return getExpression().getType();
 	}
 

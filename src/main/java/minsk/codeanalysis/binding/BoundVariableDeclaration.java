@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundVariableDeclaration extends BoundStatement {
+public class BoundVariableDeclaration implements BoundStatement {
 	private final VariableSymbol variable;
 	private final BoundExpression initializer;
 

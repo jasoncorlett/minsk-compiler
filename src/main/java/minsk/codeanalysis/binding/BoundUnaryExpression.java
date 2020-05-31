@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public final class BoundUnaryExpression extends BoundExpression {
+public final class BoundUnaryExpression implements BoundExpression {
 	private final BoundUnaryOperator operator;
 	private final BoundExpression operand;
 

@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundExpressionStatement extends BoundStatement {
+public class BoundExpressionStatement implements BoundStatement {
 	private final BoundExpression expression;
 	
 	public BoundExpressionStatement(BoundExpression expression) {

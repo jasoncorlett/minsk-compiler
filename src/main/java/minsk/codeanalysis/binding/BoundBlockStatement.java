@@ -2,7 +2,7 @@ package minsk.codeanalysis.binding;
 
 import java.util.List;
 
-public class BoundBlockStatement extends BoundStatement {
+public class BoundBlockStatement implements BoundStatement {
 	private final List<BoundStatement> statements;
 
 	public BoundBlockStatement(List<BoundStatement> statements) {

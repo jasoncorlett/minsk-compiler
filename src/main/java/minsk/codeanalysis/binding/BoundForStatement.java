@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundForStatement extends BoundStatement {
+public class BoundForStatement implements BoundStatement {
 
 	private final VariableSymbol variable;
 	private final BoundExpression lowerBound;

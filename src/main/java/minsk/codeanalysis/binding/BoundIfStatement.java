@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public class BoundIfStatement extends BoundStatement {
+public class BoundIfStatement implements BoundStatement {
 	private final BoundExpression condition;
 	private final BoundStatement thenStatement;
 	private final BoundStatement elseClause;

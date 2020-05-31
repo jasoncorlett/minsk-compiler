@@ -1,5 +1,5 @@
 package minsk.codeanalysis.binding;
 
-public abstract class BoundNode {
-	public abstract BoundNodeKind getKind();
+public interface BoundNode {
+	public BoundNodeKind getKind();
 }
