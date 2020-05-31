@@ -40,6 +40,9 @@ public enum SyntaxKind {
 	@Fixed("let") LetKeyword,
 	@Fixed("if") IfKeyword,
 	@Fixed("else") ElseKeyword,
+	@Fixed("for") ForKeyword,
+	@Fixed("to") ToKeyword,
+	@Fixed("while") WhileKeyword,
 	
 	// Statements
 	BlockStatement,
@@ -47,6 +50,8 @@ public enum SyntaxKind {
 	AssignmentStatement,
 	VariableDeclaration,
 	IfStatement,
+	WhileStatement,
+	ForStatement,
 	
 	// Expressions
 	UnaryExpression,

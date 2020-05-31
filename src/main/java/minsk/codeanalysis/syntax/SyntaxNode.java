@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import minsk.codeanalysis.text.TextSpan;
 
@@ -25,27 +26,37 @@ public interface SyntaxNode {
 		return new TextSpan(first.getStart(), last.getEnd());
 	}
 	
-	private static SyntaxNode invoke(SyntaxNode node, Method method) {
+	private Stream<SyntaxNode> invokeChildMethod(Method method) {
 		try {
-			return (SyntaxNode) method.invoke(node);
+			var result = method.invoke(this);
+			
+			if (result instanceof SyntaxNode) {
+				return Stream.of((SyntaxNode)result);
+			}
+			else if (result instanceof List) {
+				return ((List<?>) result).stream().filter(SyntaxNode.class::isInstance).map(SyntaxNode.class::cast);
+			}
+			else {
+				return Stream.empty();
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	private static boolean isChild(Method method) {
-		return SyntaxNode.class.isAssignableFrom(method.getReturnType()) && method.getAnnotation(SyntaxChild.class) != null;
+		return method.getAnnotation(SyntaxChild.class) != null;
 	}
 	
-	private static int getMethodOrder(Method method) {
+	private static int getChildMethodOrder(Method method) {
 		return method.getAnnotation(SyntaxChild.class).order();
 	}
 	
 	public default List<SyntaxNode> getChildren() {
 		return Arrays.stream(this.getClass().getDeclaredMethods())
 				.filter(SyntaxNode::isChild)
-				.sorted(Comparator.comparingInt(SyntaxNode::getMethodOrder))
-				.map(m -> SyntaxNode.invoke(this, m))
+				.sorted(Comparator.comparingInt(SyntaxNode::getChildMethodOrder))
+				.flatMap(this::invokeChildMethod)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}

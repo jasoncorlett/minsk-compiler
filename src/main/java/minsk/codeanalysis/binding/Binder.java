@@ -10,6 +10,7 @@ import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
 import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.ForStatementSyntax;
 import minsk.codeanalysis.syntax.parser.IfStatementSyntax;
 import minsk.codeanalysis.syntax.parser.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.NameExpressionSyntax;
@@ -17,6 +18,7 @@ import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.StatementSyntax;
 import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
+import minsk.codeanalysis.syntax.parser.WhileStatementSyntax;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.DiagnosticsBag;
 
@@ -41,6 +43,10 @@ public class Binder implements Diagnosable {
 			return bindBlockStatement((BlockStatementSyntax) syntax);
 		case IfStatement:
 			return bindIfStatement((IfStatementSyntax) syntax);
+		case ForStatement:
+			return bindForStatement((ForStatementSyntax) syntax);
+		case WhileStatement:
+			return bindWhileStatement((WhileStatementSyntax) syntax);
 		case VariableDeclaration:
 			return bindVariableDeclaration((VariableDeclarationSyntax) syntax);
 		case ExpressionStatement:
@@ -48,6 +54,32 @@ public class Binder implements Diagnosable {
 		default:
 			throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
 		}
+	}
+
+	private BoundForStatement bindForStatement(ForStatementSyntax syntax) {
+		var lowerBound = bindExpression(syntax.getLowerBound(), Integer.class);
+		var upperBound = bindExpression(syntax.getUpperBound(), Integer.class);
+		
+		scope = new BoundScope(scope);
+
+		var name = syntax.getIdentifier().getText();
+		var variable = new VariableSymbol(name, true, Integer.class);
+		
+		if (!scope.declare(variable))
+			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
+		
+		var body = bindStatement(syntax.getBody());
+		
+		scope = scope.getParent();
+			
+		return new BoundForStatement(variable, lowerBound, upperBound, body);
+	}
+
+	private BoundWhileStatement bindWhileStatement(WhileStatementSyntax syntax) {
+		var condition = bindExpression(syntax.getCondition(), Boolean.class);
+		var body = bindStatement(syntax.getBody());
+		
+		return new BoundWhileStatement(condition, body);
 	}
 
 	private BoundBlockStatement bindBlockStatement(BlockStatementSyntax syntax) {

@@ -70,7 +70,10 @@ class EvaluatorTest {
 			arguments("if 5 > 10 1 else 0", 0),
 			arguments("if true  1 else 0", 1),
 			arguments("if false 1 else 0", 0),
-			arguments("{ var a = 5 var b = 0 if a - 5 == b { b = a } b}", 5)
+			arguments("{ var a = 5 var b = 0 if a - 5 == b { b = a } b}", 5),
+			
+			arguments("{ var res = 0 var i = 0 while i < 3 { i = i + 1 res = res + i } }", 6),
+			arguments("{var res = 0 for i = 1 to 3 res = res + i res}", 6)
 		);
 	}
 	

@@ -8,12 +8,14 @@ import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
+import minsk.codeanalysis.binding.BoundForStatement;
 import minsk.codeanalysis.binding.BoundIfStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
+import minsk.codeanalysis.binding.BoundWhileStatement;
 import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 
@@ -53,6 +55,12 @@ public class Evaluator  {
 		case IfStatement:
 			evaluateIfStatement((BoundIfStatement) node);
 			break;
+		case ForStatement:
+			evaluateForStatement((BoundForStatement) node);
+			break;
+		case WhileStatement:
+			evaluateWhileStatement((BoundWhileStatement) node);
+			break;
 		case VariableDeclaration:
 			evaluateVariableDeclaration((BoundVariableDeclaration) node);
 			break;
@@ -64,6 +72,17 @@ public class Evaluator  {
 		}
 	}
 
+
+	private void evaluateForStatement(BoundForStatement node) {
+		var lowerBound = (int) evaluateExpression(node.getLowerBound());
+		var upperBound = (int) evaluateExpression(node.getUpperBound());
+		
+		for (int i = lowerBound; i <= upperBound; i++) {
+			variables.put(node.getVariable(), i);
+			evaluateStatement(node.getBody());
+		}
+		
+	}
 
 	private void evaluateBlockStatement(BoundBlockStatement node) {
 		for (var statment : node.getStatements())
@@ -81,6 +100,12 @@ public class Evaluator  {
 		}
 	}
 
+	private void evaluateWhileStatement(BoundWhileStatement node) {
+		while ((boolean) evaluateExpression(node.getCondition())) {
+			evaluateStatement(node.getBody());
+		}
+	}
+	
 	private void evaluateVariableDeclaration(BoundVariableDeclaration node) {
 		lastValue = evaluateExpression(node.getInitializer());
 		variables.put(node.getVariable(), lastValue);

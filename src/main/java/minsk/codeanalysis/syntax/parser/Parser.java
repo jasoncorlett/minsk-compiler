@@ -84,6 +84,10 @@ public class Parser implements Diagnosable {
 			return parseVariableDeclaration();
 		case IfKeyword:
 			return parseIfStatement();
+		case WhileKeyword:
+			return parseWhileStatement();
+		case ForKeyword:
+			return parseForStatement();
 		default:
 			return parseExpressionStatement();
 		}
@@ -101,7 +105,7 @@ public class Parser implements Diagnosable {
 		var closeBraceToken = matchToken(SyntaxKind.CloseBraceToken);
 		
 		return new BlockStatementSyntax(openBraceToken, statements, closeBraceToken);
-	}	
+	}
 	
 	private VariableDeclarationSyntax parseVariableDeclaration() {
 		var expected = current().getKind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
@@ -130,6 +134,26 @@ public class Parser implements Diagnosable {
 		var statement = parseStatement();
 		
 		return new ElseClauseSyntax(keyword, statement);
+	}
+	
+	private ForStatementSyntax parseForStatement() {
+		var forKeyword = matchToken(SyntaxKind.ForKeyword);
+		var identifier = matchToken(SyntaxKind.IdentifierToken);
+		var equalsToken= matchToken(SyntaxKind.EqualsToken);
+		var lowerBound = parseExpression();
+		var toKeyword = matchToken(SyntaxKind.ToKeyword);
+		var upperBound = parseExpression();
+		var body = parseStatement();
+		
+		return new ForStatementSyntax(forKeyword, identifier, equalsToken, lowerBound, toKeyword, upperBound, body);
+	}
+
+	private WhileStatementSyntax parseWhileStatement() {
+		var whileKeyword = matchToken(SyntaxKind.WhileKeyword);
+		var condition = parseExpression();
+		var body = parseStatement();
+		
+		return new WhileStatementSyntax(whileKeyword, condition, body);
 	}
 	
 	private ExpressionStatementSyntax parseExpressionStatement() {

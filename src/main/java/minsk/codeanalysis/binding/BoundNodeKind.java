@@ -5,6 +5,8 @@ public enum BoundNodeKind {
 	BlockStatement,
 	IfStatement,
 	ExpressionStatement,
+	ForStatement,
+	WhileStatement,
 	VariableDeclaration,
 	
 	// Expressions
@@ -12,5 +14,5 @@ public enum BoundNodeKind {
 	LiteralExpression, 
 	BinaryExpression, 
 	VariableExpression, 
-	AssignmentExpression, 
+	AssignmentExpression,
 }
