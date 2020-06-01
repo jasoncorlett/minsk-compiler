@@ -147,6 +147,10 @@ public class Lexer implements Diagnosable {
 			text = source.substring(start, position);
 		}
 		
+		if (start == position) {
+			throw new RuntimeException("Lexer failed to consume character: " + source.charAt(position));
+		}
+		
 		return new SyntaxToken(kind, start, text, value);
 	}
 

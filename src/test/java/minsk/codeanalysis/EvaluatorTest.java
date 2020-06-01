@@ -1,12 +1,10 @@
 package minsk.codeanalysis;
 
+import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -16,9 +14,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.Diagnostic;
-import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
+
 class EvaluatorTest {
-	
+
 	private static Stream<Arguments> TestExpressionResults() {
 		return Stream.of(
 			arguments("1", 1),
@@ -88,6 +86,11 @@ class EvaluatorTest {
 	}
 	
 	@Test
+	public void TestEmptyProgram() {
+		assertDiagnostics("[]", "Unexpected token 'EndOfFileToken' expected 'IdentifierToken'.");
+	}
+	
+	@Test
 	public void VariableAlreadyDeclared() {
 		var text = """
 				{
@@ -153,14 +156,10 @@ class EvaluatorTest {
 
 		var expectedSpans = annotated.getSpans();
 		
-		var actualSpans = makeList(result, Diagnostic::getSpan);
-		var actualMessages = makeList(result, Diagnostic::getMessage);
+		var actualSpans = Diagnosable.asList(result, Diagnostic::getSpan);
+		var actualMessages = Diagnosable.asList(result, Diagnostic::getMessage);
 		
 		assertEquals(expectedSpans, actualSpans);
 		assertEquals(Arrays.asList(expectedMessages), actualMessages);
-	}
-	
-	private static <T> List<T> makeList(Diagnosable source, Function<Diagnostic, T> mapper) {
-		return source.getDiagnostics().stream().map(mapper).collect(Collectors.toList());
 	}
 }

@@ -178,6 +178,11 @@ public class Binder implements Diagnosable {
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
 		
+		// Error already reported during parsing, just fall through
+		if (name == null) {
+			return new BoundLiteralExpression(0);
+		}
+		
 		var variable = scope.lookup(name);
 		
 		if (variable == null) {

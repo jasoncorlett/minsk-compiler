@@ -37,7 +37,7 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 	}
 
 	public void reportInvalidNumber(TextSpan span, SourceText source, Class<?> type) {
-		report(span, "The number '%s' is not a valid %s.", source, type);
+		report(span, "The number '%s' is not a valid '%s'.", source, type);
 	}
 
 	public void reportBadCharacter(int position, char bad) {
@@ -46,7 +46,7 @@ public class DiagnosticsBag implements Iterable<Diagnostic> {
 
 
 	public void reportUnexpectedToken(TextSpan span, SyntaxKind actual, SyntaxKind expected) {
-		report(span, "Unexpected token %s expected %s.", actual, expected);
+		report(span, "Unexpected token '%s' expected '%s'.", actual, expected);
 	}
 
 	public void reportUndefinedUnaryOperator(TextSpan operatorSpan, String operatorText, Class<?> operandType) {

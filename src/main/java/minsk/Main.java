@@ -1,7 +1,10 @@
 package minsk;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,8 +24,21 @@ public class Main {
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
 	private static final String RESET_CMD = "#reset";
+	private static final String COMMENT = "#";
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		var inputStream = System.in;
+		var isRepl = true;
+		
+		if (args.length > 0) {
+			inputStream = Files.newInputStream(Paths.get(args[0]));
+			isRepl = false;
+		}
+		
+		run(inputStream, isRepl);
+	}
+	
+	public static void run(InputStream inputStream, boolean isRepl) {
 		var showTree = false;
 		var showVars = false;
 		
@@ -30,11 +46,12 @@ public class Main {
 		var stringBuilder = new StringBuilder();
 		Compilation previous = null;
 		
-		try (Scanner sc = new Scanner(System.in, StandardCharsets.UTF_8)) {
+		try (Scanner sc = new Scanner(inputStream, StandardCharsets.UTF_8)) {
 			while (true) {
 				var isFirstLine = stringBuilder.length() == 0;
 				
-				System.out.print(isFirstLine ? "> " : "| ");
+				if (isRepl)
+					System.out.print(isFirstLine ? "> " : "| ");
 				
 				String line;
 				
@@ -83,6 +100,10 @@ public class Main {
 						variables.clear();
 						continue;
 					}
+					
+					if (line.startsWith(COMMENT)) {
+						continue;
+					}
 				}
 				
 				stringBuilder.append(line);
@@ -90,7 +111,7 @@ public class Main {
 				
 				var syntaxTree = SyntaxTree.parse(stringBuilder.toString());
 				
-				if (syntaxTree.getDiagnostics().isEmpty() || isBlank) {
+				if (syntaxTree.getDiagnostics().isEmpty() || (isBlank && isRepl)) {
 					var compilation = previous == null
 							? new Compilation(syntaxTree)
 							: previous.continueWith(syntaxTree);

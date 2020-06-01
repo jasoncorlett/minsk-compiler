@@ -97,9 +97,16 @@ public class Parser implements Diagnosable {
 		var statements = new LinkedList<StatementSyntax>();
 		
 		var openBraceToken = matchToken(SyntaxKind.OpenBraceToken);
+		var startPosition = position;
 		
-		while (current().getKind() != SyntaxKind.CloseBraceToken && current().getKind() != SyntaxKind.EndOfFileToken) {
+		while (current().getKind() != SyntaxKind.CloseBraceToken
+				&& current().getKind() != SyntaxKind.EndOfFileToken) {
 			statements.add(parseStatement());
+			
+			// Infinite loop protection, consume a token if we did not move
+			// forward. Should already have an error from the unexpected token
+			if (position == startPosition)
+				nextToken();
 		}
 		
 		var closeBraceToken = matchToken(SyntaxKind.CloseBraceToken);

@@ -2,34 +2,45 @@ package minsk.codeanalysis.syntax;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
 
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import minsk.codeanalysis.AnnotatedText;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
+import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.Diagnostic;
 
 class ParserTest {
-	private static ExpressionSyntax assertParses(String fmt, Object ...args) {
-		var text = String.format(fmt, args);
-		var tree = SyntaxTree.parse(text);
-		
-		assertNoDiagnostics(tree);
 
-		var statement = (ExpressionStatementSyntax) tree.getRoot().getStatement();
-		
-		return statement.getExpression();
+	/**
+	 * Test infinite loop protection in block statement parsing
+	 */
+	@Test
+	public void TestInfiniteLoopProtection() {
+		assertTimeoutPreemptively(
+				Duration.ofMillis(250),
+				() -> assertDiagnostics(
+						"{[)][]", 
+						"Unexpected token 'CloseParenthesisToken' expected 'IdentifierToken'.",
+						"Unexpected token 'EndOfFileToken' expected 'CloseBraceToken'."),
+				() -> "Suspected infinite loop in parser");
 	}
 	
 	public static Stream<Arguments> BinaryPrecedenceTest() {
@@ -147,6 +158,30 @@ class ParserTest {
 //						.assertToken(SyntaxKind.IdentifierToken, "b")
 //			.assertEmtpy();
 		}
+	}
+	
+	private static ExpressionSyntax assertParses(String fmt, Object ...args) {
+		var text = String.format(fmt, args);
+		var tree = SyntaxTree.parse(text);
+		
+		assertNoDiagnostics(tree);
+
+		var statement = (ExpressionStatementSyntax) tree.getRoot().getStatement();
+		
+		return statement.getExpression();
+	}
+	
+	private static void assertDiagnostics(String program, String... expectedMessages) {
+		var annotated = AnnotatedText.parse(program);
+		var result = SyntaxTree.parse(annotated.getText());
+
+		var expectedSpans = annotated.getSpans();
+		
+		var actualSpans = Diagnosable.asList(result, Diagnostic::getSpan);
+		var actualMessages = Diagnosable.asList(result, Diagnostic::getMessage);
+		
+		assertEquals(expectedSpans, actualSpans);
+		assertEquals(Arrays.asList(expectedMessages), actualMessages);
 	}
 	
 	private static List<SyntaxNode> flatten(SyntaxNode node) {
