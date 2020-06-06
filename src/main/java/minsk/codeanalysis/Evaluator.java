@@ -8,7 +8,6 @@ import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
-import minsk.codeanalysis.binding.BoundForStatement;
 import minsk.codeanalysis.binding.BoundIfStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
@@ -55,9 +54,6 @@ public class Evaluator  {
 		case IfStatement:
 			evaluateIfStatement((BoundIfStatement) node);
 			break;
-		case ForStatement:
-			evaluateForStatement((BoundForStatement) node);
-			break;
 		case WhileStatement:
 			evaluateWhileStatement((BoundWhileStatement) node);
 			break;
@@ -70,18 +66,6 @@ public class Evaluator  {
 		default:
 			throw new RuntimeException("Unexpected statement node: " + node.getKind());
 		}
-	}
-
-
-	private void evaluateForStatement(BoundForStatement node) {
-		var lowerBound = (int) evaluateExpression(node.getLowerBound());
-		var upperBound = (int) evaluateExpression(node.getUpperBound());
-		
-		for (int i = lowerBound; i <= upperBound; i++) {
-			variables.put(node.getVariable(), i);
-			evaluateStatement(node.getBody());
-		}
-		
 	}
 
 	private void evaluateBlockStatement(BoundBlockStatement node) {
