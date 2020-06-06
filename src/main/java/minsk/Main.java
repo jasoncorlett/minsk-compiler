@@ -124,8 +124,6 @@ public class Main {
 							? new Compilation(syntaxTree)
 							: previous.continueWith(syntaxTree);
 							
-					var result = compilation.evaluate(variables);
-					
 					if (showProgram) {
 						TreePrinter.prettyPrint(compilation.getBoundNode());
 					}
@@ -133,6 +131,8 @@ public class Main {
 					if (showTree) {
 						TreePrinter.prettyPrint(syntaxTree.getRoot().getStatement());
 					}
+
+					var result = compilation.evaluate(variables);
 					
 					if (showVars) {
 						variables.entrySet().forEach(e -> System.out.println(e.getKey() + " = " + e.getValue()));
