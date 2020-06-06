@@ -16,8 +16,8 @@ public abstract class TreeNode {
 			if (TreeNode.class.isInstance(result)) {
 				return Stream.of(TreeNode.class.cast(result));
 			}
-			else if (result instanceof List<TreeNode> list) {
-				return list.stream(); // .filter(TreeNode.class::isInstance).map(TreeNode.class::cast);
+			else if (result instanceof List) {
+				return ((List<?>) result).stream().filter(TreeNode.class::isInstance).map(TreeNode.class::cast);
 			}
 			else {
 				return Stream.empty();
