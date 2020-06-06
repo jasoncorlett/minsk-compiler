@@ -38,22 +38,15 @@ public class Binder implements Diagnosable {
 	}
 	
 	private BoundStatement bindStatement(StatementSyntax syntax) {
-		switch (syntax.getKind()) {
-		case BlockStatement:
-			return bindBlockStatement((BlockStatementSyntax) syntax);
-		case IfStatement:
-			return bindIfStatement((IfStatementSyntax) syntax);
-		case ForStatement:
-			return bindForStatement((ForStatementSyntax) syntax);
-		case WhileStatement:
-			return bindWhileStatement((WhileStatementSyntax) syntax);
-		case VariableDeclaration:
-			return bindVariableDeclaration((VariableDeclarationSyntax) syntax);
-		case ExpressionStatement:
-			return bindExpressionStatement((ExpressionStatementSyntax) syntax);
-		default:
-			throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
-		}
+		return switch (syntax.getKind()) {
+			case BlockStatement -> bindBlockStatement((BlockStatementSyntax) syntax);
+			case IfStatement -> bindIfStatement((IfStatementSyntax) syntax);
+			case ForStatement -> bindForStatement((ForStatementSyntax) syntax);
+			case WhileStatement -> bindWhileStatement((WhileStatementSyntax) syntax);
+			case VariableDeclaration -> bindVariableDeclaration((VariableDeclarationSyntax) syntax);
+			case ExpressionStatement -> bindExpressionStatement((ExpressionStatementSyntax) syntax);
+			default -> throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
+		};
 	}
 
 	private BoundForStatement bindForStatement(ForStatementSyntax syntax) {
@@ -157,22 +150,15 @@ public class Binder implements Diagnosable {
 	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
-		switch (syntax.getKind()) {
-		case ParenthesizedExpression:
-			return bindParenthesizedExpression(((ParenthesizedExpressionSyntax)syntax));
-		case LiteralExpression:
-			return bindLiteralExpression((LiteralExpressionSyntax) syntax);
-		case NameExpression:
-			return bindNameExpression((NameExpressionSyntax)syntax);
-		case AssignmentExpression:
-			return bindAssignmentExpression((AssignmentExpressionSyntax)syntax);
-		case UnaryExpression:
-			return bindUnaryExpression((UnaryExpressionSyntax) syntax);
-		case BinaryExpression:
-			return bindBinaryExpression((BinaryExpressionSyntax) syntax);
-		default:
-			throw new RuntimeException("Unexpected syntax " + syntax.getKind());
-		}
+		return switch (syntax.getKind()) {
+			case ParenthesizedExpression -> bindParenthesizedExpression(((ParenthesizedExpressionSyntax)syntax));
+			case LiteralExpression -> bindLiteralExpression((LiteralExpressionSyntax) syntax);
+			case NameExpression -> bindNameExpression((NameExpressionSyntax)syntax);
+			case AssignmentExpression -> bindAssignmentExpression((AssignmentExpressionSyntax)syntax);
+			case UnaryExpression -> bindUnaryExpression((UnaryExpressionSyntax) syntax);
+			case BinaryExpression -> bindBinaryExpression((BinaryExpressionSyntax) syntax);
+			default -> throw new RuntimeException("Unexpected syntax " + syntax.getKind());
+		};
 	}
 
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {

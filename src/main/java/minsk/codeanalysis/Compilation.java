@@ -5,7 +5,9 @@ import java.util.Map;
 import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.binding.BoundGlobalScope;
 import minsk.codeanalysis.binding.BoundNode;
+import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.VariableSymbol;
+import minsk.codeanalysis.lowering.Lowerer;
 import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.diagnostics.DiagnosticsCollection;
 
@@ -34,14 +36,19 @@ public class Compilation {
 			return new EvaluationResult(diagnostics, null);
 		}
 		
-		var evaluator = new Evaluator(globalScope.getStatement(), variables);
+		var statement = getStatement();
+		var evaluator = new Evaluator(statement, variables);
 		var value = evaluator.evaluate();
 		
 		return new EvaluationResult(diagnostics, value);
 	}
 	
-	public BoundNode getBoundNode() {
-		return globalScope.getStatement();
+	private BoundStatement getStatement() {
+		return Lowerer.lower(globalScope.getStatement());
+	}
+	
+	public BoundStatement getBoundNode() {
+		return getStatement();
 	}
 	
 	public SyntaxTree getSyntax() {
