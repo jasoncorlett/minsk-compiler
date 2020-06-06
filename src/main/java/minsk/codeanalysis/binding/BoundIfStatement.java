@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundIfStatement implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundIfStatement extends BoundStatement {
 	private final BoundExpression condition;
 	private final BoundStatement thenStatement;
 	private final BoundStatement elseClause;
@@ -16,15 +18,18 @@ public class BoundIfStatement implements BoundStatement {
 		return BoundNodeKind.IfStatement;
 	}
 
+	@Nested(1)
 	public BoundExpression getCondition() {
 		return condition;
 	}
 
+	@Nested(2)
 	public BoundStatement getThenStatement() {
 		return thenStatement;
 	}
 
-	public BoundStatement getElseStatement() {
+	@Nested(3)
+	public BoundStatement getElseClause() {
 		return elseClause;
 	}
 }

@@ -1,11 +1,11 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class CompilationUnitSyntax implements SyntaxNode {
+public class CompilationUnitSyntax extends SyntaxNode {
 
 	private final StatementSyntax statement;
 	private final SyntaxToken endOfFileToken;
@@ -20,7 +20,7 @@ public class CompilationUnitSyntax implements SyntaxNode {
 		return SyntaxKind.CompilationUnit;
 	}
 
-	@SyntaxChild
+	@Nested
 	public StatementSyntax getStatement() {
 		return statement;
 	}

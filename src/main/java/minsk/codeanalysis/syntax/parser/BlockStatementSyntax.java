@@ -1,14 +1,12 @@
 package minsk.codeanalysis.syntax.parser;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
-import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class BlockStatementSyntax implements StatementSyntax {
+public class BlockStatementSyntax extends StatementSyntax {
 
 	private final SyntaxToken openBraceToken;
 	private final List<StatementSyntax> statements;
@@ -21,17 +19,17 @@ public class BlockStatementSyntax implements StatementSyntax {
 		
 	}
 	
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getOpenBraceToken() {
 		return openBraceToken;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public List<StatementSyntax> getStatements() {
 		return statements;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public SyntaxToken getCloseBraceToken() {
 		return closeBraceToken;
 	}

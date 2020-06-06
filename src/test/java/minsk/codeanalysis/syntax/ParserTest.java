@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import minsk.codeanalysis.AnnotatedText;
+import minsk.codeanalysis.TreeNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
@@ -184,8 +185,8 @@ class ParserTest {
 		assertEquals(Arrays.asList(expectedMessages), actualMessages);
 	}
 	
-	private static List<SyntaxNode> flatten(SyntaxNode node) {
-		var list = new LinkedList<SyntaxNode>();
+	private static List<TreeNode> flatten(TreeNode node) {
+		var list = new LinkedList<TreeNode>();
 		list.add(node);
 		
 		for (var child : node.getChildren()) {
@@ -199,7 +200,7 @@ class ParserTest {
 		final Iterator<SyntaxNode> iter;
 		
 		TreeAsserter(SyntaxNode node) {
-			iter = flatten(node).iterator();
+			iter = flatten(node).stream().filter(SyntaxNode.class::isInstance).map(SyntaxNode.class::cast).iterator();
 		}
 		
 		public TreeAsserter assertToken(SyntaxKind expectedKind, String expectedText) {

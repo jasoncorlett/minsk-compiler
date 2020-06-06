@@ -10,12 +10,12 @@ import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.parser.Parser;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class SyntaxTree implements Diagnosable {
 	private final SourceText source;
 	private final CompilationUnitSyntax root;
-	private final DiagnosticsBag diagnostics;
+	private final DiagnosticsCollection diagnostics;
 	
 	private SyntaxTree(SourceText source) {
 		var parser = new Parser(source);
@@ -35,7 +35,7 @@ public class SyntaxTree implements Diagnosable {
 		return root;
 	}
 
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 	

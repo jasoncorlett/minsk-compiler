@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundForStatement implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundForStatement extends BoundStatement {
 
 	private final VariableSymbol variable;
 	private final BoundExpression lowerBound;
@@ -20,18 +22,22 @@ public class BoundForStatement implements BoundStatement {
 		return BoundNodeKind.ForStatement;
 	}
 
+	@Nested(1)
 	public VariableSymbol getVariable() {
 		return variable;
 	}
 
+	@Nested(2)
 	public BoundExpression getLowerBound() {
 		return lowerBound;
 	}
 
+	@Nested(3)
 	public BoundExpression getUpperBound() {
 		return upperBound;
 	}
 
+	@Nested(4)
 	public BoundStatement getBody() {
 		return body;
 	}

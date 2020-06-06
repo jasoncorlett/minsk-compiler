@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public final class BoundBinaryExpression implements BoundExpression {
+import minsk.codeanalysis.Nested;
+
+public final class BoundBinaryExpression extends BoundExpression {
 
 	private final BoundExpression left;
 	private final BoundBinaryOperator operator;
@@ -17,16 +19,19 @@ public final class BoundBinaryExpression implements BoundExpression {
 		return getOperator().getResultType();
 	}
 
+	@Nested(1)
 	public BoundExpression getLeft() {
 		return left;
 	}
-
-	public BoundExpression getRight() {
-		return right;
-	}
-
+	
+	@Nested(2)
 	public BoundBinaryOperator getOperator() {
 		return operator;
+	}
+
+	@Nested(3)
+	public BoundExpression getRight() {
+		return right;
 	}
 
 	@Override

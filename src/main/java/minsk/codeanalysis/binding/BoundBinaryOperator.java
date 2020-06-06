@@ -1,16 +1,23 @@
 package minsk.codeanalysis.binding;
 
+import minsk.codeanalysis.TreeNode;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
-public final class BoundBinaryOperator {
+public final class BoundBinaryOperator extends TreeNode {
 	
 	private static final BoundBinaryOperator[] operators = new BoundBinaryOperator[] {
+			new BoundBinaryOperator(SyntaxKind.PipeToken, BoundBinaryOperatorKind.BitwiseOr, Integer.class),
+			new BoundBinaryOperator(SyntaxKind.AmpersandToken, BoundBinaryOperatorKind.BitwiseAnd, Integer.class),
+			new BoundBinaryOperator(SyntaxKind.CaretToken, BoundBinaryOperatorKind.BitwiseXor, Integer.class),
 			new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, Integer.class),
 			new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, Integer.class),
 			new BoundBinaryOperator(SyntaxKind.StarToken, BoundBinaryOperatorKind.Multiplication, Integer.class),
 			new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, Integer.class),
 			new BoundBinaryOperator(SyntaxKind.PercentToken, BoundBinaryOperatorKind.Modulo, Integer.class),
 			
+			new BoundBinaryOperator(SyntaxKind.AmpersandToken, BoundBinaryOperatorKind.BitwiseAnd, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.PipeToken, BoundBinaryOperatorKind.BitwiseOr, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.CaretToken, BoundBinaryOperatorKind.BitwiseXor, Boolean.class),
 			new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, Boolean.class),
 			new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, Boolean.class),
 			
@@ -74,6 +81,11 @@ public final class BoundBinaryOperator {
 
 	public Class<?> getResultType() {
 		return resultType;
+	}
+	
+	@Override
+	public String toString() {
+		return "BoundBinaryOperator [ " + syntaxKind.getFixedText() + " ]";
 	}
 	
 }

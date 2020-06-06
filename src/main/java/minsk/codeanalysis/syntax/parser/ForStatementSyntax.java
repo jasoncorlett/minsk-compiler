@@ -3,13 +3,13 @@ package minsk.codeanalysis.syntax.parser;
 import java.util.LinkedList;
 import java.util.List;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
 // for v = 1 to 5
-public class ForStatementSyntax implements StatementSyntax {
+public class ForStatementSyntax extends StatementSyntax {
 	private final SyntaxToken forKeyword;
 	private final SyntaxToken identifier;
 	private final SyntaxToken equalsToken;
@@ -34,36 +34,36 @@ public class ForStatementSyntax implements StatementSyntax {
 		return SyntaxKind.ForStatement;
 	}
 
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getForKeyword() {
 		return forKeyword;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public SyntaxToken getIdentifier() {
 		return identifier;
 	}
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public SyntaxToken getEqualsToken() {
 		return equalsToken;
 	}
 
-	@SyntaxChild(order = 4)
+	@Nested(4)
 	public ExpressionSyntax getLowerBound() {
 		return lowerBound;
 	}
 
-	@SyntaxChild(order = 5)
+	@Nested(5)
 	public SyntaxToken getToKeyword() {
 		return toKeyword;
 	}
 
-	@SyntaxChild(order = 6)
+	@Nested(6)
 	public ExpressionSyntax getUpperBound() {
 		return upperBound;
 	}
 
-	@SyntaxChild(order = 7)
+	@Nested(7)
 	public StatementSyntax getBody() {
 		return body;
 	}

@@ -13,5 +13,8 @@ public enum BoundBinaryOperatorKind {
 	Greater, 
 	GreaterEquals, 
 	Less, 
-	LessEquals
+	LessEquals,
+	BitwiseAnd,
+	BitwiseOr,
+	BitwiseXor
 }

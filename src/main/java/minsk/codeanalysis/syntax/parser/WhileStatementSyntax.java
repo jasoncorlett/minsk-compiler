@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class WhileStatementSyntax implements StatementSyntax {
+public class WhileStatementSyntax extends StatementSyntax {
 
 	private final SyntaxToken whileKeyword;
 	private final ExpressionSyntax condition;
@@ -21,17 +21,17 @@ public class WhileStatementSyntax implements StatementSyntax {
 		return SyntaxKind.WhileStatement;
 	}
 	
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getWhileKeyword() {
 		return whileKeyword;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public ExpressionSyntax getCondition() {
 		return condition;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public StatementSyntax getBody() {
 		return body;
 	}

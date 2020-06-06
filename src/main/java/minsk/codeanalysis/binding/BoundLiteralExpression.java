@@ -1,6 +1,6 @@
 package minsk.codeanalysis.binding;
 
-public final class BoundLiteralExpression implements BoundExpression {
+public final class BoundLiteralExpression extends BoundExpression {
 	private final Object value;
 
 	public BoundLiteralExpression(Object value) {
@@ -22,5 +22,10 @@ public final class BoundLiteralExpression implements BoundExpression {
 	@Override
 	public final BoundNodeKind getKind() {
 		return BoundNodeKind.LiteralExpression;
+	}
+	
+	@Override
+	public String toString() {
+		return "BoundLiteralExpression [ " + value + " ]";
 	}
 }

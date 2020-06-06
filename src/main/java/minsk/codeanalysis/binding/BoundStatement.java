@@ -1,4 +1,4 @@
 package minsk.codeanalysis.binding;
 
-public interface BoundStatement extends BoundNode {
+public abstract class BoundStatement extends BoundNode {
 }

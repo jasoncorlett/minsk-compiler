@@ -4,7 +4,7 @@ import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.text.TextSpan;
 
-public class SyntaxToken implements SyntaxNode {
+public class SyntaxToken extends SyntaxNode {
 	private final int position;
 	private final String text;
 	private final Object value;
@@ -34,14 +34,27 @@ public class SyntaxToken implements SyntaxNode {
 		var length = (text != null) ? text.length() : 0;
 		return new TextSpan(position, position + length);
 	}
-	
-	@Override
-	public String toString() {
-		return "" + this.getKind().toString() + ((this.getValue() != null) ? " " + this.getValue() : "");
-	}
 
 	@Override
 	public SyntaxKind getKind() {
 		return kind;
+	}
+	
+	@Override
+	public String toString() {
+		var builder = new StringBuilder();
+		builder.append(getKind());
+		
+		if (this.getKind() == SyntaxKind.IdentifierToken) {
+			builder.append(" ");
+			builder.append(this.getText());
+		}
+		
+		if (this.getValue() != null) {
+			builder.append(" ");
+			builder.append(this.getValue());
+		}
+		
+		return builder.toString();
 	}
 }

@@ -21,6 +21,7 @@ import minsk.diagnostics.Diagnosable;
 public class Main {
 	private static final String SHOW_VARS_CMD = "#showvars";
 	private static final String SHOW_TREE_CMD = "#showtree";
+	private static final String SHOW_PROGRAM_CMD = "#showprogram";
 	private static final String CLEAR_SCREEN_CMD = "#clear";
 	private static final String QUIT_CMD = "#quit";
 	private static final String RESET_CMD = "#reset";
@@ -41,6 +42,7 @@ public class Main {
 	public static void run(InputStream inputStream, boolean isRepl) {
 		var showTree = false;
 		var showVars = false;
+		var showProgram = false;
 		
 		Map<VariableSymbol, Object> variables = new HashMap<>(); 
 		var stringBuilder = new StringBuilder();
@@ -101,6 +103,12 @@ public class Main {
 						continue;
 					}
 					
+					if (SHOW_PROGRAM_CMD.equalsIgnoreCase(line)) {
+						showProgram = !showProgram;
+						System.out.println((showProgram ? "" : "Not ") + "Showing Program Tree");
+						continue;
+					}
+					
 					if (line.startsWith(COMMENT)) {
 						continue;
 					}
@@ -118,6 +126,10 @@ public class Main {
 							
 					var result = compilation.evaluate(variables);
 					
+					if (showProgram) {
+						TreePrinter.prettyPrint(compilation.getBoundNode());
+					}
+					
 					if (showTree) {
 						TreePrinter.prettyPrint(syntaxTree.getRoot().getStatement());
 					}
@@ -129,7 +141,8 @@ public class Main {
 					if (result.getDiagnostics().isEmpty()) {
 						System.out.println(result.getValue());
 						previous = compilation;
-					} else {
+					} 
+					else {
 						printDiagnostics(result, syntaxTree.getSource());
 						
 						// Hack to prevent the next iteration's prompt from printing concurrently
@@ -159,5 +172,4 @@ public class Main {
 		}
 	}
 
-	
 }

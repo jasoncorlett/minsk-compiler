@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
+public class ParenthesizedExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken openParenToken;
 	private final ExpressionSyntax expression;
 	private final SyntaxToken closeParenToken;
@@ -15,17 +15,17 @@ public class ParenthesizedExpressionSyntax implements ExpressionSyntax {
 		this.closeParenToken = closeParenToken;
 	}
 
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getOpenParenToken() {
 		return openParenToken;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public ExpressionSyntax getExpression() {
 		return expression;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public SyntaxToken getCloseParenToken() {
 		return closeParenToken;
 	}

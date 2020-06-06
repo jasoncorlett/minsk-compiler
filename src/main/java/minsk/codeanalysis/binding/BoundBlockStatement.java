@@ -2,7 +2,9 @@ package minsk.codeanalysis.binding;
 
 import java.util.List;
 
-public class BoundBlockStatement implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundBlockStatement extends BoundStatement {
 	private final List<BoundStatement> statements;
 
 	public BoundBlockStatement(List<BoundStatement> statements) {
@@ -14,6 +16,7 @@ public class BoundBlockStatement implements BoundStatement {
 		return BoundNodeKind.BlockStatement;
 	}
 
+	@Nested
 	public List<BoundStatement> getStatements() {
 		return statements;
 	}

@@ -96,7 +96,7 @@ public class Evaluator  {
 			evaluateStatement(node.getThenStatement());
 		}
 		else {
-			evaluateStatement(node.getElseStatement());
+			evaluateStatement(node.getElseClause());
 		}
 	}
 
@@ -163,8 +163,29 @@ public class Evaluator  {
 			return (int) left > (int) right;
 		case GreaterEquals:
 			return (int) left >= (int) right;
+		case BitwiseAnd:
+			if (binaryExpression.getType() == Integer.class) {
+				return (int) left & (int) right;
+			}
+			else {
+				return (boolean) left & (boolean) right;
+			}
+		case BitwiseOr:
+			if (binaryExpression.getType() == Integer.class) {
+				return (int) left | (int) right;
+			}
+			else {
+				return (boolean) left | (boolean) right;
+			}
+		case BitwiseXor:
+			if (binaryExpression.getType() == Integer.class) {
+				return (int) left ^ (int) right;
+			}
+			else {
+				return (boolean) left ^ (boolean) right;
+			}
 		default:
-			throw new RuntimeException("Unexpected operator: " + binaryExpression.getKind());
+			throw new RuntimeException("Unexpected operator: " + binaryExpression.getOperator().getSyntaxKind().getFixedText());
 		}
 	}
 

@@ -20,7 +20,7 @@ import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
 import minsk.codeanalysis.syntax.parser.WhileStatementSyntax;
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class Binder implements Diagnosable {
 
@@ -139,7 +139,7 @@ public class Binder implements Diagnosable {
 		return parent;
 	}
 
-	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
+	private final DiagnosticsCollection diagnostics = new DiagnosticsCollection();
 	private BoundScope scope;
 
 	public Binder(BoundScope parent) {
@@ -250,7 +250,7 @@ public class Binder implements Diagnosable {
 	}
 
 	@Override
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 	

@@ -5,12 +5,12 @@ import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.text.SourceText;
 import minsk.codeanalysis.text.TextSpan;
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class Lexer implements Diagnosable {
 	public static final char EOF = '\0';
 	
-	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
+	private final DiagnosticsCollection diagnostics = new DiagnosticsCollection();
 	
 	private final SourceText source;
 	
@@ -73,6 +73,14 @@ public class Lexer implements Diagnosable {
 			kind = SyntaxKind.CloseBraceToken;
 			position++;
 			break;
+		case '~':
+			kind = SyntaxKind.TildeToken;
+			position++;
+			break;
+		case '^':
+			kind = SyntaxKind.CaretToken;
+			position++;
+			break;
 		case '!':
 			position++;
 			if (current() == '=') {
@@ -87,6 +95,9 @@ public class Lexer implements Diagnosable {
 			if (current() == '&') {
 				kind = SyntaxKind.AmpersandAmpersandToken;
 				position++;
+			} 
+			else {
+				kind = SyntaxKind.AmpersandToken;
 			}
 			break;
 		case '|':
@@ -94,6 +105,9 @@ public class Lexer implements Diagnosable {
 			if (current() == '|') {
 				kind = SyntaxKind.PipePipeToken;
 				position++;
+			} 
+			else {
+				kind = SyntaxKind.PipeToken;
 			}
 			break;
 		case '=':
@@ -101,7 +115,8 @@ public class Lexer implements Diagnosable {
 			if (current() == '=') {
 				kind = SyntaxKind.EqualsEqualsToken;
 				position++;
-			} else {
+			} 
+			else {
 				kind = SyntaxKind.EqualsToken;
 			}
 			break;
@@ -110,7 +125,8 @@ public class Lexer implements Diagnosable {
 			if (current() == '=') {
 				kind = SyntaxKind.GreaterEqualsToken;
 				position++;
-			} else {
+			} 
+			else {
 				kind = SyntaxKind.GreaterToken;
 			}
 			break;
@@ -119,7 +135,8 @@ public class Lexer implements Diagnosable {
 			if (current() == '=') {
 				kind = SyntaxKind.LessEqualsToken;
 				position++;
-			} else {
+			} 
+			else {
 				kind = SyntaxKind.LessToken;
 			}
 			break;
@@ -135,7 +152,8 @@ public class Lexer implements Diagnosable {
 			else if (Character.isLetter(current())) {
 				kind = readIdentifierOrKeyword(start);
 				break;
-			} else {
+			} 
+			else {
 				diagnostics.reportBadCharacter(position, current());
 				position++;
 			}
@@ -179,14 +197,15 @@ public class Lexer implements Diagnosable {
 		
 		try {
 			value = Integer.parseInt(text);
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			diagnostics.reportInvalidNumber(new TextSpan(start, position), source, Integer.class);
 		}
 		
 		return SyntaxKind.LiteralToken;
 	}
 
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 }

@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundWhileStatement implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundWhileStatement extends BoundStatement {
 
 	private final BoundExpression condition;
 	private final BoundStatement body;
@@ -15,10 +17,12 @@ public class BoundWhileStatement implements BoundStatement {
 		return BoundNodeKind.WhileStatement;
 	}
 
+	@Nested
 	public BoundExpression getCondition() {
 		return condition;
 	}
 
+	@Nested
 	public BoundStatement getBody() {
 		return body;
 	}

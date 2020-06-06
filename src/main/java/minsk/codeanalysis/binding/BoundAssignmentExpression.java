@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundAssignmentExpression implements BoundExpression {
+import minsk.codeanalysis.Nested;
+
+public class BoundAssignmentExpression extends BoundExpression {
 
 	private final VariableSymbol variable;
 	private final BoundExpression expression;
@@ -20,10 +22,12 @@ public class BoundAssignmentExpression implements BoundExpression {
 		return BoundNodeKind.AssignmentExpression;
 	}
 
+	@Nested(1)
 	public VariableSymbol getVariable() {
 		return variable;
 	}
 
+	@Nested(2)
 	public BoundExpression getExpression() {
 		return expression;
 	}

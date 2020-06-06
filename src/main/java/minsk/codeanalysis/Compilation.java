@@ -4,9 +4,10 @@ import java.util.Map;
 
 import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.binding.BoundGlobalScope;
+import minsk.codeanalysis.binding.BoundNode;
 import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class Compilation {
 
@@ -26,7 +27,7 @@ public class Compilation {
 	}
 
 	public EvaluationResult evaluate(Map<VariableSymbol, Object> variables) {
-		var diagnostics = new DiagnosticsBag();
+		var diagnostics = new DiagnosticsCollection();
 		diagnostics.addFrom(syntax, globalScope);
 		
 		if (!diagnostics.isEmpty()) {
@@ -37,6 +38,10 @@ public class Compilation {
 		var value = evaluator.evaluate();
 		
 		return new EvaluationResult(diagnostics, value);
+	}
+	
+	public BoundNode getBoundNode() {
+		return globalScope.getStatement();
 	}
 	
 	public SyntaxTree getSyntax() {

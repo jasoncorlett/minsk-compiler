@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundVariableDeclaration implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundVariableDeclaration extends BoundStatement {
 	private final VariableSymbol variable;
 	private final BoundExpression initializer;
 
@@ -14,10 +16,12 @@ public class BoundVariableDeclaration implements BoundStatement {
 		return BoundNodeKind.VariableDeclaration;
 	}
 
+	@Nested
 	public VariableSymbol getVariable() {
 		return variable;
 	}
 
+	@Nested
 	public BoundExpression getInitializer() {
 		return initializer;
 	}

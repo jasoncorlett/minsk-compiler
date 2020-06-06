@@ -1,9 +1,9 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
-public class ExpressionStatementSyntax implements StatementSyntax {
+public class ExpressionStatementSyntax extends StatementSyntax {
 	private final ExpressionSyntax expression;
 
 	public ExpressionStatementSyntax(ExpressionSyntax expression) {
@@ -15,7 +15,7 @@ public class ExpressionStatementSyntax implements StatementSyntax {
 		return SyntaxKind.ExpressionStatement;
 	}
 
-	@SyntaxChild
+	@Nested
 	public ExpressionSyntax getExpression() {
 		return expression;
 	}

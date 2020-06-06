@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class AssignmentExpressionSyntax implements ExpressionSyntax {
+public class AssignmentExpressionSyntax extends ExpressionSyntax {
 	private final SyntaxToken identifierToken;
 	private final SyntaxToken equalsToken;
 	private final ExpressionSyntax expression;
@@ -15,17 +15,17 @@ public class AssignmentExpressionSyntax implements ExpressionSyntax {
 		this.expression = expression;
 	}
 
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getIdentifierToken() {
 		return identifierToken;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public SyntaxToken getEqualsToken() {
 		return equalsToken;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public ExpressionSyntax getExpression() {
 		return expression;
 	}

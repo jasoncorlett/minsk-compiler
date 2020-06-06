@@ -1,20 +1,20 @@
 package minsk.codeanalysis;
 
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class EvaluationResult implements Diagnosable {
 	
-	private final DiagnosticsBag diagnostics;
+	private final DiagnosticsCollection diagnostics;
 	private final Object value;
 
-	public EvaluationResult(DiagnosticsBag diagnostics, Object value) {
+	public EvaluationResult(DiagnosticsCollection diagnostics, Object value) {
 		this.diagnostics = diagnostics;
 		this.value = value;
 	}
 
 	@Override
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 

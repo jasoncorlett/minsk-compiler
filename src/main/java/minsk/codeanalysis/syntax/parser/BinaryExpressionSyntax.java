@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class BinaryExpressionSyntax implements ExpressionSyntax {
+public class BinaryExpressionSyntax extends ExpressionSyntax {
 	private final ExpressionSyntax left;
 	private final ExpressionSyntax right;
 	private final SyntaxToken operatorToken;
@@ -15,17 +15,17 @@ public class BinaryExpressionSyntax implements ExpressionSyntax {
 		this.right = right;
 	}
 	
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public ExpressionSyntax getLeft() {
 		return left;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public SyntaxToken getOperatorToken() {
 		return operatorToken;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public ExpressionSyntax getRight() {
 		return right;
 	}

@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public interface Diagnosable {
-	public DiagnosticsBag getDiagnostics();
+	public DiagnosticsCollection getDiagnostics();
 	
 	public static List<Diagnostic> asList(Diagnosable diagnosable) {
 		return diagnosable.getDiagnostics().stream().collect(Collectors.toList());

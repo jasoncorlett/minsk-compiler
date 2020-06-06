@@ -12,6 +12,7 @@ public enum SyntaxKind {
 	EndOfFileToken,
 	LiteralToken, 
 	WhitespaceToken,
+	@Fixed("~") @Unary(6) TildeToken,
 	@Fixed("!") @Unary(6) BangToken,
 	@Fixed("/") @Binary(5) SlashToken,
 	@Fixed("*") @Binary(5) StarToken,
@@ -27,8 +28,11 @@ public enum SyntaxKind {
 	@Fixed("<=") @Binary(3) LessEqualsToken,
 	@Fixed(">")  @Binary(3) GreaterToken,
 	@Fixed(">=") @Binary(3) GreaterEqualsToken,
+	@Fixed("&")  @Binary(2) AmpersandToken,
 	@Fixed("&&") @Binary(2) AmpersandAmpersandToken,
+	@Fixed("|")  @Binary(1) PipeToken,
 	@Fixed("||") @Binary(1) PipePipeToken,
+	@Fixed("^")  @Binary(1) CaretToken,
 	@Fixed("=") EqualsToken,
 	@Fixed("{") OpenBraceToken,
 	@Fixed("}") CloseBraceToken,
@@ -94,21 +98,24 @@ public enum SyntaxKind {
 		try {
 			var fixedAnnotation = this.getClass().getField(this.name()).getAnnotation(Fixed.class); 
 			fixedText = fixedAnnotation == null ? null : fixedAnnotation.value();
-		} catch (NoSuchFieldException | SecurityException e) {
+		} 
+		catch (NoSuchFieldException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 		
 		try {
 			var unaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Unary.class);
 			unaryPrecedence = unaryAnnotation == null ? 0 : unaryAnnotation.value();
-		} catch (NoSuchFieldException | SecurityException e) {
+		}
+		catch (NoSuchFieldException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 		
 		try {
 			var binaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Binary.class);
 			binaryPrecedence = binaryAnnotation == null ? 0 : binaryAnnotation.value();
-		} catch (NoSuchFieldException | SecurityException e) {
+		} 
+		catch (NoSuchFieldException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public class BoundExpressionStatement implements BoundStatement {
+import minsk.codeanalysis.Nested;
+
+public class BoundExpressionStatement extends BoundStatement {
 	private final BoundExpression expression;
 	
 	public BoundExpressionStatement(BoundExpression expression) {
@@ -12,6 +14,7 @@ public class BoundExpressionStatement implements BoundStatement {
 		return BoundNodeKind.ExpressionStatement;
 	}
 
+	@Nested
 	public BoundExpression getExpression() {
 		return expression;
 	}

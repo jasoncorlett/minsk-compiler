@@ -9,11 +9,11 @@ import minsk.codeanalysis.syntax.lexer.Lexer;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class Parser implements Diagnosable {
 
-	private final DiagnosticsBag diagnostics = new DiagnosticsBag();
+	private final DiagnosticsCollection diagnostics = new DiagnosticsCollection();
 	private final List<SyntaxToken> tokens;
 
 	private int position = 0;
@@ -46,7 +46,8 @@ public class Parser implements Diagnosable {
 		var index = position + offset;
 		if (index >= getTokens().size()) {
 			return getTokens().get(getTokens().size() - 1);
-		} else {
+		}
+		else {
 			return getTokens().get(index);
 		}
 	}
@@ -195,7 +196,8 @@ public class Parser implements Diagnosable {
 			var operatorToken = nextToken();
 			var operand = parseBinaryExpression(unaryOperatorPrecedence);
 			left = new UnaryExpressionSyntax(operatorToken, operand);
-		} else {
+		} 
+		else {
 			left = parsePrimaryExpression();
 		}
 
@@ -261,7 +263,7 @@ public class Parser implements Diagnosable {
 		return tokens;
 	}
 
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 }

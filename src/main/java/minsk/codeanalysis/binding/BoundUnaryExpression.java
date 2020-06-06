@@ -1,6 +1,8 @@
 package minsk.codeanalysis.binding;
 
-public final class BoundUnaryExpression implements BoundExpression {
+import minsk.codeanalysis.Nested;
+
+public final class BoundUnaryExpression extends BoundExpression {
 	private final BoundUnaryOperator operator;
 	private final BoundExpression operand;
 
@@ -9,10 +11,12 @@ public final class BoundUnaryExpression implements BoundExpression {
 		this.operand = operand;
 	}
 
+	@Nested
 	public BoundUnaryOperator getOperator() {
 		return operator;
 	}
 
+	@Nested
 	public BoundExpression getOperand() {
 		return operand;
 	}

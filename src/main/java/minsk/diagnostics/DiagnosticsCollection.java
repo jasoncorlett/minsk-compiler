@@ -9,7 +9,7 @@ import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.text.SourceText;
 import minsk.codeanalysis.text.TextSpan;
 
-public class DiagnosticsBag implements Iterable<Diagnostic> {
+public class DiagnosticsCollection implements Iterable<Diagnostic> {
 	private final List<Diagnostic> diagnostics = new LinkedList<>();
 
 	private void report(TextSpan span, String message, Object... args) {

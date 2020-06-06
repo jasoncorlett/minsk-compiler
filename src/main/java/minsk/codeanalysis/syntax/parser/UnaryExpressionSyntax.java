@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class UnaryExpressionSyntax implements ExpressionSyntax {
+public class UnaryExpressionSyntax extends ExpressionSyntax {
 	private final ExpressionSyntax operand;
 	private final SyntaxToken operatorToken;
 	
@@ -13,12 +13,12 @@ public class UnaryExpressionSyntax implements ExpressionSyntax {
 		this.operand = operand;
 	}
 	
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public ExpressionSyntax getOperand() {
 		return operand;
 	}
 
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getOperatorToken() {
 		return operatorToken;
 	}

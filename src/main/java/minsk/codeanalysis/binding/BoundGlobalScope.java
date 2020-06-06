@@ -3,15 +3,15 @@ package minsk.codeanalysis.binding;
 import java.util.Collection;
 
 import minsk.diagnostics.Diagnosable;
-import minsk.diagnostics.DiagnosticsBag;
+import minsk.diagnostics.DiagnosticsCollection;
 
 public class BoundGlobalScope implements Diagnosable {
 	private final BoundGlobalScope previous;
-	private final DiagnosticsBag diagnostics;
+	private final DiagnosticsCollection diagnostics;
 	private final Collection<VariableSymbol> variables;
 	private final BoundStatement statement;
 
-	public BoundGlobalScope(BoundGlobalScope previous, DiagnosticsBag diagnostics, Collection<VariableSymbol> variables, BoundStatement statement) {
+	public BoundGlobalScope(BoundGlobalScope previous, DiagnosticsCollection diagnostics, Collection<VariableSymbol> variables, BoundStatement statement) {
 		this.previous = previous;
 		this.diagnostics = diagnostics;
 		this.variables = variables;
@@ -19,7 +19,7 @@ public class BoundGlobalScope implements Diagnosable {
 	}
 
 	@Override
-	public DiagnosticsBag getDiagnostics() {
+	public DiagnosticsCollection getDiagnostics() {
 		return diagnostics;
 	}
 

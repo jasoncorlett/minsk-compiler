@@ -1,10 +1,10 @@
 package minsk.codeanalysis.syntax.parser;
 
-import minsk.codeanalysis.syntax.SyntaxChild;
+import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class IfStatementSyntax implements StatementSyntax {
+public class IfStatementSyntax extends StatementSyntax {
 
 	private final SyntaxToken ifKeyword;
 	private final ExpressionSyntax condition;
@@ -24,22 +24,22 @@ public class IfStatementSyntax implements StatementSyntax {
 		return SyntaxKind.IfStatement;
 	}
 
-	@SyntaxChild(order = 1)
+	@Nested(1)
 	public SyntaxToken getIfKeyword() {
 		return ifKeyword;
 	}
 
-	@SyntaxChild(order = 2)
+	@Nested(2)
 	public ExpressionSyntax getCondition() {
 		return condition;
 	}
 
-	@SyntaxChild(order = 3)
+	@Nested(3)
 	public StatementSyntax getThenStatement() {
 		return thenStatement;
 	}
 
-	@SyntaxChild(order = 4)
+	@Nested(4)
 	public ElseClauseSyntax getElseClause() {
 		return elseClause;
 	}
