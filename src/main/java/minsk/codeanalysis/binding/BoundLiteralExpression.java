@@ -26,6 +26,6 @@ public final class BoundLiteralExpression extends BoundExpression {
 	
 	@Override
 	public String toString() {
-		return "BoundLiteralExpression [ " + value + " ]";
+		return "BoundLiteralExpression [ Value: " + value + ", Type: " + (getType() != null ? getType().getSimpleName() : "<NULL>") + "]";
 	}
 }

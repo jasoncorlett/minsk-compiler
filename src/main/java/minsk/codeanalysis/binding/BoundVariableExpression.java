@@ -23,6 +23,6 @@ public class BoundVariableExpression extends BoundExpression {
 	
 	@Override
 	public String toString() {
-		return getVariable().toString();
+		return "VariableExpression [ Name = " + getVariable().getName() + ", Type: " + getVariable().getType().getSimpleName() + " ]";
 	}
 }
