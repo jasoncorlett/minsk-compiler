@@ -20,14 +20,21 @@ import minsk.codeanalysis.binding.BoundTreeRewriter;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.BoundWhileStatement;
+import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
 public class Lowerer extends BoundTreeRewriter {
 
 	private int labelCount = 0;
-	
+	private int variableCounter = 0;
+
 	private LabelSymbol generateLabel() {
 		return new LabelSymbol("Label" + ++labelCount);
+	}
+	
+	protected VariableSymbol generateVariable(boolean isReadOnly, Class<?> clazz) {
+		var name = "var" + ++variableCounter;
+		return new VariableSymbol(name, isReadOnly, clazz);
 	}
 	
 	private Lowerer() {
@@ -74,19 +81,23 @@ public class Lowerer extends BoundTreeRewriter {
 		//		<var> = <var> + 1
 		//
 		
-		var variableDeclaration = new BoundVariableDeclaration(node.getVariable(), node.getLowerBound());
-		var variableExpression  = new BoundVariableExpression(node.getVariable());
+		var lowerBoundDeclaration = new BoundVariableDeclaration(node.getVariable(), node.getLowerBound());
+		var lowerBoundExpression = new BoundVariableExpression(node.getVariable());
+		
+		var upperBound = generateVariable(true, Integer.class);
+		var upperBoundDeclaration = new BoundVariableDeclaration(upperBound, node.getUpperBound());
+		var upperBoundExpression = new BoundVariableExpression(upperBound);
 		
 		var condition = new BoundBinaryExpression(
-				variableExpression,
+				lowerBoundExpression,
 				BoundBinaryOperator.bind(SyntaxKind.LessEqualsToken, Integer.class, Integer.class),
-				node.getUpperBound()
+				upperBoundExpression
 		);
 		
 		var increment = new BoundExpressionStatement(new BoundAssignmentExpression(
 				node.getVariable(),
 				new BoundBinaryExpression(
-						variableExpression,
+						lowerBoundExpression,
 						BoundBinaryOperator.bind(SyntaxKind.PlusToken, Integer.class, Integer.class),
 						new BoundLiteralExpression(1))));
 		
@@ -98,7 +109,8 @@ public class Lowerer extends BoundTreeRewriter {
 		var whileStatement = new BoundWhileStatement(condition, body);
 		
 		var	result= BoundBlockStatement.of(
-				variableDeclaration,
+				lowerBoundDeclaration,
+				upperBoundDeclaration,
 				whileStatement
 		);
 		
@@ -147,7 +159,7 @@ public class Lowerer extends BoundTreeRewriter {
 		if (node.getElseClause() == null) {
 			var endLabel = generateLabel();
 			var endLabelStatement = new BoundLabelStatement(endLabel);
-			var gotoEnd = new BoundConditionalGotoStatement(endLabel, node.getCondition(), true);
+			var gotoEnd = new BoundConditionalGotoStatement(endLabel, node.getCondition(), false);
 
 			return rewriteStatement(BoundBlockStatement.of(
 					gotoEnd,
@@ -173,7 +185,7 @@ public class Lowerer extends BoundTreeRewriter {
 			var endLabel = generateLabel();
 			
 			var elseLabelStatement = new BoundLabelStatement(elseLabel);
-			var gotoElse = new BoundConditionalGotoStatement(elseLabel, node.getCondition(), true);
+			var gotoElse = new BoundConditionalGotoStatement(elseLabel, node.getCondition(), false);
 			var gotoEnd = new BoundGotoStatement(endLabel);
 			var endLabelStatement = new BoundLabelStatement(endLabel);
 			

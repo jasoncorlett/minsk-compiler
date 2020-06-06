@@ -91,7 +91,8 @@ class EvaluatorTest {
 			arguments("{ var a = 5 var b = 0 if a - 5 == b { b = a } b}", 5),
 			
 			arguments("{ var res = 0 var i = 0 while i < 3 { i = i + 1 res = res + i } }", 6),
-			arguments("{var res = 0 for i = 1 to 3 res = res + i res}", 6)
+			arguments("{var res = 0 for i = 1 to 3 res = res + i res}", 6),
+			arguments("{var a = 10 for i = 1 to (a = a - 1) {} a}", 9) // subtraction only happens once
 		);
 	}
 	

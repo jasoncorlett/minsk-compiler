@@ -7,16 +7,16 @@ public class BoundConditionalGotoStatement extends BoundStatement {
 
 	private final LabelSymbol label;
 	private final BoundExpression condition;
-	private final boolean jumpIfFalse;
+	private final boolean jumpWhen;
 	
 	public BoundConditionalGotoStatement(LabelSymbol label, BoundExpression condition) {
-		this(label, condition, false);
+		this(label, condition, true);
 	}
 	
-	public BoundConditionalGotoStatement(LabelSymbol label, BoundExpression condition, boolean jumpIfFalse) {
+	public BoundConditionalGotoStatement(LabelSymbol label, BoundExpression condition, boolean jumpWhen) {
 		this.label = label;
 		this.condition = condition;
-		this.jumpIfFalse = jumpIfFalse;
+		this.jumpWhen = jumpWhen;
 	}
 	
 	public LabelSymbol getLabel() {
@@ -28,8 +28,8 @@ public class BoundConditionalGotoStatement extends BoundStatement {
 		return condition;
 	}
 
-	public boolean isJumpIfFalse() {
-		return jumpIfFalse;
+	public boolean getJumpWhen() {
+		return jumpWhen;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class BoundConditionalGotoStatement extends BoundStatement {
 	
 	@Override
 	public String toString() {
-		return "ConditionalGoto [ To: " + getLabel() + ", When: " + !jumpIfFalse + " ]";
+		return "ConditionalGoto [ To: " + getLabel() + ", When: " + jumpWhen + " ]";
 	}
 
 }

@@ -75,8 +75,7 @@ public class Evaluator  {
 				var cgs = (BoundConditionalGotoStatement) stmt;
 				var condition = (boolean) evaluateExpression(cgs.getCondition());
 				
-				if ((condition && !cgs.isJumpIfFalse())
-						|| (!condition && cgs.isJumpIfFalse())) {
+				if (condition == cgs.getJumpWhen()) {
 					index = labelToIndex.get(cgs.getLabel());
 				}
 				else {

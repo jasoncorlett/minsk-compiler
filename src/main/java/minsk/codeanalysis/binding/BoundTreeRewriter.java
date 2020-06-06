@@ -96,7 +96,7 @@ public abstract class BoundTreeRewriter {
 			return node;
 		}
 		
-		return new BoundConditionalGotoStatement(node.getLabel(), condition, node.isJumpIfFalse());
+		return new BoundConditionalGotoStatement(node.getLabel(), condition, node.getJumpWhen());
 	}
 	
 	protected BoundStatement rewriteExpressionStatement(BoundExpressionStatement node) {
