@@ -3,6 +3,7 @@ package minsk.codeanalysis;
 import java.util.Map;
 
 import minsk.codeanalysis.binding.Binder;
+import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundGlobalScope;
 import minsk.codeanalysis.binding.BoundNode;
 import minsk.codeanalysis.binding.BoundStatement;
@@ -43,11 +44,11 @@ public class Compilation {
 		return new EvaluationResult(diagnostics, value);
 	}
 	
-	private BoundStatement getStatement() {
+	private BoundBlockStatement getStatement() {
 		return Lowerer.lower(globalScope.getStatement());
 	}
 	
-	public BoundStatement getBoundNode() {
+	public BoundBlockStatement getBoundNode() {
 		return getStatement();
 	}
 	

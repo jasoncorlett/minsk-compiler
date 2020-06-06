@@ -11,6 +11,9 @@ public abstract class BoundTreeRewriter {
 			case IfStatement 			-> rewriteIfStatement((BoundIfStatement) node);
 			case WhileStatement 		-> rewriteWhileStatement((BoundWhileStatement) node);
 			case ForStatement 			-> rewriteForStatement((BoundForStatement) node);
+			case LabelStatement			-> rewriteLabelStatement((BoundLabelStatement) node);
+			case GotoStatement			-> rewriteGotoStatement((BoundGotoStatement) node);
+			case ConditionalGotoStatement -> rewriteConditionalGotoStatement((BoundConditionalGotoStatement) node);
 			case ExpressionStatement 	-> rewriteExpressionStatement((BoundExpressionStatement) node);
 			default 					-> throw new IllegalArgumentException("Unexpected value: " + node.getKind());
 		};
@@ -76,6 +79,24 @@ public abstract class BoundTreeRewriter {
 		}
 		
 		return new BoundForStatement(node.getVariable(), lowerBound, upperBound, body);
+	}
+	
+	protected BoundStatement rewriteLabelStatement(BoundLabelStatement node) {
+		return node;
+	}
+	
+	protected BoundStatement rewriteGotoStatement(BoundGotoStatement node) {
+		return node;
+	}
+	
+	protected BoundStatement rewriteConditionalGotoStatement(BoundConditionalGotoStatement node) {
+		var condition = rewriteExpression(node.getCondition());
+		
+		if (node.getCondition().equals(condition)) {
+			return node;
+		}
+		
+		return new BoundConditionalGotoStatement(node.getLabel(), condition, node.isJumpIfFalse());
 	}
 	
 	protected BoundStatement rewriteExpressionStatement(BoundExpressionStatement node) {

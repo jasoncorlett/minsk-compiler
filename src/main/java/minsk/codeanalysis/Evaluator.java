@@ -6,9 +6,12 @@ import java.util.Map;
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
 import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
+import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
+import minsk.codeanalysis.binding.BoundGotoStatement;
 import minsk.codeanalysis.binding.BoundIfStatement;
+import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
@@ -19,7 +22,7 @@ import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 
 public class Evaluator  {
-	private final BoundStatement root;
+	private final BoundBlockStatement root;
 	private final Map<VariableSymbol, Object> variables;
 	private Object lastValue;
 	
@@ -36,58 +39,59 @@ public class Evaluator  {
 		return compilation.evaluate(variables);
 	}
 	
-	public Evaluator(BoundStatement root, Map<VariableSymbol, Object> variables) {
+	public Evaluator(BoundBlockStatement root, Map<VariableSymbol, Object> variables) {
 		this.root = root;
 		this.variables = variables;
 	}
 	
 	public Object evaluate() {
-		evaluateStatement(root);
-		return lastValue;
-	}
-	
-	private void evaluateStatement(BoundStatement node) {
-		switch (node.getKind()) {
-		case BlockStatement:
-			evaluateBlockStatement((BoundBlockStatement) node);
-			break;
-		case IfStatement:
-			evaluateIfStatement((BoundIfStatement) node);
-			break;
-		case WhileStatement:
-			evaluateWhileStatement((BoundWhileStatement) node);
-			break;
-		case VariableDeclaration:
-			evaluateVariableDeclaration((BoundVariableDeclaration) node);
-			break;
-		case ExpressionStatement:
-			evaluateExpressionStatement((BoundExpressionStatement) node);
-			break;
-		default:
-			throw new RuntimeException("Unexpected statement node: " + node.getKind());
-		}
-	}
-
-	private void evaluateBlockStatement(BoundBlockStatement node) {
-		for (var statment : node.getStatements())
-			evaluateStatement(statment);
-	}
-
-	private void evaluateIfStatement(BoundIfStatement node) {
-		var condition = (boolean) evaluateExpression(node.getCondition());
+		var labelToIndex = new HashMap<LabelSymbol, Integer>();
 		
-		if (condition) {
-			evaluateStatement(node.getThenStatement());
+		for (var i = 0; i < root.getStatements().size(); i++) {
+			if (root.getStatements().get(i) instanceof BoundLabelStatement label) {
+				labelToIndex.put(label.getLabel(), i);
+			}
 		}
-		else {
-			evaluateStatement(node.getElseClause());
+		
+		var index = 0;
+		
+		while (index < root.getStatements().size()) {
+			var stmt = root.getStatements().get(index);
+			
+			switch (stmt.getKind()) {
+			case VariableDeclaration:
+				evaluateVariableDeclaration((BoundVariableDeclaration) stmt);
+				index++;
+				break;
+			case ExpressionStatement:
+				evaluateExpressionStatement((BoundExpressionStatement) stmt);
+				index++;
+				break;
+			case GotoStatement:
+				var gs = (BoundGotoStatement) stmt;
+				index = labelToIndex.get(gs.getLabel());
+				break;
+			case ConditionalGotoStatement:
+				var cgs = (BoundConditionalGotoStatement) stmt;
+				var condition = (boolean) evaluateExpression(cgs.getCondition());
+				
+				if ((condition && !cgs.isJumpIfFalse())
+						|| (!condition && cgs.isJumpIfFalse())) {
+					index = labelToIndex.get(cgs.getLabel());
+				}
+				else {
+					index++;
+				}
+				break;
+			case LabelStatement:
+				index++;
+				break;
+			default:
+				throw new RuntimeException("Unexpected statement: " + stmt.getKind());
+			}
 		}
-	}
 
-	private void evaluateWhileStatement(BoundWhileStatement node) {
-		while ((boolean) evaluateExpression(node.getCondition())) {
-			evaluateStatement(node.getBody());
-		}
+		return lastValue;
 	}
 	
 	private void evaluateVariableDeclaration(BoundVariableDeclaration node) {

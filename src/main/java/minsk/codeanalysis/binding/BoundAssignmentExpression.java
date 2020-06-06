@@ -31,4 +31,9 @@ public class BoundAssignmentExpression extends BoundExpression {
 	public BoundExpression getExpression() {
 		return expression;
 	}
+	
+	@Override
+	public String toString() {
+		return "AssignmentExpression [ " + getVariable().getName() + " ]";
+	}
 }

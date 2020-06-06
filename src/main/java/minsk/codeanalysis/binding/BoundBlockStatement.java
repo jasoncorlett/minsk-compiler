@@ -1,5 +1,6 @@
 package minsk.codeanalysis.binding;
 
+import java.util.Arrays;
 import java.util.List;
 
 import minsk.codeanalysis.Nested;
@@ -9,6 +10,10 @@ public class BoundBlockStatement extends BoundStatement {
 
 	public BoundBlockStatement(List<BoundStatement> statements) {
 		this.statements = statements;
+	}
+	
+	public static BoundBlockStatement of(BoundStatement ...statements) {
+		return new BoundBlockStatement(Arrays.asList(statements));
 	}
 
 	@Override

@@ -1,13 +1,19 @@
 package minsk.codeanalysis.lowering;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.LinkedList;
 
+import minsk.codeanalysis.LabelSymbol;
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
 import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBinaryOperator;
 import minsk.codeanalysis.binding.BoundBlockStatement;
+import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundForStatement;
+import minsk.codeanalysis.binding.BoundGotoStatement;
+import minsk.codeanalysis.binding.BoundIfStatement;
+import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundTreeRewriter;
@@ -18,12 +24,43 @@ import minsk.codeanalysis.syntax.SyntaxKind;
 
 public class Lowerer extends BoundTreeRewriter {
 
+	private int labelCount = 0;
+	
+	private LabelSymbol generateLabel() {
+		return new LabelSymbol("Label" + ++labelCount);
+	}
+	
 	private Lowerer() {
 	}
 
-	public static BoundStatement lower(BoundStatement statement) {
+	public static BoundBlockStatement lower(BoundStatement statement) {
 		var lowerer = new Lowerer();
-		return lowerer.rewriteStatement(statement);
+		var result = lowerer.rewriteStatement(statement);
+		return flatten(result);
+	}
+	
+	private static BoundBlockStatement flatten(BoundStatement statement) {
+		var result = new LinkedList<BoundStatement>();
+		var stack = new LinkedList<BoundStatement>();
+		stack.push(statement);
+		
+		while (!stack.isEmpty()) {
+			var current = stack.pop();
+			
+			if (current instanceof BoundBlockStatement block) {
+				var list = new LinkedList<>(block.getStatements());
+				Collections.reverse(list);
+				
+				for (var s : list) {
+					stack.push(s);
+				}
+			}
+			else {
+				result.add(current);
+			}
+		}
+		
+		return new BoundBlockStatement(result);
 	}
 
 	@Override
@@ -53,17 +90,104 @@ public class Lowerer extends BoundTreeRewriter {
 						BoundBinaryOperator.bind(SyntaxKind.PlusToken, Integer.class, Integer.class),
 						new BoundLiteralExpression(1))));
 		
-		var body = new BoundBlockStatement(List.of(
+		var body = BoundBlockStatement.of(
 				node.getBody(),
 				increment
-		));
+		);
 
 		var whileStatement = new BoundWhileStatement(condition, body);
 		
-		return new BoundBlockStatement(List.of(
-				(BoundStatement) variableDeclaration,
+		var	result= BoundBlockStatement.of(
+				variableDeclaration,
 				whileStatement
-		));
+		);
+		
+		return rewriteStatement(result);
+	}
+	
+	@Override
+	protected BoundStatement rewriteWhileStatement(BoundWhileStatement node) {
+		// while <condition>
+		//		<body>
+		// --------------
+		// goto check
+		// continue:
+		// <body>
+		// check:
+		// gotoTrue <condition> continue
+		// end:
+		
+		var continueLabel = generateLabel();
+		var checkLabel = generateLabel();
+		
+		var gotoCheck = new BoundGotoStatement(checkLabel);
+		var continueLabelStatement = new BoundLabelStatement(continueLabel);
+		var checkLabelStatement = new BoundLabelStatement(checkLabel);
+		var gotoContinue = new BoundConditionalGotoStatement(continueLabel, node.getCondition());
+		
+		var result = BoundBlockStatement.of(
+				gotoCheck,
+				continueLabelStatement,
+				node.getBody(),
+				checkLabelStatement,
+				gotoContinue
+		);
+		
+		return rewriteStatement(result);
+	}
+	
+	@Override
+	protected BoundStatement rewriteIfStatement(BoundIfStatement node) {
+		// if <condition>
+		// 		<then>
+		// ------
+		// gotoFalse <condition> end
+		// <then>
+		// end:
+		if (node.getElseClause() == null) {
+			var endLabel = generateLabel();
+			var endLabelStatement = new BoundLabelStatement(endLabel);
+			var gotoEnd = new BoundConditionalGotoStatement(endLabel, node.getCondition(), true);
+
+			return rewriteStatement(BoundBlockStatement.of(
+					gotoEnd,
+					node.getThenStatement(),
+					endLabelStatement
+			));
+		}
+		
+		// if <condition>
+		// 		<then>
+		// else
+		// 		<else>
+		// -------
+		//
+		// gotoFalse <condition> else
+		// <then>
+		// goto end
+		// else:
+		// <else>
+		// end:
+		else {
+			var elseLabel = generateLabel();
+			var endLabel = generateLabel();
+			
+			var elseLabelStatement = new BoundLabelStatement(elseLabel);
+			var gotoElse = new BoundConditionalGotoStatement(elseLabel, node.getCondition(), true);
+			var gotoEnd = new BoundGotoStatement(endLabel);
+			var endLabelStatement = new BoundLabelStatement(endLabel);
+			
+			var result = BoundBlockStatement.of(
+					gotoElse,
+					node.getThenStatement(),
+					gotoEnd,
+					elseLabelStatement,
+					node.getElseClause(),
+					endLabelStatement
+			);
+			
+			return rewriteStatement(result);
+		}
 	}
 
 }

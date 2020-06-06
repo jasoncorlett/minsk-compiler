@@ -8,6 +8,9 @@ public enum BoundNodeKind {
 	ForStatement,
 	WhileStatement,
 	VariableDeclaration,
+	LabelStatement,
+	GotoStatement,
+	ConditionalGotoStatement,
 	
 	// Expressions
 	UnaryExpression,

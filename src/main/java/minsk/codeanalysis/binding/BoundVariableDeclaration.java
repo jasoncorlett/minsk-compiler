@@ -25,4 +25,9 @@ public class BoundVariableDeclaration extends BoundStatement {
 	public BoundExpression getInitializer() {
 		return initializer;
 	}
+	
+	@Override
+	public String toString() {
+		return "VariableDeclaration [ " + getVariable().getName() + " ]";
+	}
 }
