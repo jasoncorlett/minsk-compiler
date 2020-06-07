@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -27,6 +28,17 @@ public class Main {
 	private static final String RESET_CMD = "#reset";
 	private static final String COMMENT = "#";
 	
+	private static void print(Object ...args) {
+		Arrays.stream(args).forEach(System.out::print);
+		System.out.flush();
+	}
+
+	private static void println(Object ...args) {
+		Arrays.stream(args).forEach(System.out::print);
+		System.out.println();
+		System.out.flush();
+	}
+
 	public static void main(String[] args) throws IOException {
 		var inputStream = System.in;
 		var isRepl = true;
@@ -52,8 +64,9 @@ public class Main {
 			while (true) {
 				var isFirstLine = stringBuilder.length() == 0;
 				
-				if (isRepl)
-					System.out.print(isFirstLine ? "> " : "| ");
+				if (isRepl) {
+					print(isFirstLine ? "> " : "| ");
+				}
 				
 				String line;
 				
@@ -76,13 +89,13 @@ public class Main {
 					
 					if (SHOW_TREE_CMD.equalsIgnoreCase(line)) {
 						showTree = !showTree;
-						System.out.println((showTree ? "" : "Not ") + "Showing Parse Trees");
+						println((showTree ? "" : "Not ") + "Showing Parse Trees");
 						continue;
 					}
 					
 					if (SHOW_VARS_CMD.equalsIgnoreCase(line)) {
 						showVars = !showVars;
-						System.out.println((showVars ? "" : "Not ") + "Showing Variables");
+						println((showVars ? "" : "Not ") + "Showing Variables");
 						continue;
 					}
 					
@@ -105,7 +118,7 @@ public class Main {
 					
 					if (SHOW_PROGRAM_CMD.equalsIgnoreCase(line)) {
 						showProgram = !showProgram;
-						System.out.println((showProgram ? "" : "Not ") + "Showing Program Tree");
+						println((showProgram ? "" : "Not ") + "Showing Program Tree");
 						continue;
 					}
 					
@@ -135,11 +148,11 @@ public class Main {
 					var result = compilation.evaluate(variables);
 					
 					if (showVars) {
-						variables.entrySet().forEach(e -> System.out.println(e.getKey() + " = " + e.getValue()));
+						variables.entrySet().forEach(e -> println(e.getKey() + " = " + e.getValue()));
 					}
 					
 					if (result.getDiagnostics().isEmpty()) {
-						System.out.println(result.getValue());
+						println(result.getValue());
 						previous = compilation;
 					} 
 					else {
@@ -158,7 +171,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	private static void printDiagnostics(Diagnosable diagnosable, SourceText source) {
 		for (var diagnostic : diagnosable.getDiagnostics()) {
 			var lineNumber = source.getLineIndex(diagnostic.getSpan().getStart());
@@ -171,5 +184,4 @@ public class Main {
 			System.err.printf("    %s%s%n", " ".repeat(position), "^".repeat(diagnostic.getSpan().getLength()));
 		}
 	}
-
 }

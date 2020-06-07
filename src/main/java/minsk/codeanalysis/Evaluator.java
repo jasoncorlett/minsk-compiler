@@ -48,7 +48,9 @@ public class Evaluator  {
 		var labelToIndex = new HashMap<LabelSymbol, Integer>();
 		
 		for (var i = 0; i < root.getStatements().size(); i++) {
-			if (root.getStatements().get(i) instanceof BoundLabelStatement label) {
+			var node = root.getStatements().get(i);
+			if (root.getStatements().get(i) instanceof BoundLabelStatement) {
+				var label = (BoundLabelStatement) node;
 				labelToIndex.put(label.getLabel(), i);
 			}
 		}

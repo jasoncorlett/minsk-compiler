@@ -17,6 +17,10 @@ public class SyntaxToken extends SyntaxNode {
 		this.value = value;
 	}
 	
+	public boolean isMissing() {
+		return text == null;
+	}
+
 	public int getPosition() {
 		return position;
 	}
