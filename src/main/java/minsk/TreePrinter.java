@@ -19,7 +19,7 @@ class TreePrinter {
 		System.out.print(indent);
 		System.out.print(marker);
 		System.out.print(node);
-		
+
 		System.out.println();
 		
 		indent += isLast ? INDENT_BLANK : INDENT_TREE;

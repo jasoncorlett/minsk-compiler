@@ -140,6 +140,9 @@ public class Lexer implements Diagnosable {
 				kind = SyntaxKind.LessToken;
 			}
 			break;
+		case '"':
+			kind = readString();
+			break;
 		default:
 			if (Character.isDigit(current())) {
 				kind = readNumber(start);
@@ -159,17 +162,50 @@ public class Lexer implements Diagnosable {
 			}
 		}
 
-		var text = kind.getFixedText();
-		
-		if (text == null && start < source.length() && position <= source.length()) {
-			text = source.substring(start, position);
-		}
-		
 		if (start == position) {
 			throw new RuntimeException("Lexer failed to consume character: " + source.charAt(position));
 		}
-		
+
+		var text = kind.getFixedText();
+
+		if (text == null && start < source.length() && position <= source.length()) {
+			text = source.substring(start, position);
+		}
+
 		return new SyntaxToken(kind, start, text, value);
+	}
+
+	private SyntaxKind readString() {
+		var start = position;
+		var sb = new StringBuilder();
+		var done = false;
+
+		while (!done) {
+			switch (current()) {
+				case EOF:
+				case '\n':
+				case '\r':
+					diagnostics.reportUnterminatedString(new TextSpan(start, position));
+					done = true;
+					break;
+				case '"':
+					position++;
+					if (current() == '"') {
+						sb.append(current());
+						position++;
+					}
+					else {
+						done = true;
+					}
+					break;
+				default:
+					sb.append(current());
+					position++;
+			}
+		}
+
+		value = sb.toString();
+		return SyntaxKind.StringToken;
 	}
 
 	private SyntaxKind readIdentifierOrKeyword(final int start) {

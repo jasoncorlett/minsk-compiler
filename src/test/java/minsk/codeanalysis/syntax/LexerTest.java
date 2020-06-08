@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class LexerTest {
 	/**
 	 * SyntaxTuple - holds basic information about a token required to test
-	 * Saves the hassle of passing values separately or constructing a token 
+	 * Saves the hassle of passing values separately or constructing a token
 	 */
 	private static class SyntaxTuple {
 		final SyntaxKind kind;
@@ -76,7 +76,9 @@ class LexerTest {
 				new SyntaxTuple(SyntaxKind.IdentifierToken, "a"),
 				new SyntaxTuple(SyntaxKind.IdentifierToken, "count"),
 				new SyntaxTuple(SyntaxKind.LiteralToken, "2"),
-				new SyntaxTuple(SyntaxKind.LiteralToken, "12")
+				new SyntaxTuple(SyntaxKind.LiteralToken, "12"),
+				new SyntaxTuple(SyntaxKind.StringToken, "\"wolf\""),
+				new SyntaxTuple(SyntaxKind.StringToken, "\"wo\"\"lf\"")
 		);
 		
 		return Stream.concat(fixedTokens, dynamicTokens);
@@ -114,7 +116,7 @@ class LexerTest {
 	@MethodSource({"getTokenData", "getSeparatorsData"})
 	void TestSingleTokens(SyntaxTuple a) {
 		var tokens = SyntaxTree.parseTokens(a.text);
-		
+
 		assertEquals(1, tokens.size());
 		var token = tokens.get(0);
 		

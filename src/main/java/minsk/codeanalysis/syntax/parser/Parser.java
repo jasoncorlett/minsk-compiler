@@ -227,6 +227,9 @@ public class Parser implements Diagnosable {
 
 		case LiteralToken:
 			return parseLiteralExpression();
+
+		case StringToken:
+			return parseStringLiteral();
 			
 		case IdentifierToken:
 		default:
@@ -257,6 +260,12 @@ public class Parser implements Diagnosable {
 	private ExpressionSyntax parseLiteralExpression() {
 		var numberToken = matchToken(SyntaxKind.LiteralToken);
 		return new LiteralExpressionSyntax(numberToken);
+	}
+
+
+	private ExpressionSyntax parseStringLiteral() {
+		var stringToken = matchToken(SyntaxKind.StringToken);
+		return new LiteralExpressionSyntax(stringToken);
 	}
 
 	public List<SyntaxToken> getTokens() {

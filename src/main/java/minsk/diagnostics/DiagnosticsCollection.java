@@ -74,4 +74,8 @@ public class DiagnosticsCollection implements Iterable<Diagnostic> {
 		report(span, "Cannot assign variable '%s'.", name);
 		
 	}
+
+	public void reportUnterminatedString(TextSpan span) {
+		report(span, "Found unterminated string.");
+	}
 }

@@ -36,7 +36,8 @@ public enum SyntaxKind {
 	@Fixed("=") EqualsToken,
 	@Fixed("{") OpenBraceToken,
 	@Fixed("}") CloseBraceToken,
-	
+	StringToken,
+
 	// Keywords
 	@Fixed("true") TrueKeyword,
 	@Fixed("false") FalseKeyword,
@@ -47,7 +48,7 @@ public enum SyntaxKind {
 	@Fixed("for") ForKeyword,
 	@Fixed("to") ToKeyword,
 	@Fixed("while") WhileKeyword,
-	
+
 	// Statements
 	BlockStatement,
 	ExpressionStatement,
