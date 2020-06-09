@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.syntax.parser.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
@@ -57,12 +58,7 @@ public class Binder implements Diagnosable {
 		
 		scope = new BoundScope(scope);
 
-		var name = syntax.getIdentifier().getText();
-		var variable = new VariableSymbol(name, true, TypeSymbol.Int);
-		
-		if (!scope.declare(variable))
-			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
-		
+		var variable = bindVariable(syntax.getIdentifier(), true, lowerBound.getType());
 		var body = bindStatement(syntax.getBody());
 		
 		scope = scope.getParent();
@@ -98,14 +94,9 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundStatement bindVariableDeclaration(VariableDeclarationSyntax syntax) {
-		var name = syntax.getIdentifier().getText();
 		var isReadOnly = syntax.getKeyword().getKind() == SyntaxKind.LetKeyword;
 		var initializer = bindExpression(syntax.getInitializer());
-		var variable = new VariableSymbol(name, isReadOnly, initializer.getType());
-		
-		if (!scope.declare(variable)) {
-			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
-		}
+		var variable = bindVariable(syntax.getIdentifier(), isReadOnly, initializer.getType());
 		
 		return new BoundVariableDeclaration(variable, initializer);
 	}
@@ -168,7 +159,7 @@ public class Binder implements Diagnosable {
 		var name = syntax.getIdentifierToken().getText();
 		
 		// Error already reported during parsing, just fall through
-		if (name == null) {
+		if (syntax.getIdentifierToken().isMissing()) {
 			return new BoundErrorExpression();
 		}
 		
@@ -255,5 +246,17 @@ public class Binder implements Diagnosable {
 	
 	public BoundScope getScope() {
 		return scope;
+	}
+	
+	private VariableSymbol bindVariable(SyntaxToken identifier, boolean isReadOnly, TypeSymbol type) {
+		var name = identifier.getText() != null ? identifier.getText() : "?";
+		var declare = !identifier.isMissing();
+		var variable = new VariableSymbol(name, isReadOnly, type);
+		
+		if (declare && !scope.declare(variable)) {
+			diagnostics.reportVariableAlreadyDeclared(identifier.getSpan(), name);
+		}
+		
+		return variable;
 	}
 }
