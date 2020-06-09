@@ -1,25 +1,24 @@
 package minsk.codeanalysis.binding;
 
-import minsk.codeanalysis.LabelSymbol;
 import minsk.codeanalysis.Nested;
 
 public class BoundConditionalGotoStatement extends BoundStatement {
 
-	private final LabelSymbol label;
+	private final BoundLabel label;
 	private final BoundExpression condition;
 	private final boolean jumpWhen;
 	
-	public BoundConditionalGotoStatement(LabelSymbol label, BoundExpression condition) {
+	public BoundConditionalGotoStatement(BoundLabel label, BoundExpression condition) {
 		this(label, condition, true);
 	}
 	
-	public BoundConditionalGotoStatement(LabelSymbol label, BoundExpression condition, boolean jumpWhen) {
+	public BoundConditionalGotoStatement(BoundLabel label, BoundExpression condition, boolean jumpWhen) {
 		this.label = label;
 		this.condition = condition;
 		this.jumpWhen = jumpWhen;
 	}
 	
-	public LabelSymbol getLabel() {
+	public BoundLabel getLabel() {
 		return label;
 	}
 

@@ -1,9 +1,9 @@
-package minsk.codeanalysis;
+package minsk.codeanalysis.binding;
 
-public class LabelSymbol {
+public class BoundLabel {
 	private final String name;
 
-	public LabelSymbol(String name) {
+	public BoundLabel(String name) {
 		this.name = name;
 	}
 

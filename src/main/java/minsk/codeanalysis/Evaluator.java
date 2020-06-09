@@ -10,6 +10,7 @@ import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundGotoStatement;
+import minsk.codeanalysis.binding.BoundLabel;
 import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
@@ -42,7 +43,7 @@ public class Evaluator  {
 	}
 	
 	public Object evaluate() {
-		var labelToIndex = new HashMap<LabelSymbol, Integer>();
+		var labelToIndex = new HashMap<BoundLabel, Integer>();
 		
 		for (var i = 0; i < root.getStatements().size(); i++) {
 			var node = root.getStatements().get(i);

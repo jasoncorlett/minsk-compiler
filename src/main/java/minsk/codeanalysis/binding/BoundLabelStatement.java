@@ -1,16 +1,14 @@
 package minsk.codeanalysis.binding;
 
-import minsk.codeanalysis.LabelSymbol;
-
 public class BoundLabelStatement extends BoundStatement {
 
-	private final LabelSymbol label;
+	private final BoundLabel label;
 	
-	public BoundLabelStatement(LabelSymbol label) {
+	public BoundLabelStatement(BoundLabel label) {
 		this.label = label;
 	}
 
-	public LabelSymbol getLabel() {
+	public BoundLabel getLabel() {
 		return label;
 	}
 

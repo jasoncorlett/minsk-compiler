@@ -1,16 +1,14 @@
 package minsk.codeanalysis.binding;
 
-import minsk.codeanalysis.LabelSymbol;
-
 public class BoundGotoStatement extends BoundStatement {
 
-	private final LabelSymbol label;
+	private final BoundLabel label;
 	
-	public BoundGotoStatement(LabelSymbol label) {
+	public BoundGotoStatement(BoundLabel label) {
 		this.label = label;
 	}
 
-	public LabelSymbol getLabel() {
+	public BoundLabel getLabel() {
 		return label;
 	}
 

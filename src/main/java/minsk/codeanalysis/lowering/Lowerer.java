@@ -3,7 +3,6 @@ package minsk.codeanalysis.lowering;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import minsk.codeanalysis.LabelSymbol;
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
 import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBinaryOperator;
@@ -13,6 +12,7 @@ import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundForStatement;
 import minsk.codeanalysis.binding.BoundGotoStatement;
 import minsk.codeanalysis.binding.BoundIfStatement;
+import minsk.codeanalysis.binding.BoundLabel;
 import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
@@ -28,8 +28,8 @@ public class Lowerer extends BoundTreeRewriter {
 	private int labelCount = 0;
 	private int variableCounter = 0;
 
-	private LabelSymbol generateLabel() {
-		return new LabelSymbol("Label" + ++labelCount);
+	private BoundLabel generateLabel() {
+		return new BoundLabel("Label" + ++labelCount);
 	}
 	
 	protected VariableSymbol generateVariable(boolean isReadOnly, Class<?> clazz) {
