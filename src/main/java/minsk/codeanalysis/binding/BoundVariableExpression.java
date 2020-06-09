@@ -1,5 +1,7 @@
 package minsk.codeanalysis.binding;
 
+import minsk.codeanalysis.symbols.VariableSymbol;
+
 public class BoundVariableExpression extends BoundExpression {
 	private final VariableSymbol variable;
 	

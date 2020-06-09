@@ -1,4 +1,4 @@
-package minsk.codeanalysis.binding;
+package minsk.codeanalysis.symbols;
 
 public class VariableSymbol {
 	

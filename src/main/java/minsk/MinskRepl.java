@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import minsk.codeanalysis.Compilation;
-import minsk.codeanalysis.binding.VariableSymbol;
+import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;

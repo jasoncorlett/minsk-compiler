@@ -2,6 +2,7 @@ package minsk.codeanalysis.binding;
 
 import java.util.Collection;
 
+import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.DiagnosticsCollection;
 

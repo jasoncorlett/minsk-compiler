@@ -1,6 +1,7 @@
 package minsk.codeanalysis.binding;
 
 import minsk.codeanalysis.Nested;
+import minsk.codeanalysis.symbols.VariableSymbol;
 
 public class BoundForStatement extends BoundStatement {
 

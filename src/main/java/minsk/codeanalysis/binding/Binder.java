@@ -3,6 +3,7 @@ package minsk.codeanalysis.binding;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
+import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.parser.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BinaryExpressionSyntax;

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import minsk.codeanalysis.symbols.VariableSymbol;
+
 public class BoundScope {
 
 	private final Map<String, VariableSymbol> variables = new HashMap<>();

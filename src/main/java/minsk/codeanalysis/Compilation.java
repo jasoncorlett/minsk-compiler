@@ -5,8 +5,8 @@ import java.util.Map;
 import minsk.codeanalysis.binding.Binder;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundGlobalScope;
-import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.lowering.Lowerer;
+import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 import minsk.diagnostics.DiagnosticsCollection;
 

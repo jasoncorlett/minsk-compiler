@@ -20,7 +20,7 @@ import minsk.codeanalysis.binding.BoundTreeRewriter;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.BoundWhileStatement;
-import minsk.codeanalysis.binding.VariableSymbol;
+import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
 public class Lowerer extends BoundTreeRewriter {
