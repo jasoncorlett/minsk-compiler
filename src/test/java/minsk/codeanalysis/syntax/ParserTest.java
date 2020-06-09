@@ -1,12 +1,11 @@
 package minsk.codeanalysis.syntax;
 
+import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import static minsk.codeanalysis.Assertions.assertNoDiagnostics;
 
 import java.time.Duration;
 import java.util.Arrays;

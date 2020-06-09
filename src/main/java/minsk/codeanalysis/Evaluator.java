@@ -10,14 +10,11 @@ import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundGotoStatement;
-import minsk.codeanalysis.binding.BoundIfStatement;
 import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
-import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
-import minsk.codeanalysis.binding.BoundWhileStatement;
 import minsk.codeanalysis.binding.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 
@@ -128,7 +125,7 @@ public class Evaluator  {
 		switch (binaryExpression.getOperator().getKind()) {
 		case Addition:
 			if (binaryExpression.getType() == Integer.class) {
-			return (int) left + (int) right;
+				return (int) left + (int) right;
 			}
 			else {
 				return left.toString() + right.toString();

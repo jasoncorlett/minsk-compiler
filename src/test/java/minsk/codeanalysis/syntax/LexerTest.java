@@ -1,8 +1,8 @@
 package minsk.codeanalysis.syntax;
 
+import static minsk.codeanalysis.Assertions.assertSingle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static minsk.codeanalysis.Assertions.assertSingle;
 
 import java.util.Arrays;
 import java.util.Set;

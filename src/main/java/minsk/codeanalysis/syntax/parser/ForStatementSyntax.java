@@ -1,11 +1,8 @@
 package minsk.codeanalysis.syntax.parser;
 
-import java.util.LinkedList;
-import java.util.List;
 
 import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
-import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
 // for v = 1 to 5
