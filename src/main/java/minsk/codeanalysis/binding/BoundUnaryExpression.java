@@ -1,6 +1,7 @@
 package minsk.codeanalysis.binding;
 
 import minsk.codeanalysis.Nested;
+import minsk.codeanalysis.symbols.TypeSymbol;
 
 public final class BoundUnaryExpression extends BoundExpression {
 	private final BoundUnaryOperator operator;
@@ -22,7 +23,7 @@ public final class BoundUnaryExpression extends BoundExpression {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public TypeSymbol getType() {
 		return operator.getResultType();
 	}
 

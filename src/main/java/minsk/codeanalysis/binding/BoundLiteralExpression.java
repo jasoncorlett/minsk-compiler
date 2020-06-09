@@ -1,5 +1,7 @@
 package minsk.codeanalysis.binding;
 
+import minsk.codeanalysis.symbols.TypeSymbol;
+
 public final class BoundLiteralExpression extends BoundExpression {
 	private final Object value;
 
@@ -12,11 +14,18 @@ public final class BoundLiteralExpression extends BoundExpression {
 	}
 
 	@Override
-	public final Class<?> getType() {
-		if (getValue() == null) {
-			return null;
+	public final TypeSymbol getType() {
+		if (getValue() instanceof Boolean) {
+			return TypeSymbol.Bool;
 		}
-		return getValue().getClass();
+		else if (getValue() instanceof String) {
+			return TypeSymbol.String;
+		}
+		else if (getValue() instanceof Integer) {
+			return TypeSymbol.Int;
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -26,6 +35,6 @@ public final class BoundLiteralExpression extends BoundExpression {
 	
 	@Override
 	public String toString() {
-		return "BoundLiteralExpression [ Value: " + value + ", Type: " + (getType() != null ? getType().getSimpleName() : "<NULL>") + "]";
+		return "BoundLiteralExpression [ Value: " + value + ", Type: " + getType() + "]";
 	}
 }

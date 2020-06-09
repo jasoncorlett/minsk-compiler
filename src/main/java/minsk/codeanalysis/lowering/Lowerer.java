@@ -20,6 +20,7 @@ import minsk.codeanalysis.binding.BoundTreeRewriter;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.BoundWhileStatement;
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 
@@ -32,9 +33,9 @@ public class Lowerer extends BoundTreeRewriter {
 		return new BoundLabel("Label" + ++labelCount);
 	}
 	
-	protected VariableSymbol generateVariable(boolean isReadOnly, Class<?> clazz) {
+	protected VariableSymbol generateVariable(boolean isReadOnly, TypeSymbol type) {
 		var name = "var" + ++variableCounter;
-		return new VariableSymbol(name, isReadOnly, clazz);
+		return new VariableSymbol(name, isReadOnly, type);
 	}
 	
 	private Lowerer() {
@@ -84,13 +85,13 @@ public class Lowerer extends BoundTreeRewriter {
 		var lowerBoundDeclaration = new BoundVariableDeclaration(node.getVariable(), node.getLowerBound());
 		var lowerBoundExpression = new BoundVariableExpression(node.getVariable());
 		
-		var upperBound = generateVariable(true, Integer.class);
+		var upperBound = generateVariable(true, TypeSymbol.Int);
 		var upperBoundDeclaration = new BoundVariableDeclaration(upperBound, node.getUpperBound());
 		var upperBoundExpression = new BoundVariableExpression(upperBound);
 		
 		var condition = new BoundBinaryExpression(
 				lowerBoundExpression,
-				BoundBinaryOperator.bind(SyntaxKind.LessEqualsToken, Integer.class, Integer.class),
+				BoundBinaryOperator.bind(SyntaxKind.LessEqualsToken, TypeSymbol.Int, TypeSymbol.Int),
 				upperBoundExpression
 		);
 		
@@ -98,7 +99,7 @@ public class Lowerer extends BoundTreeRewriter {
 				node.getVariable(),
 				new BoundBinaryExpression(
 						lowerBoundExpression,
-						BoundBinaryOperator.bind(SyntaxKind.PlusToken, Integer.class, Integer.class),
+						BoundBinaryOperator.bind(SyntaxKind.PlusToken, TypeSymbol.Int, TypeSymbol.Int),
 						new BoundLiteralExpression(1))));
 		
 		var body = BoundBlockStatement.of(

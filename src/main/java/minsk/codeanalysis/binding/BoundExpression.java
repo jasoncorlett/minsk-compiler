@@ -1,10 +1,12 @@
 package minsk.codeanalysis.binding;
 
+import minsk.codeanalysis.symbols.TypeSymbol;
+
 public abstract class BoundExpression extends BoundNode {
-	public abstract Class<?> getType();
+	public abstract TypeSymbol getType();
 	
 	@Override
 	public String toString() {
-		return super.toString() + " " + getType().getSimpleName();
+		return super.toString() + " " + getType();
 	}
 }

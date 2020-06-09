@@ -1,6 +1,7 @@
 package minsk.codeanalysis.binding;
 
 import minsk.codeanalysis.Nested;
+import minsk.codeanalysis.symbols.TypeSymbol;
 
 public final class BoundBinaryExpression extends BoundExpression {
 
@@ -15,7 +16,7 @@ public final class BoundBinaryExpression extends BoundExpression {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public TypeSymbol getType() {
 		return getOperator().getResultType();
 	}
 

@@ -162,17 +162,17 @@ class EvaluatorTest {
 				}
 				""";
 		
-		assertDiagnostics(text, "Cannot convert from 'Boolean' to 'Integer'.");
+		assertDiagnostics(text, "Cannot convert from 'bool' to 'int'.");
 	}
 	
 	@Test
 	public void UnaryOperatorReportsUndefined() {
-		assertDiagnostics("[+]true", "Unary operator '+' is not defined for 'Boolean'.");
+		assertDiagnostics("[+]true", "Unary operator '+' is not defined for 'bool'.");
 	}
 	
 	@Test
 	public void BinaryOperatorReportsUndefined() {
-		assertDiagnostics("10 [*] true", "Binary operator '*' is not defined for types 'Integer' and 'Boolean'.");
+		assertDiagnostics("10 [*] true", "Binary operator '*' is not defined for types 'int' and 'bool'.");
 	}
 	
 	private static void assertDiagnostics(String program, String... expectedMessages) {

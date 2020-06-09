@@ -17,5 +17,4 @@ public abstract class AbstractSymbol {
 	public String toString() {
 		return getName();
 	}
-	
 }

@@ -16,6 +16,7 @@ import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
 
@@ -125,7 +126,7 @@ public class Evaluator  {
 		
 		switch (binaryExpression.getOperator().getKind()) {
 		case Addition:
-			if (binaryExpression.getType() == Integer.class) {
+			if (binaryExpression.getType() == TypeSymbol.Int) {
 				return (int) left + (int) right;
 			}
 			else {
@@ -156,21 +157,21 @@ public class Evaluator  {
 		case GreaterEquals:
 			return (int) left >= (int) right;
 		case BitwiseAnd:
-			if (binaryExpression.getType() == Integer.class) {
+			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
 				return (int) left & (int) right;
 			}
 			else {
 				return (boolean) left & (boolean) right;
 			}
 		case BitwiseOr:
-			if (binaryExpression.getType() == Integer.class) {
+			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
 				return (int) left | (int) right;
 			}
 			else {
 				return (boolean) left | (boolean) right;
 			}
 		case BitwiseXor:
-			if (binaryExpression.getType() == Integer.class) {
+			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
 				return (int) left ^ (int) right;
 			}
 			else {

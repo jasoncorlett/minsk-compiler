@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.text.SourceText;
 import minsk.codeanalysis.text.TextSpan;
@@ -49,21 +50,21 @@ public class DiagnosticsCollection implements Iterable<Diagnostic> {
 		report(span, "Unexpected token '%s' expected '%s'.", actual, expected);
 	}
 
-	public void reportUndefinedUnaryOperator(TextSpan operatorSpan, String operatorText, Class<?> operandType) {
-		report(operatorSpan, "Unary operator '%s' is not defined for '%s'.", operatorText, operandType.getSimpleName());
+	public void reportUndefinedUnaryOperator(TextSpan operatorSpan, String operatorText, TypeSymbol operandType) {
+		report(operatorSpan, "Unary operator '%s' is not defined for '%s'.", operatorText, operandType);
 	}
 
-	public void reportUndefinedBinaryOperator(TextSpan operatorSpan, String operatorText, Class<?> leftType,
-			Class<?> rightType) {
-		report(operatorSpan, "Binary operator '%s' is not defined for types '%s' and '%s'.", operatorText, leftType.getSimpleName(), rightType.getSimpleName());
+	public void reportUndefinedBinaryOperator(TextSpan operatorSpan, String operatorText, TypeSymbol leftType,
+			TypeSymbol rightType) {
+		report(operatorSpan, "Binary operator '%s' is not defined for types '%s' and '%s'.", operatorText, leftType, rightType);
 	}
 
 	public void reportUndefinedName(TextSpan span, String name) {
 		report(span, "Variable '%s' is not defined.", name);
 	}
 
-	public void reportCannotConvert(TextSpan span, Class<?> from, Class<?> to) {
-		report(span, "Cannot convert from '%s' to '%s'.", from.getSimpleName(), to.getSimpleName());
+	public void reportCannotConvert(TextSpan span, TypeSymbol from, TypeSymbol to) {
+		report(span, "Cannot convert from '%s' to '%s'.", from, to);
 	}
 
 	public void reportVariableAlreadyDeclared(TextSpan span, String name) {

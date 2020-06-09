@@ -3,6 +3,7 @@ package minsk.codeanalysis.binding;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.parser.AssignmentExpressionSyntax;
@@ -51,13 +52,13 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundForStatement bindForStatement(ForStatementSyntax syntax) {
-		var lowerBound = bindExpression(syntax.getLowerBound(), Integer.class);
-		var upperBound = bindExpression(syntax.getUpperBound(), Integer.class);
+		var lowerBound = bindExpression(syntax.getLowerBound(), TypeSymbol.Int);
+		var upperBound = bindExpression(syntax.getUpperBound(), TypeSymbol.Int);
 		
 		scope = new BoundScope(scope);
 
 		var name = syntax.getIdentifier().getText();
-		var variable = new VariableSymbol(name, true, Integer.class);
+		var variable = new VariableSymbol(name, true, TypeSymbol.Int);
 		
 		if (!scope.declare(variable))
 			diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name);
@@ -70,7 +71,7 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundWhileStatement bindWhileStatement(WhileStatementSyntax syntax) {
-		var condition = bindExpression(syntax.getCondition(), Boolean.class);
+		var condition = bindExpression(syntax.getCondition(), TypeSymbol.Bool);
 		var body = bindStatement(syntax.getBody());
 		
 		return new BoundWhileStatement(condition, body);
@@ -89,7 +90,7 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundIfStatement bindIfStatement(IfStatementSyntax syntax) {
-		var condition = bindExpression(syntax.getCondition(), Boolean.class);
+		var condition = bindExpression(syntax.getCondition(), TypeSymbol.Bool);
 		var thenStatement = bindStatement(syntax.getThenStatement());
 		var elseClause = syntax.getElseClause() == null ? null : bindStatement(syntax.getElseClause().getElseStatement());
 		
@@ -140,7 +141,7 @@ public class Binder implements Diagnosable {
 		this.scope = new BoundScope(parent);
 	}
 	
-	public BoundExpression bindExpression(ExpressionSyntax syntax, Class<?> targetType) {
+	public BoundExpression bindExpression(ExpressionSyntax syntax, TypeSymbol targetType) {
 		var bound = bindExpression(syntax);
 		
 		if (bound.getType() != targetType) {

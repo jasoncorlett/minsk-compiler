@@ -1,6 +1,7 @@
 package minsk.codeanalysis.binding;
 
 import minsk.codeanalysis.Nested;
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 
 public class BoundAssignmentExpression extends BoundExpression {
@@ -14,7 +15,7 @@ public class BoundAssignmentExpression extends BoundExpression {
 	}
 	
 	@Override
-	public Class<?> getType() {
+	public TypeSymbol getType() {
 		return getExpression().getType();
 	}
 

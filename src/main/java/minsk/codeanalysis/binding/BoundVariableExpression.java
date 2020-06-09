@@ -1,5 +1,6 @@
 package minsk.codeanalysis.binding;
 
+import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 
 public class BoundVariableExpression extends BoundExpression {
@@ -14,7 +15,7 @@ public class BoundVariableExpression extends BoundExpression {
 	}
 	
 	@Override
-	public Class<?> getType() {
+	public TypeSymbol getType() {
 		return variable.getType();
 	}
 
@@ -25,6 +26,6 @@ public class BoundVariableExpression extends BoundExpression {
 	
 	@Override
 	public String toString() {
-		return "VariableExpression [ Name = " + getVariable().getName() + ", Type: " + getVariable().getType().getSimpleName() + " ]";
+		return "VariableExpression [ Name = " + getVariable().getName() + ", Type: " + getType() + " ]";
 	}
 }
