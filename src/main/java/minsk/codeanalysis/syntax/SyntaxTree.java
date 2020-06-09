@@ -1,6 +1,5 @@
 package minsk.codeanalysis.syntax;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,6 +9,7 @@ import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.parser.Parser;
 import minsk.codeanalysis.text.SourceText;
 import minsk.diagnostics.Diagnosable;
+import minsk.diagnostics.DiagnosableList;
 import minsk.diagnostics.DiagnosticsCollection;
 
 public class SyntaxTree implements Diagnosable {
@@ -47,16 +47,20 @@ public class SyntaxTree implements Diagnosable {
 		return parse(SourceText.from(text));
 	}
 	
-	public static List<SyntaxToken> parseTokens(String text) {
+	public static DiagnosableList<SyntaxToken> parseTokens(String text) {
 		var source = SourceText.from(text);
 		return parseTokens(source);
 	}
-	
-	public static List<SyntaxToken> parseTokens(SourceText source) {
+
+	public static DiagnosableList<SyntaxToken> parseTokens(SourceText source) {
 		var lexer = new Lexer(source);
-		return Stream
-				.generate(lexer::lex)
-				.takeWhile(t -> t.getKind() != SyntaxKind.EndOfFileToken)
-				.collect(Collectors.toList());
+		
+		var result = Stream.generate(lexer::lex)
+			.takeWhile(t -> t.getKind() != SyntaxKind.EndOfFileToken)
+			.collect(Collectors.toCollection(DiagnosableList::new));
+
+		result.getDiagnostics().addFrom(lexer);
+		
+		return result;
 	}
 }
