@@ -127,7 +127,12 @@ public class Evaluator  {
 		
 		switch (binaryExpression.getOperator().getKind()) {
 		case Addition:
+			if (binaryExpression.getType() == Integer.class) {
 			return (int) left + (int) right;
+			}
+			else {
+				return left.toString() + right.toString();
+			}
 		case Subtraction:
 			return (int) left - (int) right;
 		case Multiplication:
@@ -183,7 +188,7 @@ public class Evaluator  {
 		
 		switch (expr.getOperator().getKind()) {
 		case Identity:
-			return (int) operand;
+			return operand;
 		case Negation:
 			return -(int) operand;
 		case LogicalNegation:

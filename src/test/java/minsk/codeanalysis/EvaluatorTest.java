@@ -92,7 +92,11 @@ class EvaluatorTest {
 			
 			arguments("{ var res = 0 var i = 0 while i < 3 { i = i + 1 res = res + i } }", 6),
 			arguments("{var res = 0 for i = 1 to 3 res = res + i res}", 6),
-			arguments("{var a = 10 for i = 1 to (a = a - 1) {} a}", 9) // subtraction only happens once
+			arguments("{var a = 10 for i = 1 to (a = a - 1) {} a}", 9), // subtraction only happens once
+			arguments("{var a = \"apple\" a}", "apple"),
+			arguments("{var p = \"pine\" var a = \"apple\" if p + a == \"pineapple\" \"yes\" else \"no\"}", "yes"),
+			arguments("{var a = \"apple\" if a != \"banana\" \"yes\" else \"no\"}", "yes"),
+			arguments("{var p = \"Password\" var n = 123 p + n}", "Password123")
 		);
 	}
 	

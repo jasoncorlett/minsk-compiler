@@ -176,9 +176,11 @@ public class Lexer implements Diagnosable {
 	}
 
 	private SyntaxKind readString() {
-		var start = position;
 		var sb = new StringBuilder();
 		var done = false;
+		var start = position;
+		
+		position++; // opening quote
 
 		while (!done) {
 			switch (current()) {

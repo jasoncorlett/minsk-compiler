@@ -30,6 +30,14 @@ public final class BoundBinaryOperator extends TreeNode {
 			new BoundBinaryOperator(SyntaxKind.GreaterEqualsToken, BoundBinaryOperatorKind.GreaterEquals, Integer.class, Boolean.class),
 			new BoundBinaryOperator(SyntaxKind.LessToken, BoundBinaryOperatorKind.Less, Integer.class, Boolean.class),
 			new BoundBinaryOperator(SyntaxKind.LessEqualsToken, BoundBinaryOperatorKind.LessEquals, Integer.class, Boolean.class),
+			
+			new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, String.class),
+			new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, String.class, Integer.class, String.class),
+			new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, String.class, Boolean.class, String.class),
+			
+			new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, String.class, Boolean.class),
+			new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, String.class, Boolean.class),
+			
 	};
 	
 	public static BoundBinaryOperator bind(SyntaxKind syntaxKind, Class<?> leftType, Class<?> rightType) {

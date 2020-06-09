@@ -2,6 +2,7 @@ package minsk.codeanalysis.syntax;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static minsk.codeanalysis.Assertions.assertSingle;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -10,13 +11,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import minsk.codeanalysis.text.TextSpan;
+
 class LexerTest {
+
+	@Test
+	public void TestLexesUnterminatedString() {
+		var text = "\"";
+		var tokens = SyntaxTree.parseTokens(text);
+
+		var token = assertSingle(tokens);
+
+		assertEquals(SyntaxKind.StringToken, token.getKind());
+		assertEquals(text, token.getText());
+
+		var diagnostic = assertSingle(tokens.getDiagnostics());
+
+		assertEquals(new TextSpan(0, 1), diagnostic.getSpan());
+		assertEquals("Found unterminated string.", diagnostic.getMessage());
+	}
+
 	/**
 	 * SyntaxTuple - holds basic information about a token required to test
 	 * Saves the hassle of passing values separately or constructing a token
@@ -64,6 +85,7 @@ class LexerTest {
 				|| (aKind == SyntaxKind.AmpersandToken && bKind == SyntaxKind.AmpersandAmpersandToken)
 				|| (aKind == SyntaxKind.PipeToken && bKind == SyntaxKind.PipeToken)
 				|| (aKind == SyntaxKind.PipeToken && bKind == SyntaxKind.PipePipeToken)
+				|| (aKind == SyntaxKind.StringToken && bKind == SyntaxKind.StringToken)
 				|| (aIsEquals && bIsEquals);
 	}	
 	
