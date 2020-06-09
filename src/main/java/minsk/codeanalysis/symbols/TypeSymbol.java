@@ -5,6 +5,7 @@ public class TypeSymbol extends AbstractSymbol {
 	public static final TypeSymbol Bool = new TypeSymbol("bool");
 	public static final TypeSymbol Int = new TypeSymbol("int");
 	public static final TypeSymbol String = new TypeSymbol("string");
+	public static final TypeSymbol Error = new TypeSymbol("?");
 	
 	private TypeSymbol(String name) {
 		super(name);

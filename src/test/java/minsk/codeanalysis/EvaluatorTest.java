@@ -184,7 +184,7 @@ class EvaluatorTest {
 		var actualSpans = Diagnosable.asList(result, Diagnostic::getSpan);
 		var actualMessages = Diagnosable.asList(result, Diagnostic::getMessage);
 		
-		assertEquals(expectedSpans, actualSpans);
+		assertEquals(expectedSpans, actualSpans, String.join("\n", actualMessages));
 		assertEquals(Arrays.asList(expectedMessages), actualMessages);
 	}
 }

@@ -17,5 +17,5 @@ public enum BoundNodeKind {
 	LiteralExpression, 
 	BinaryExpression, 
 	VariableExpression, 
-	AssignmentExpression,
+	AssignmentExpression, ErrorExpression,
 }

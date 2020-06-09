@@ -144,7 +144,8 @@ public class Binder implements Diagnosable {
 	public BoundExpression bindExpression(ExpressionSyntax syntax, TypeSymbol targetType) {
 		var bound = bindExpression(syntax);
 		
-		if (bound.getType() != targetType) {
+		// If an error type is present, the error has already been reported
+		if (!bound.getType().equals(TypeSymbol.Error) && !targetType.equals(TypeSymbol.Error) && !bound.getType().equals(targetType)) {
 			diagnostics.reportCannotConvert(syntax.getSpan(), bound.getType(), targetType);
 		}
 		
@@ -168,14 +169,14 @@ public class Binder implements Diagnosable {
 		
 		// Error already reported during parsing, just fall through
 		if (name == null) {
-			return new BoundLiteralExpression(0);
+			return new BoundErrorExpression();
 		}
 		
 		var variable = scope.lookup(name);
 		
 		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
-			return new BoundLiteralExpression(0);
+			return new BoundErrorExpression();
 		}
 		
 		return new BoundVariableExpression(variable);
@@ -214,11 +215,16 @@ public class Binder implements Diagnosable {
 
 	private BoundExpression bindUnaryExpression(UnaryExpressionSyntax syntax) {
 		var boundOperand = bindExpression(syntax.getOperand());
+		
+		if (boundOperand.getType().equals(TypeSymbol.Error)) {
+			return new BoundErrorExpression();
+		}
+		
 		var boundOperator = BoundUnaryOperator.bind(syntax.getOperatorToken().getKind(), boundOperand.getType());
 
 		if (boundOperator == null) {
 			diagnostics.reportUndefinedUnaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundOperand.getType());
-			return boundOperand;
+			return new BoundErrorExpression();
 		}
 
 		return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -227,11 +233,16 @@ public class Binder implements Diagnosable {
 	private BoundExpression bindBinaryExpression(BinaryExpressionSyntax syntax) {
 		var boundLeft = bindExpression(syntax.getLeft());
 		var boundRight = bindExpression(syntax.getRight());
+		
+		if (boundRight.getType().equals(TypeSymbol.Error) || boundLeft.getType().equals(TypeSymbol.Error)) {
+			return new BoundErrorExpression();
+		}
+		
 		var boundOperator = BoundBinaryOperator.bind(syntax.getOperatorToken().getKind(), boundLeft.getType(), boundRight.getType());
 
 		if (boundOperator == null) {
 			diagnostics.reportUndefinedBinaryOperator(syntax.getOperatorToken().getSpan(), syntax.getOperatorToken().getText(), boundLeft.getType(), boundRight.getType());
-			return boundLeft;
+			return new BoundErrorExpression();
 		}
 
 		return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);

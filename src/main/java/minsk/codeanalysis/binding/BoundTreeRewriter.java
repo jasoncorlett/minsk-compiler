@@ -116,6 +116,7 @@ public abstract class BoundTreeRewriter {
 		case LiteralExpression -> rewriteLiteralExpression((BoundLiteralExpression) node);
 		case UnaryExpression -> rewriteUnaryExpression((BoundUnaryExpression) node);
 		case VariableExpression -> rewriteVariableExpression((BoundVariableExpression) node);
+		case ErrorExpression -> rewriteErrorExpression((BoundErrorExpression) node);
 		default -> throw new IllegalArgumentException("Unexpected expression: " + node);
 		};
 	}
@@ -157,6 +158,10 @@ public abstract class BoundTreeRewriter {
 	}
 
 	protected BoundExpression rewriteVariableExpression(BoundVariableExpression node) {
+		return node;
+	}
+	
+	protected BoundExpression rewriteErrorExpression(BoundErrorExpression node) {
 		return node;
 	}
 }
