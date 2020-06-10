@@ -37,6 +37,7 @@ public enum SyntaxKind {
 	@Fixed("{") OpenBraceToken,
 	@Fixed("}") CloseBraceToken,
 	StringToken,
+	@Fixed(",") CommaToken,
 
 	// Keywords
 	@Fixed("true") TrueKeyword,
@@ -65,6 +66,7 @@ public enum SyntaxKind {
 	ParenthesizedExpression,
 	NameExpression, 
 	AssignmentExpression,
+	CallExpression,
 
 	// Special nodes
 	CompilationUnit,

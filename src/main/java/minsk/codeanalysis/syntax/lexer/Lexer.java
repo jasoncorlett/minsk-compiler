@@ -81,6 +81,10 @@ public class Lexer implements Diagnosable {
 			kind = SyntaxKind.CaretToken;
 			position++;
 			break;
+		case ',':
+			kind = SyntaxKind.CommaToken;
+			position++;
+			break;
 		case '!':
 			position++;
 			if (current() == '=') {

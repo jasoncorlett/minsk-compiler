@@ -233,7 +233,7 @@ public class Parser implements Diagnosable {
 			
 		case IdentifierToken:
 		default:
-			return parseNameExpression();
+			return parseNameOrCallExpression();
 		}
 	}
 
@@ -252,6 +252,41 @@ public class Parser implements Diagnosable {
 		return new LiteralExpressionSyntax(keywordToken, isTrue);
 	}
 
+	private ExpressionSyntax parseNameOrCallExpression() {
+		if (current().getKind() == SyntaxKind.IdentifierToken && lookahead().getKind() == SyntaxKind.OpenParenthesisToken) {
+			return parseCallExpression();
+		}
+		
+		return parseNameExpression();
+	}
+	
+	private ExpressionSyntax parseCallExpression() {
+		var identifier = matchToken(SyntaxKind.IdentifierToken);
+		var openParenthesisToken = matchToken(SyntaxKind.OpenParenthesisToken);
+		var arguments = parseArguments();
+		var closeParenthesisToken = matchToken(SyntaxKind.CloseParenthesisToken);
+		
+		return new CallExpressionSyntax(identifier, openParenthesisToken, arguments, closeParenthesisToken);
+	}
+
+	private SeparatedSyntaxList<ExpressionSyntax> parseArguments() {
+		var nodesAndSeparators = new ArrayList<ExpressionSyntax>();
+		
+		while (current().getKind() != SyntaxKind.CloseParenthesisToken && current().getKind() != SyntaxKind.EndOfFileToken) {
+			var expression = parseExpression();
+			nodesAndSeparators.add(expression);
+			
+			if (current().getKind() != SyntaxKind.CloseParenthesisToken) {
+				var comma = matchToken(SyntaxKind.CommaToken);
+				nodesAndSeparators.add(comma);
+			}
+			
+		}
+			
+		
+		return new SeparatedSyntaxList<>(nodesAndSeparators);
+	}
+	
 	private ExpressionSyntax parseNameExpression() {
 		var identifierToken = matchToken(SyntaxKind.IdentifierToken);
 		return new NameExpressionSyntax(identifierToken);
