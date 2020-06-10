@@ -1,5 +1,6 @@
 package minsk.codeanalysis.binding;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public abstract class BoundTreeRewriter {
@@ -117,8 +118,31 @@ public abstract class BoundTreeRewriter {
 		case UnaryExpression -> rewriteUnaryExpression((BoundUnaryExpression) node);
 		case VariableExpression -> rewriteVariableExpression((BoundVariableExpression) node);
 		case ErrorExpression -> rewriteErrorExpression((BoundErrorExpression) node);
+		case CallExpression -> rewriteCallExpression((BoundCallExpression) node);
 		default -> throw new IllegalArgumentException("Unexpected expression: " + node);
 		};
+	}
+
+	// TODO: Avoid creating list if arguments do not change
+	protected BoundExpression rewriteCallExpression(BoundCallExpression node) {
+		var arguments = new ArrayList<BoundExpression>();
+		var changed = false;
+
+		for (var oldArgument : node.getArguments()) {
+			var newArgument = rewriteExpression(oldArgument);
+
+			arguments.add(newArgument);
+
+			if (!oldArgument.equals(newArgument)) {
+				changed = true;
+			}
+		}
+
+		if (!changed) {
+			return node;
+		}
+
+		return new BoundCallExpression(node.getFunction(), arguments);
 	}
 
 	protected BoundExpression rewriteAssignmentExpression(BoundAssignmentExpression node) {

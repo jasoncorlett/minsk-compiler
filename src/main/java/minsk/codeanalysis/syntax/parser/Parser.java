@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.Lexer;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.text.SourceText;
@@ -270,7 +271,7 @@ public class Parser implements Diagnosable {
 	}
 
 	private SeparatedSyntaxList<ExpressionSyntax> parseArguments() {
-		var nodesAndSeparators = new ArrayList<ExpressionSyntax>();
+		var nodesAndSeparators = new ArrayList<SyntaxNode>();
 		
 		while (current().getKind() != SyntaxKind.CloseParenthesisToken && current().getKind() != SyntaxKind.EndOfFileToken) {
 			var expression = parseExpression();
@@ -279,11 +280,9 @@ public class Parser implements Diagnosable {
 			if (current().getKind() != SyntaxKind.CloseParenthesisToken) {
 				var comma = matchToken(SyntaxKind.CommaToken);
 				nodesAndSeparators.add(comma);
-			}
-			
+			}			
 		}
 			
-		
 		return new SeparatedSyntaxList<>(nodesAndSeparators);
 	}
 	

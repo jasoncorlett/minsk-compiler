@@ -79,4 +79,20 @@ public class DiagnosticsCollection implements Iterable<Diagnostic> {
 	public void reportUnterminatedString(TextSpan span) {
 		report(span, "Found unterminated string.");
 	}
+
+	public void reportExpressionMustHaveValue(TextSpan span) {
+		report(span, "Expression must return value.");
+	}
+
+	public void reportUndefinedFunction(TextSpan span, String name) {
+		report(span, "Function '%s' is undefined", name);
+	}
+
+	public void reportWrongArgumentCount(TextSpan span, String function, int expected, int actual) {
+		report(span, "Function '%s' requires %d arguments, got %d.", function, expected, actual);
+	}
+
+	public void reportWrongArgumentType(TextSpan span, String name, TypeSymbol expected, TypeSymbol actual) {
+		report(span, "Argument '%s' must be of type '%s', got '%s'.", name, expected, actual);
+	}
 }

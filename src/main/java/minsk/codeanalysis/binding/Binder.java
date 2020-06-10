@@ -1,8 +1,11 @@
 package minsk.codeanalysis.binding;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import minsk.codeanalysis.symbols.BuiltinFunctions;
 import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
@@ -10,6 +13,7 @@ import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 import minsk.codeanalysis.syntax.parser.AssignmentExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
+import minsk.codeanalysis.syntax.parser.CallExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
@@ -143,7 +147,22 @@ public class Binder implements Diagnosable {
 		return bound;
 	}
 
+	public BoundExpression bindExpression(ExpressionSyntax syntax, boolean canBeVoid) {
+		var expression = bindExpressionInternal(syntax);
+
+		if (!canBeVoid && expression.getType().equals(TypeSymbol.Void)) {
+			diagnostics.reportExpressionMustHaveValue(syntax.getSpan());
+			return new BoundErrorExpression();
+		}
+
+		return expression;
+	}
+
 	public BoundExpression bindExpression(ExpressionSyntax syntax) {
+		return bindExpression(syntax, false);
+	}
+
+	public BoundExpression bindExpressionInternal(ExpressionSyntax syntax) {
 		return switch (syntax.getKind()) {
 			case ParenthesizedExpression -> bindParenthesizedExpression(((ParenthesizedExpressionSyntax)syntax));
 			case LiteralExpression -> bindLiteralExpression((LiteralExpressionSyntax) syntax);
@@ -151,8 +170,45 @@ public class Binder implements Diagnosable {
 			case AssignmentExpression -> bindAssignmentExpression((AssignmentExpressionSyntax)syntax);
 			case UnaryExpression -> bindUnaryExpression((UnaryExpressionSyntax) syntax);
 			case BinaryExpression -> bindBinaryExpression((BinaryExpressionSyntax) syntax);
+			case CallExpression -> bindCallExpression((CallExpressionSyntax) syntax);
 			default -> throw new RuntimeException("Unexpected syntax " + syntax.getKind());
 		};
+	}
+
+	private BoundExpression bindCallExpression(CallExpressionSyntax syntax) {
+		var boundArguments = new ArrayList<BoundExpression>();
+
+		for (var argument : syntax.getArguments()) {
+			boundArguments.add(bindExpression(argument));
+		}
+
+		var functions = BuiltinFunctions.getAll();
+
+		var maybeFunction = functions.stream().filter(f -> f.getName().equals(syntax.getIdentifier().getText())).findFirst();
+
+		if (maybeFunction.isEmpty()) {
+			diagnostics.reportUndefinedFunction(syntax.getSpan(), syntax.getIdentifier().getText());
+			return new BoundErrorExpression();
+		}
+
+		var function = maybeFunction.get();
+
+		if (function.getArguments().size() != boundArguments.size()) {
+			diagnostics.reportWrongArgumentCount(syntax.getSpan(), function.getName(), function.getArguments().size(), boundArguments.size());
+			return new BoundErrorExpression();
+		}
+
+		for (var i = 0; i < boundArguments.size(); i++) {
+			var expected = function.getArguments().get(i);
+			var actual = boundArguments.get(i);
+
+			if (!expected.getType().equals(actual.getType())) {
+				diagnostics.reportWrongArgumentType(syntax.getSpan(), expected.getName(), expected.getType(), actual.getType());
+				return new BoundErrorExpression();
+			}
+		}
+
+		return new BoundCallExpression(function, boundArguments);
 	}
 
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {

@@ -14,7 +14,7 @@ import minsk.diagnostics.Diagnosable;
 public class MinskRepl extends Repl {
 
     public MinskRepl(InputStream in, PrintStream out, PrintStream err, boolean isInteractive) {
-        super(in, out, err, isInteractive);
+        super(out, err, isInteractive);
     }
 
     private boolean showTree = false;

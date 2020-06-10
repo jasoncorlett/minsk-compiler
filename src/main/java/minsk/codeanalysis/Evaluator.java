@@ -2,10 +2,13 @@ package minsk.codeanalysis;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
+import minsk.IOHelper;
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
 import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
+import minsk.codeanalysis.binding.BoundCallExpression;
 import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
@@ -16,6 +19,7 @@ import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundUnaryExpression;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
+import minsk.codeanalysis.symbols.BuiltinFunctions;
 import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxTree;
@@ -104,19 +108,29 @@ public class Evaluator  {
 	}
 
 	public Object evaluateExpression(BoundExpression expr) {
-		switch (expr.getKind()) {
-		case LiteralExpression:
-			return evaluateLiteralExpression((BoundLiteralExpression) expr);
-		case VariableExpression:
-			return evaluateVariableExpression((BoundVariableExpression) expr);
-		case AssignmentExpression:
-			return evaluateAssignmentExpression((BoundAssignmentExpression) expr);
-		case UnaryExpression:
-			return evaluateUnaryExpression((BoundUnaryExpression) expr);
-		case BinaryExpression:
-			return evaluateBinaryExpression((BoundBinaryExpression) expr);
-		default:
-			throw new RuntimeException("Invalid syntax node: " + expr.getKind());
+		return switch (expr.getKind()) {
+			case LiteralExpression -> evaluateLiteralExpression((BoundLiteralExpression) expr);
+			case VariableExpression -> evaluateVariableExpression((BoundVariableExpression) expr);
+			case AssignmentExpression -> evaluateAssignmentExpression((BoundAssignmentExpression) expr);
+			case UnaryExpression -> evaluateUnaryExpression((BoundUnaryExpression) expr);
+			case BinaryExpression -> evaluateBinaryExpression((BoundBinaryExpression) expr);
+			case CallExpression ->  evaluateCallExpression((BoundCallExpression) expr);
+			default -> throw new RuntimeException("Invalid syntax node: " + expr.getKind());
+		};
+	}
+
+	private Object evaluateCallExpression(BoundCallExpression expr) {
+		if (expr.getFunction().equals(BuiltinFunctions.input)) {
+			return IOHelper.readLine();
+		}
+		else if (expr.getFunction().equals(BuiltinFunctions.print)) {
+			var message = evaluateExpression(expr.getArguments().get(0));
+
+			System.out.println(message);
+			return null;
+		}
+		else {
+			throw new RuntimeException("Impossible function '%s'".formatted(expr.getFunction()));
 		}
 	}
 

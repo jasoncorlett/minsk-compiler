@@ -7,32 +7,34 @@ import java.util.List;
 import minsk.codeanalysis.syntax.SyntaxNode;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
 
-public class SeparatedSyntaxList<T extends SyntaxNode> extends AbstractSeparatedSyntaxList implements Iterable<T> {
+public class SeparatedSyntaxList<E extends SyntaxNode> extends AbstractSeparatedSyntaxList implements Iterable<E> {
 
 	private final List<SyntaxNode> nodesAndSeparators;
-	
+
 	public SeparatedSyntaxList(List<SyntaxNode> nodesAndSeparators) {
 		this.nodesAndSeparators = nodesAndSeparators;
 	}
 
 	public int count() {
-		return (nodesAndSeparators.size() + 1)/ 2;
+		return (nodesAndSeparators.size() + 1) / 2;
 	}
 
-	public T get(int index) {
-		var element = nodesAndSeparators.get(index * 2);
-		
-		if (element instanceof T t) {
-			return t;
-		}
-		
-		return null;
+	/**
+	 * @see java.util.ArrayList.elementData
+	 */
+	@SuppressWarnings("unchecked")
+	private E getImpl(int index) {
+		return (E) nodesAndSeparators.get(index);
 	}
-	
+
+	public E get(int index) {
+		return getImpl(index * 2);
+	}
+
 	public SyntaxToken getSeparator(int index) {
 		if (index == count() - 1)
 			return null;
-		
+
 		return (SyntaxToken) nodesAndSeparators.get(index * 2 + 1);
 	}
 
@@ -42,11 +44,13 @@ public class SeparatedSyntaxList<T extends SyntaxNode> extends AbstractSeparated
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		var result = new ArrayList<T>();
-		for (int i = 0; i < count(); i++) {
+	public Iterator<E> iterator() {
+		var result = new ArrayList<E>();
+		
+		for (var i = 0; i < count(); i++) {
 			result.add(get(i));
 		}
+
 		return result.iterator();
 	}
 }

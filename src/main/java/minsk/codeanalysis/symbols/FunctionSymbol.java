@@ -4,11 +4,13 @@ import java.util.List;
 
 public class FunctionSymbol extends AbstractSymbol {
 
-	private final List<ParameterSymbol> parameters;
-	
-	public FunctionSymbol(String name, List<ParameterSymbol> parameters, TypeSymbol type) {
+	private final List<ParameterSymbol> arguments;
+	private final TypeSymbol type;
+
+	public FunctionSymbol(String name, List<ParameterSymbol> arguments, TypeSymbol type) {
 		super(name);
-		this.parameters = parameters;
+		this.arguments = arguments;
+		this.type = type;
 	}
 
 	@Override
@@ -16,8 +18,11 @@ public class FunctionSymbol extends AbstractSymbol {
 		return SymbolKind.Function;
 	}
 
-	public List<ParameterSymbol> getParameters() {
-		return parameters;
+	public List<ParameterSymbol> getArguments() {
+		return arguments;
 	}
 
+	public TypeSymbol getType() {
+		return type;
+	}
 }

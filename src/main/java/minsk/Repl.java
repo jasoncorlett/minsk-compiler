@@ -9,18 +9,15 @@ import java.util.Scanner;
 
 public abstract class Repl {
 
-    private final InputStream in;
     private final PrintStream out;
     private final PrintStream err;
 
     protected final boolean isInteractive;
 
     private final List<String> document = new ArrayList<>();
-    private Scanner scanner;
     private boolean done = false;
 
-    public Repl(InputStream in, PrintStream out, PrintStream err, boolean isInteractive) {
-        this.in = in;
+    public Repl(PrintStream out, PrintStream err, boolean isInteractive) {
         this.out = out;
         this.err = err;
         this.isInteractive = isInteractive;
@@ -38,7 +35,7 @@ public abstract class Repl {
                 print(isFirstLine ? "> " : "| ");
             }
 
-            var line = getLine();
+            var line = IOHelper.readLine();
 
             if (line == null) {
                 done = true;
@@ -57,10 +54,6 @@ public abstract class Repl {
                     document.clear();
                 }
             }
-        }
-
-        if (scanner != null) {
-            scanner.close();
         }
     }
 
@@ -92,18 +85,5 @@ public abstract class Repl {
     protected void errorf(String fmt, Object ...args) {
         err.printf(fmt, args);
         err.flush();
-    }
-
-    private String getLine() {
-        if (scanner == null) {
-            scanner = new Scanner(in);
-        }
-
-        try {
-            return scanner.nextLine();
-        } catch (NoSuchElementException e) {
-        }
-
-        return null;
     }
 }

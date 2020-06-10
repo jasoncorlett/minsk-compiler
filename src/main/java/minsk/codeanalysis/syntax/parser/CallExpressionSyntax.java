@@ -1,7 +1,5 @@
 package minsk.codeanalysis.syntax.parser;
 
-import java.util.List;
-
 import minsk.codeanalysis.Nested;
 import minsk.codeanalysis.syntax.SyntaxKind;
 import minsk.codeanalysis.syntax.lexer.SyntaxToken;
