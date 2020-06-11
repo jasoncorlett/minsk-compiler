@@ -2,6 +2,7 @@ package minsk.codeanalysis.binding;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -118,15 +119,25 @@ public class Binder implements Diagnosable {
 			previous = previous.getPrevious();
 		}
 		
-		BoundScope parent = null;
+		var parent = createRootScope();
 		
 		while (!stack.isEmpty()) {
 			var scope = new BoundScope(parent);
-			stack.pop().getVariables().forEach(scope::declare);
+			stack.pop().getVariables().forEach(scope::declareVariable);
 			parent = scope;
 		}
 		
 		return parent;
+	}
+	
+	private static BoundScope createRootScope() {
+		var result = new BoundScope(null);
+
+		for (var fn : BuiltinFunctions.getAll()) {
+			result.declareFunction(fn);
+		}
+		
+		return result;
 	}
 
 	private final DiagnosticsCollection diagnostics = new DiagnosticsCollection();
@@ -176,22 +187,19 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundExpression bindCallExpression(CallExpressionSyntax syntax) {
+		var name = syntax.getIdentifier().getText();
 		var boundArguments = new ArrayList<BoundExpression>();
 
 		for (var argument : syntax.getArguments()) {
 			boundArguments.add(bindExpression(argument));
 		}
 
-		var functions = BuiltinFunctions.getAll();
-
-		var maybeFunction = functions.stream().filter(f -> f.getName().equals(syntax.getIdentifier().getText())).findFirst();
-
-		if (maybeFunction.isEmpty()) {
+		var function = scope.lookupFunction(name); 
+		
+		if (function == null) {
 			diagnostics.reportUndefinedFunction(syntax.getSpan(), syntax.getIdentifier().getText());
 			return new BoundErrorExpression();
 		}
-
-		var function = maybeFunction.get();
 
 		if (function.getArguments().size() != boundArguments.size()) {
 			diagnostics.reportWrongArgumentCount(syntax.getSpan(), function.getName(), function.getArguments().size(), boundArguments.size());
@@ -219,7 +227,7 @@ public class Binder implements Diagnosable {
 			return new BoundErrorExpression();
 		}
 		
-		var variable = scope.lookup(name);
+		var variable = scope.lookupVariable(name);
 		
 		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
@@ -233,7 +241,7 @@ public class Binder implements Diagnosable {
 		var name = syntax.getIdentifierToken().getText();
 		var boundExpression = bindExpression(syntax.getExpression());
 		
-		VariableSymbol variable = scope.lookup(name);
+		VariableSymbol variable = scope.lookupVariable(name);
 		
 		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
@@ -309,7 +317,7 @@ public class Binder implements Diagnosable {
 		var declare = !identifier.isMissing();
 		var variable = new VariableSymbol(name, isReadOnly, type);
 		
-		if (declare && !scope.declare(variable)) {
+		if (declare && !scope.declareVariable(variable)) {
 			diagnostics.reportVariableAlreadyDeclared(identifier.getSpan(), name);
 		}
 		

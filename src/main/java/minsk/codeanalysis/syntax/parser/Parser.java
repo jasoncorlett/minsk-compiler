@@ -282,7 +282,7 @@ public class Parser implements Diagnosable {
 				nodesAndSeparators.add(comma);
 			}			
 		}
-			
+
 		return new SeparatedSyntaxList<>(nodesAndSeparators);
 	}
 	
