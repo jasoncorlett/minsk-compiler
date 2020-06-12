@@ -2,8 +2,6 @@ package minsk.codeanalysis.binding;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import minsk.codeanalysis.symbols.BuiltinFunctions;
@@ -107,7 +105,7 @@ public class Binder implements Diagnosable {
 	}
 	
 	private BoundExpressionStatement bindExpressionStatement(ExpressionStatementSyntax syntax) {
-		var expression = bindExpression(syntax.getExpression());
+		var expression = bindExpression(syntax.getExpression(), true);
 		return new BoundExpressionStatement(expression);
 	}
 
