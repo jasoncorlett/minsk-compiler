@@ -78,21 +78,16 @@ public class Parser implements Diagnosable {
 	}
 	
 	private StatementSyntax parseStatement() {
-		switch (current().getKind()) {
-		case OpenBraceToken:
-			return parseBlockStatement();
-		case LetKeyword:
-		case VarKeyword:
-			return parseVariableDeclaration();
-		case IfKeyword:
-			return parseIfStatement();
-		case WhileKeyword:
-			return parseWhileStatement();
-		case ForKeyword:
-			return parseForStatement();
-		default:
-			return parseExpressionStatement();
-		}
+		return switch (current().getKind()) {
+			case OpenBraceToken -> parseBlockStatement();
+			case LetKeyword, VarKeyword -> parseVariableDeclaration();
+			case IfKeyword -> parseIfStatement();
+			case WhileKeyword -> parseWhileStatement();
+			case UntilKeyword -> parseUntilStatement();
+			case ForKeyword -> parseForStatement();
+			case DoKeyword -> parseDoStatement();
+			default -> parseExpressionStatement();
+		};
 	}
 
 	private BlockStatementSyntax parseBlockStatement() {
@@ -165,6 +160,24 @@ public class Parser implements Diagnosable {
 		return new WhileStatementSyntax(whileKeyword, condition, body);
 	}
 	
+	private DoStatementSyntax parseDoStatement() {
+		var doKeyword = matchToken(SyntaxKind.DoKeyword);
+		var body = parseStatement();
+		var loopKeyword = current().getKind() == SyntaxKind.WhileKeyword ? matchToken(SyntaxKind.WhileKeyword)
+			: matchToken(SyntaxKind.UntilKeyword);
+		var condition = parseExpression();
+
+		return new DoStatementSyntax(doKeyword, body, loopKeyword, condition);
+	}
+
+	private UntilStatementSyntax parseUntilStatement() {
+		var untilKeyword = matchToken(SyntaxKind.UntilKeyword);
+		var condition = parseExpression();
+		var body = parseStatement();
+
+		return new UntilStatementSyntax(untilKeyword, condition, body);
+	}
+
 	private ExpressionStatementSyntax parseExpressionStatement() {
 		return new ExpressionStatementSyntax(parseExpression());
 	}

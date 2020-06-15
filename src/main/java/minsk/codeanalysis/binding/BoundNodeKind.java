@@ -11,7 +11,9 @@ public enum BoundNodeKind {
 	LabelStatement,
 	GotoStatement,
 	ConditionalGotoStatement,
-	
+	DoStatement,
+	UntilStatement,
+
 	// Expressions
 	UnaryExpression,
 	LiteralExpression, 

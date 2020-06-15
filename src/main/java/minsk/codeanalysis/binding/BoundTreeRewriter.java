@@ -11,6 +11,8 @@ public abstract class BoundTreeRewriter {
 			case VariableDeclaration 	-> rewriteVariableDeclaration((BoundVariableDeclaration) node);
 			case IfStatement 			-> rewriteIfStatement((BoundIfStatement) node);
 			case WhileStatement 		-> rewriteWhileStatement((BoundWhileStatement) node);
+			case DoStatement 			-> rewriteDoStatement((BoundDoStatement) node);
+			case UntilStatement			-> rewriteUntilStatement((BoundUntilStatement) node);
 			case ForStatement 			-> rewriteForStatement((BoundForStatement) node);
 			case LabelStatement			-> rewriteLabelStatement((BoundLabelStatement) node);
 			case GotoStatement			-> rewriteGotoStatement((BoundGotoStatement) node);
@@ -80,6 +82,28 @@ public abstract class BoundTreeRewriter {
 		}
 		
 		return new BoundForStatement(node.getVariable(), lowerBound, upperBound, body);
+	}
+
+	protected BoundStatement rewriteDoStatement(BoundDoStatement node) {
+		var condition = rewriteExpression(node.getCondition());
+		var body = rewriteStatement(node.getBody());
+
+		if (condition.equals(node.getCondition()) && body.equals(node.getBody())) {
+			return node;
+		}
+
+		return new BoundDoStatement(body, node.isContinueWhen(), condition);
+	}
+
+	protected BoundStatement rewriteUntilStatement(BoundUntilStatement node) {
+		var condition = rewriteExpression(node.getCondition());
+		var body = rewriteStatement(node.getBody());
+
+		if (condition.equals(node.getCondition()) && body.equals(node.getBody())) {
+			return node;
+		}
+
+		return new BoundUntilStatement(condition, body);
 	}
 	
 	protected BoundStatement rewriteLabelStatement(BoundLabelStatement node) {
@@ -165,7 +189,6 @@ public abstract class BoundTreeRewriter {
 		
 		return new BoundBinaryExpression(left, node.getOperator(), right);
 	}
-
 
 	protected BoundExpression rewriteLiteralExpression(BoundLiteralExpression node) {
 		return node;

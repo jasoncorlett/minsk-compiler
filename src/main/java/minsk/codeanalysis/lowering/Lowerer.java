@@ -8,6 +8,7 @@ import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBinaryOperator;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
+import minsk.codeanalysis.binding.BoundDoStatement;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundForStatement;
 import minsk.codeanalysis.binding.BoundGotoStatement;
@@ -17,12 +18,16 @@ import minsk.codeanalysis.binding.BoundLabelStatement;
 import minsk.codeanalysis.binding.BoundLiteralExpression;
 import minsk.codeanalysis.binding.BoundStatement;
 import minsk.codeanalysis.binding.BoundTreeRewriter;
+import minsk.codeanalysis.binding.BoundUnaryExpression;
+import minsk.codeanalysis.binding.BoundUnaryOperator;
+import minsk.codeanalysis.binding.BoundUntilStatement;
 import minsk.codeanalysis.binding.BoundVariableDeclaration;
 import minsk.codeanalysis.binding.BoundVariableExpression;
 import minsk.codeanalysis.binding.BoundWhileStatement;
 import minsk.codeanalysis.symbols.TypeSymbol;
 import minsk.codeanalysis.symbols.VariableSymbol;
 import minsk.codeanalysis.syntax.SyntaxKind;
+import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
 
 public class Lowerer extends BoundTreeRewriter {
 
@@ -146,6 +151,46 @@ public class Lowerer extends BoundTreeRewriter {
 				gotoContinue
 		);
 		
+		return rewriteStatement(result);
+	}
+
+	@Override
+	protected BoundStatement rewriteUntilStatement(BoundUntilStatement node) {
+		// until <expr>
+		//	<body>
+		// ------
+		// while !<expr>
+		//  <body>
+
+		var condition = new BoundUnaryExpression(
+			BoundUnaryOperator.bind(SyntaxKind.BangToken, TypeSymbol.Bool),
+			node.getCondition());
+
+		var result = new BoundWhileStatement(condition, node.getBody());
+
+		return rewriteStatement(result);
+	}
+
+	@Override
+	protected BoundStatement rewriteDoStatement(BoundDoStatement node) {
+		// do <body>
+		// while|until <cond>
+		// ----
+		// start:
+		// <body>
+		// while: gotoTrue <cond> start
+		// until: gotoFalse <cond> end
+
+		var startLabel = generateLabel();
+		var startLabelStatement = new BoundLabelStatement(startLabel);
+		var startLabelGoto = new BoundConditionalGotoStatement(startLabel, node.getCondition(), node.isContinueWhen());
+
+		var result = BoundBlockStatement.of(
+			startLabelStatement,
+			node.getBody(),
+			startLabelGoto
+		);
+
 		return rewriteStatement(result);
 	}
 	

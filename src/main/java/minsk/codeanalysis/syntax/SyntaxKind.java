@@ -49,6 +49,8 @@ public enum SyntaxKind {
 	@Fixed("for") ForKeyword,
 	@Fixed("to") ToKeyword,
 	@Fixed("while") WhileKeyword,
+	@Fixed("do") DoKeyword,
+	@Fixed("until") UntilKeyword,
 
 	// Statements
 	BlockStatement,
@@ -58,6 +60,8 @@ public enum SyntaxKind {
 	IfStatement,
 	WhileStatement,
 	ForStatement,
+	DoStatement,
+	UntilStatement,
 	
 	// Expressions
 	UnaryExpression,

@@ -14,6 +14,7 @@ import minsk.codeanalysis.syntax.parser.BinaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.BlockStatementSyntax;
 import minsk.codeanalysis.syntax.parser.CallExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.CompilationUnitSyntax;
+import minsk.codeanalysis.syntax.parser.DoStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionStatementSyntax;
 import minsk.codeanalysis.syntax.parser.ExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.ForStatementSyntax;
@@ -23,6 +24,7 @@ import minsk.codeanalysis.syntax.parser.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.StatementSyntax;
 import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
+import minsk.codeanalysis.syntax.parser.UntilStatementSyntax;
 import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
 import minsk.codeanalysis.syntax.parser.WhileStatementSyntax;
 import minsk.diagnostics.Diagnosable;
@@ -49,10 +51,27 @@ public class Binder implements Diagnosable {
 			case IfStatement -> bindIfStatement((IfStatementSyntax) syntax);
 			case ForStatement -> bindForStatement((ForStatementSyntax) syntax);
 			case WhileStatement -> bindWhileStatement((WhileStatementSyntax) syntax);
+			case UntilStatement -> bindUntilStatement((UntilStatementSyntax) syntax);
+			case DoStatement -> bindDoStatement((DoStatementSyntax) syntax);
 			case VariableDeclaration -> bindVariableDeclaration((VariableDeclarationSyntax) syntax);
 			case ExpressionStatement -> bindExpressionStatement((ExpressionStatementSyntax) syntax);
 			default -> throw new RuntimeException("Unexpected statement syntax: " + syntax.getKind());
 		};
+	}
+
+	private BoundDoStatement bindDoStatement(DoStatementSyntax syntax) {
+		var body = bindStatement(syntax.getBody());
+		var continueWhen = syntax.getLoopKeyword().getKind() == SyntaxKind.WhileKeyword;
+		var condition = bindExpression(syntax.getCondition());
+
+		return new BoundDoStatement(body, continueWhen, condition);
+	}
+
+	private BoundUntilStatement bindUntilStatement(UntilStatementSyntax syntax) {
+		var condition = bindExpression(syntax.getCondition(), TypeSymbol.Bool);
+		var body = bindStatement(syntax.getBody());
+
+		return new BoundUntilStatement(condition, body);
 	}
 
 	private BoundForStatement bindForStatement(ForStatementSyntax syntax) {
