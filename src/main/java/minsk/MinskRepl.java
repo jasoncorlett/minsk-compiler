@@ -14,7 +14,7 @@ import minsk.diagnostics.Diagnosable;
 public class MinskRepl extends Repl {
 
     public MinskRepl(InputStream in, PrintStream out, PrintStream err, boolean isInteractive) {
-        super(out, err, isInteractive);
+        super(in, out, err, isInteractive);
     }
 
     private boolean showTree = false;
@@ -25,13 +25,13 @@ public class MinskRepl extends Repl {
     private Map<VariableSymbol, Object> variables = new HashMap<>();
 
     @Override
-    protected boolean isCompleteSubmission(String line) {
-        return SyntaxTree.parse(line).getDiagnostics().isEmpty();
+    protected boolean isCompleteSubmission(String text) {
+        return SyntaxTree.parse(text).getDiagnostics().isEmpty();
     }
 
     @Override
-    protected void evaluateSubmission(String line) {
-        var syntaxTree = SyntaxTree.parse(line);
+    protected void evaluateSubmission(String text) {
+        var syntaxTree = SyntaxTree.parse(text);
 
         var compilation = previous == null
                 ? new Compilation(syntaxTree)

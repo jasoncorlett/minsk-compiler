@@ -2,7 +2,7 @@ package minsk.codeanalysis;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+import java.util.Random;
 
 import minsk.IOHelper;
 import minsk.codeanalysis.binding.BoundAssignmentExpression;
@@ -28,6 +28,7 @@ public class Evaluator  {
 	private final BoundBlockStatement root;
 	private final Map<VariableSymbol, Object> variables;
 	private Object lastValue;
+	private Random random;
 	
 	public static EvaluationResult evaluateProgram(String text) {
 		return evaluateProgram(text, null);
@@ -128,6 +129,14 @@ public class Evaluator  {
 
 			System.out.println(message);
 			return null;
+		}
+		else if (expr.getFunction().equals((BuiltinFunctions.rnd))) {
+			if (random == null) {
+				random = new Random();
+			}
+			
+			int max = (int) evaluateExpression(expr.getArguments().get(0));
+			return random.nextInt(max);
 		}
 		else {
 			throw new RuntimeException("Impossible function '%s'".formatted(expr.getFunction()));

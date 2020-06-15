@@ -11,16 +11,21 @@ public abstract class Repl {
 
     private final PrintStream out;
     private final PrintStream err;
-
+    private final InputStream in;
+    private final Scanner sc;
+    
     protected final boolean isInteractive;
 
     private final List<String> document = new ArrayList<>();
     private boolean done = false;
 
-    public Repl(PrintStream out, PrintStream err, boolean isInteractive) {
+    public Repl(InputStream in, PrintStream out, PrintStream err, boolean isInteractive) {
+    	this.in = in;
         this.out = out;
         this.err = err;
         this.isInteractive = isInteractive;
+        
+    	this.sc = new Scanner(in);
     }
 
     public void run() {
@@ -35,13 +40,16 @@ public abstract class Repl {
                 print(isFirstLine ? "> " : "| ");
             }
 
-            var line = IOHelper.readLine();
+            var line = sc != null ? sc.nextLine() : IOHelper.readLine();
 
             if (line == null) {
                 done = true;
             }
             else if (isFirstLine && line.startsWith("#")) {
                 parseMetaCommand(line);
+            }
+            else if (isFirstLine && line.startsWith(">")) {
+            	parseInput(line);
             }
             else {
                 document.add(line);
@@ -56,11 +64,15 @@ public abstract class Repl {
             }
         }
     }
-
+    
     protected abstract boolean isCompleteSubmission(String line);
 
     protected abstract void evaluateSubmission(String line);
 
+    protected void parseInput(String line) {
+    	IOHelper.bufferLine(line.replaceFirst("^>", "").strip());
+    }
+    
     protected void parseMetaCommand(String line) {
         if ("#quit".equals(line)) {
             done = true;
