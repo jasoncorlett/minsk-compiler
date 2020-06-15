@@ -22,4 +22,5 @@ public enum BoundNodeKind {
 	AssignmentExpression,
 	ErrorExpression,
 	CallExpression,
+	ConversionExpression,
 }

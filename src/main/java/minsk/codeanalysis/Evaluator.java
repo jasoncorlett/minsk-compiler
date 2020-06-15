@@ -10,6 +10,7 @@ import minsk.codeanalysis.binding.BoundBinaryExpression;
 import minsk.codeanalysis.binding.BoundBlockStatement;
 import minsk.codeanalysis.binding.BoundCallExpression;
 import minsk.codeanalysis.binding.BoundConditionalGotoStatement;
+import minsk.codeanalysis.binding.BoundConversionExpression;
 import minsk.codeanalysis.binding.BoundExpression;
 import minsk.codeanalysis.binding.BoundExpressionStatement;
 import minsk.codeanalysis.binding.BoundGotoStatement;
@@ -116,8 +117,26 @@ public class Evaluator  {
 			case UnaryExpression -> evaluateUnaryExpression((BoundUnaryExpression) expr);
 			case BinaryExpression -> evaluateBinaryExpression((BoundBinaryExpression) expr);
 			case CallExpression ->  evaluateCallExpression((BoundCallExpression) expr);
+			case ConversionExpression -> evaluateConversionExpression((BoundConversionExpression) expr);
 			default -> throw new RuntimeException("Invalid syntax node: " + expr.getKind());
 		};
+	}
+
+	private Object evaluateConversionExpression(BoundConversionExpression expr) {
+		var value = evaluateExpression(expr.getExpression());
+
+		if (expr.instanceOf(TypeSymbol.String)) {
+			return String.valueOf(value);
+		}
+		else if (expr.instanceOf(TypeSymbol.Int)) {
+			return Integer.valueOf((String) value);
+		}
+		else if (expr.instanceOf(TypeSymbol.Bool)) {
+			return Boolean.valueOf((String) value);
+		}
+		else {
+			throw new RuntimeException("Unexpected type: %s".formatted(expr.getType()));
+		}
 	}
 
 	private Object evaluateCallExpression(BoundCallExpression expr) {
@@ -149,7 +168,7 @@ public class Evaluator  {
 		
 		switch (binaryExpression.getOperator().getKind()) {
 		case Addition:
-			if (binaryExpression.getType() == TypeSymbol.Int) {
+			if (binaryExpression.instanceOf(TypeSymbol.Int)) {
 				return (int) left + (int) right;
 			}
 			else {
@@ -180,21 +199,21 @@ public class Evaluator  {
 		case GreaterEquals:
 			return (int) left >= (int) right;
 		case BitwiseAnd:
-			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
+			if (binaryExpression.instanceOf(TypeSymbol.Int)) {
 				return (int) left & (int) right;
 			}
 			else {
 				return (boolean) left & (boolean) right;
 			}
 		case BitwiseOr:
-			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
+			if (binaryExpression.instanceOf(TypeSymbol.Int)) {
 				return (int) left | (int) right;
 			}
 			else {
 				return (boolean) left | (boolean) right;
 			}
 		case BitwiseXor:
-			if (binaryExpression.getType().equals(TypeSymbol.Int)) {
+			if (binaryExpression.instanceOf(TypeSymbol.Int)) {
 				return (int) left ^ (int) right;
 			}
 			else {

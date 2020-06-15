@@ -205,6 +205,12 @@ public class Binder implements Diagnosable {
 
 	private BoundExpression bindCallExpression(CallExpressionSyntax syntax) {
 		var name = syntax.getIdentifier().getText();
+		var conversionType = syntax.getArguments().count() == 1 ? lookupType(name) : null;
+
+		if (conversionType != null) {
+			return bindConversion(conversionType, syntax.getArguments().get(0));
+		}
+
 		var boundArguments = new ArrayList<BoundExpression>();
 
 		for (var argument : syntax.getArguments()) {
@@ -234,6 +240,18 @@ public class Binder implements Diagnosable {
 		}
 
 		return new BoundCallExpression(function, boundArguments);
+	}
+
+	private BoundExpression bindConversion(TypeSymbol type, ExpressionSyntax syntax) {
+		var expression = bindExpression(syntax);
+		var conversion = Conversion.classify(expression.getType(), type);
+
+		if (!conversion.isExists()) {
+			diagnostics.reportCannotConvert(syntax.getSpan(), expression.getType(), type);
+			return new BoundErrorExpression();
+		}
+
+		return new BoundConversionExpression(type, expression);
 	}
 
 	private BoundExpression bindNameExpression(NameExpressionSyntax syntax) {
@@ -327,6 +345,15 @@ public class Binder implements Diagnosable {
 	
 	public BoundScope getScope() {
 		return scope;
+	}
+
+	private TypeSymbol lookupType(String name) {
+		return switch (name) {
+			case "int" -> TypeSymbol.Int;
+			case "bool" -> TypeSymbol.Bool;
+			case "string" -> TypeSymbol.String;
+			default -> null;
+		};
 	}
 	
 	private VariableSymbol bindVariable(SyntaxToken identifier, boolean isReadOnly, TypeSymbol type) {

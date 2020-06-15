@@ -143,8 +143,19 @@ public abstract class BoundTreeRewriter {
 		case VariableExpression -> rewriteVariableExpression((BoundVariableExpression) node);
 		case ErrorExpression -> rewriteErrorExpression((BoundErrorExpression) node);
 		case CallExpression -> rewriteCallExpression((BoundCallExpression) node);
+		case ConversionExpression -> rewriteConversionExpression((BoundConversionExpression) node);
 		default -> throw new IllegalArgumentException("Unexpected expression: " + node);
 		};
+	}
+
+	private BoundExpression rewriteConversionExpression(BoundConversionExpression node) {
+		var expression = rewriteExpression(node.getExpression());
+
+		if (expression.equals(node.getExpression())) {
+			return node;
+		}
+
+		return new BoundConversionExpression(node.getType(), node.getExpression());
 	}
 
 	// TODO: Avoid creating list if arguments do not change
