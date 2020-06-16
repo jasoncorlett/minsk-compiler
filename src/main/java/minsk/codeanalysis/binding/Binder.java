@@ -165,14 +165,7 @@ public class Binder implements Diagnosable {
 	}
 	
 	public BoundExpression bindExpression(ExpressionSyntax syntax, TypeSymbol targetType) {
-		var bound = bindExpression(syntax);
-		
-		// If an error type is present, the error has already been reported
-		if (!bound.getType().equals(TypeSymbol.Error) && !targetType.equals(TypeSymbol.Error) && !bound.getType().equals(targetType)) {
-			diagnostics.reportCannotConvert(syntax.getSpan(), bound.getType(), targetType);
-		}
-		
-		return bound;
+		return bindConversion(syntax, targetType);
 	}
 
 	public BoundExpression bindExpression(ExpressionSyntax syntax, boolean canBeVoid) {
@@ -208,7 +201,7 @@ public class Binder implements Diagnosable {
 		var conversionType = syntax.getArguments().count() == 1 ? lookupType(name) : null;
 
 		if (conversionType != null) {
-			return bindConversion(conversionType, syntax.getArguments().get(0));
+			return bindConversion(syntax.getArguments().get(0), conversionType);
 		}
 
 		var boundArguments = new ArrayList<BoundExpression>();
@@ -242,13 +235,20 @@ public class Binder implements Diagnosable {
 		return new BoundCallExpression(function, boundArguments);
 	}
 
-	private BoundExpression bindConversion(TypeSymbol type, ExpressionSyntax syntax) {
+	private BoundExpression bindConversion(ExpressionSyntax syntax, TypeSymbol type) {
 		var expression = bindExpression(syntax);
 		var conversion = Conversion.classify(expression.getType(), type);
 
 		if (!conversion.isExists()) {
-			diagnostics.reportCannotConvert(syntax.getSpan(), expression.getType(), type);
+			if (!expression.instanceOf(TypeSymbol.Error) && !type.equals(TypeSymbol.Error)) {
+				diagnostics.reportCannotConvert(syntax.getSpan(), expression.getType(), type);
+			}
+
 			return new BoundErrorExpression();
+		}
+
+		if (conversion.isIdentity()) {
+			return expression;
 		}
 
 		return new BoundConversionExpression(type, expression);
@@ -274,24 +274,20 @@ public class Binder implements Diagnosable {
 	
 	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
-		var boundExpression = bindExpression(syntax.getExpression());
 		
 		VariableSymbol variable = scope.lookupVariable(name);
 		
 		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
-			return boundExpression;
+			return bindExpression(syntax.getExpression());
 		}
 		
 		if (variable.isReadOnly()) {
 			diagnostics.reportCannotAssign(syntax.getEqualsToken().getSpan(), name);
 		}
 
-		if (boundExpression.getType() != variable.getType()) {
-			diagnostics.reportCannotConvert(syntax.getExpression().getSpan(), boundExpression.getType(), variable.getType());
-		}
-		
-		return new BoundAssignmentExpression(variable, boundExpression);
+		var convertedExpression = bindConversion(syntax, variable.getType());
+		return new BoundAssignmentExpression(variable, convertedExpression);
 	}
 
 	private BoundExpression bindParenthesizedExpression(ParenthesizedExpressionSyntax parenthesizedExpressionSyntax) {
