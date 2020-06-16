@@ -27,6 +27,7 @@ import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.UntilStatementSyntax;
 import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
 import minsk.codeanalysis.syntax.parser.WhileStatementSyntax;
+import minsk.codeanalysis.text.TextSpan;
 import minsk.diagnostics.Diagnosable;
 import minsk.diagnostics.DiagnosticsCollection;
 
@@ -237,11 +238,15 @@ public class Binder implements Diagnosable {
 
 	private BoundExpression bindConversion(ExpressionSyntax syntax, TypeSymbol type) {
 		var expression = bindExpression(syntax);
+		return bindConversion(syntax.getSpan(), expression, type);
+	}
+
+	private BoundExpression bindConversion(TextSpan diagnosticSpan, BoundExpression expression, TypeSymbol type) {
 		var conversion = Conversion.classify(expression.getType(), type);
 
 		if (!conversion.isExists()) {
 			if (!expression.instanceOf(TypeSymbol.Error) && !type.equals(TypeSymbol.Error)) {
-				diagnostics.reportCannotConvert(syntax.getSpan(), expression.getType(), type);
+				diagnostics.reportCannotConvert(diagnosticSpan, expression.getType(), type);
 			}
 
 			return new BoundErrorExpression();
@@ -274,19 +279,20 @@ public class Binder implements Diagnosable {
 	
 	private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
 		var name = syntax.getIdentifierToken().getText();
-		
+		var boundExpression = bindExpression(syntax.getExpression());
+
 		VariableSymbol variable = scope.lookupVariable(name);
 		
 		if (variable == null) {
 			diagnostics.reportUndefinedName(syntax.getIdentifierToken().getSpan(), name);
-			return bindExpression(syntax.getExpression());
+			return boundExpression;
 		}
 		
 		if (variable.isReadOnly()) {
 			diagnostics.reportCannotAssign(syntax.getEqualsToken().getSpan(), name);
 		}
 
-		var convertedExpression = bindConversion(syntax, variable.getType());
+		var convertedExpression = bindConversion(syntax.getExpression().getSpan(), boundExpression, variable.getType());
 		return new BoundAssignmentExpression(variable, convertedExpression);
 	}
 
