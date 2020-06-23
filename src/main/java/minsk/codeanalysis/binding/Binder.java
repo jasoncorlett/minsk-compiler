@@ -23,6 +23,7 @@ import minsk.codeanalysis.syntax.parser.LiteralExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.NameExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.ParenthesizedExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.StatementSyntax;
+import minsk.codeanalysis.syntax.parser.TypeClauseSyntax;
 import minsk.codeanalysis.syntax.parser.UnaryExpressionSyntax;
 import minsk.codeanalysis.syntax.parser.UntilStatementSyntax;
 import minsk.codeanalysis.syntax.parser.VariableDeclarationSyntax;
@@ -118,10 +119,28 @@ public class Binder implements Diagnosable {
 
 	private BoundStatement bindVariableDeclaration(VariableDeclarationSyntax syntax) {
 		var isReadOnly = syntax.getKeyword().getKind() == SyntaxKind.LetKeyword;
+		var declaredType = bindTypeClause(syntax.getTypeClause());
 		var initializer = bindExpression(syntax.getInitializer());
+		var variableType = (declaredType != null) ? declaredType : initializer.getType();
 		var variable = bindVariable(syntax.getIdentifier(), isReadOnly, initializer.getType());
-		
-		return new BoundVariableDeclaration(variable, initializer);
+		var convertedInitializer = bindConversion(syntax.getInitializer().getSpan(), initializer, variableType, false);
+
+		return new BoundVariableDeclaration(variable, convertedInitializer);
+	}
+
+	private TypeSymbol bindTypeClause(TypeClauseSyntax syntax) {
+		if (syntax == null) {
+			return null;
+		}
+
+		var identifier = syntax.getIdentifierToken();
+		var type = lookupType(identifier.getText());
+
+		if (type == null) {
+			diagnostics.reportUndefinedType(identifier.getSpan(), identifier.getText());
+		}
+
+		return type;
 	}
 	
 	private BoundExpressionStatement bindExpressionStatement(ExpressionStatementSyntax syntax) {
@@ -237,11 +256,19 @@ public class Binder implements Diagnosable {
 	}
 
 	private BoundExpression bindConversion(ExpressionSyntax syntax, TypeSymbol type) {
+		return bindConversion(syntax, type, false);
+	}
+
+	private BoundExpression bindConversion(ExpressionSyntax syntax, TypeSymbol type, boolean allowImplicit) {
 		var expression = bindExpression(syntax);
-		return bindConversion(syntax.getSpan(), expression, type);
+		return bindConversion(syntax.getSpan(), expression, type, allowImplicit);
 	}
 
 	private BoundExpression bindConversion(TextSpan diagnosticSpan, BoundExpression expression, TypeSymbol type) {
+		return bindConversion(diagnosticSpan, expression, type, false);
+	}
+	
+	private BoundExpression bindConversion(TextSpan diagnosticSpan, BoundExpression expression, TypeSymbol type, boolean allowExplicit) {
 		var conversion = Conversion.classify(expression.getType(), type);
 
 		if (!conversion.isExists()) {
@@ -255,6 +282,11 @@ public class Binder implements Diagnosable {
 		if (conversion.isIdentity()) {
 			return expression;
 		}
+
+		// TODO: We might want to disallow implicit conversions sometimes		
+		// if (!allowExplicit && conversion.isExplicit()) {
+		// 	diagnostics.reportCannotConvertImplicitly(diagnosticSpan, expression.getType(), type);
+		// }
 
 		return new BoundConversionExpression(type, expression);
 	}

@@ -39,7 +39,6 @@ public class Conversion {
 			return Identity;
 		}
 		
-		
 		if ((from.equals(TypeSymbol.Bool) || from.equals(TypeSymbol.Int)) 
 				&& to.equals(TypeSymbol.String)) {
 			return Explicit;
@@ -49,7 +48,6 @@ public class Conversion {
 				(to.equals(TypeSymbol.Bool) || to.equals(TypeSymbol.Int))) {
 			return Explicit;
 		}
-		
 		
 		return None;
 	}

@@ -95,4 +95,12 @@ public class DiagnosticsCollection implements Iterable<Diagnostic> {
 	public void reportWrongArgumentType(TextSpan span, String name, TypeSymbol expected, TypeSymbol actual) {
 		report(span, "Argument '%s' must be of type '%s', got '%s'.", name, expected, actual);
 	}
+
+	public void reportUndefinedType(TextSpan span, String typeName) {
+		report(span, "Type '%s' is undefined.", typeName);
+	}
+
+	public void reportCannotConvertImplicitly(TextSpan span, TypeSymbol expected, TypeSymbol actual) {
+		report(span, "Cannot implicitly convert from '%s' to '%s'. Try casting instead.", actual, expected);
+	}
 }

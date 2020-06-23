@@ -38,6 +38,7 @@ public enum SyntaxKind {
 	@Fixed("}") CloseBraceToken,
 	StringToken,
 	@Fixed(",") CommaToken,
+	@Fixed(":") ColonToken,
 
 	// Keywords
 	@Fixed("true") TrueKeyword,
@@ -74,7 +75,8 @@ public enum SyntaxKind {
 
 	// Special nodes
 	CompilationUnit,
-	ElseClause;
+	ElseClause,
+	TypeClause;
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -98,7 +100,7 @@ public enum SyntaxKind {
 	private final boolean isKeyword;
 	private final int binaryPrecedence;
 	private final int unaryPrecedence;
-	
+
 	private SyntaxKind() {
 		isKeyword = this.toString().endsWith("Keyword");
 		

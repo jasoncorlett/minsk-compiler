@@ -8,13 +8,15 @@ public class VariableDeclarationSyntax extends StatementSyntax {
 
 	private final SyntaxToken keyword;
 	private final SyntaxToken identifier;
+	private final TypeClauseSyntax typeClause;
 	private final SyntaxToken equals;
 	private final ExpressionSyntax initializer;
 
-	public VariableDeclarationSyntax(SyntaxToken keyword, SyntaxToken identifier, SyntaxToken equals,
-			ExpressionSyntax initializer) {
+	public VariableDeclarationSyntax(SyntaxToken keyword, SyntaxToken identifier, TypeClauseSyntax typeClause,
+			SyntaxToken equals, ExpressionSyntax initializer) {
 		this.keyword = keyword;
 		this.identifier = identifier;
+		this.typeClause = typeClause;
 		this.equals = equals;
 		this.initializer = initializer;
 	}
@@ -35,11 +37,16 @@ public class VariableDeclarationSyntax extends StatementSyntax {
 	}
 
 	@Nested(3)
+	public TypeClauseSyntax getTypeClause() {
+		return typeClause;
+	}
+
+	@Nested(4)
 	public SyntaxToken getEquals() {
 		return equals;
 	}
 
-	@Nested(4)
+	@Nested(5)
 	public ExpressionSyntax getInitializer() {
 		return initializer;
 	}

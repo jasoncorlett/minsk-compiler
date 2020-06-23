@@ -115,10 +115,26 @@ public class Parser implements Diagnosable {
 		var expected = current().getKind() == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
 		var keyword = matchToken(expected);
 		var identifier = matchToken(SyntaxKind.IdentifierToken);
+		var typeClause = parseOptionalTypeClause();
 		var equals = matchToken(SyntaxKind.EqualsToken);
 		var initializer = parseExpression();
 		
-		return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
+		return new VariableDeclarationSyntax(keyword, identifier, typeClause, equals, initializer);
+	}
+
+	private TypeClauseSyntax parseOptionalTypeClause() {
+		if (!current().getKind().equals(SyntaxKind.ColonToken)) {
+			return null;
+		}
+
+		return parseTypeClause();
+	}
+
+	private TypeClauseSyntax parseTypeClause() {
+		var colon = matchToken(SyntaxKind.ColonToken);
+		var identifier = matchToken(SyntaxKind.IdentifierToken);
+
+		return new TypeClauseSyntax(colon, identifier);
 	}
 
 	private IfStatementSyntax parseIfStatement() {
