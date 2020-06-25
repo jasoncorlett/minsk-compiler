@@ -1,10 +1,12 @@
 package minsk.codeanalysis.syntax;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
+import java.util.Optional;
+ 
 @SuppressWarnings("java:S115") // Sonar rule about case of enum constants
 public enum SyntaxKind {
 	// Tokens
@@ -77,7 +79,7 @@ public enum SyntaxKind {
 	CompilationUnit,
 	ElseClause,
 	TypeClause;
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	private @interface Fixed {
@@ -103,32 +105,20 @@ public enum SyntaxKind {
 
 	private SyntaxKind() {
 		isKeyword = this.toString().endsWith("Keyword");
-		
+
+		fixedText = getAnnotation(Fixed.class).map(Fixed::value).orElse(null);
+		unaryPrecedence = getAnnotation(Unary.class).map(Unary::value).orElse(0);
+		binaryPrecedence = getAnnotation(Binary.class).map(Binary::value).orElse(0);
+	}
+
+	private <T extends Annotation> Optional<T> getAnnotation(Class<T> clazz) { 
 		try {
-			var fixedAnnotation = this.getClass().getField(this.name()).getAnnotation(Fixed.class); 
-			fixedText = fixedAnnotation == null ? null : fixedAnnotation.value();
-		} 
-		catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
-		
-		try {
-			var unaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Unary.class);
-			unaryPrecedence = unaryAnnotation == null ? 0 : unaryAnnotation.value();
-		}
-		catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
-		
-		try {
-			var binaryAnnotation = this.getClass().getField(this.name()).getAnnotation(Binary.class);
-			binaryPrecedence = binaryAnnotation == null ? 0 : binaryAnnotation.value();
-		} 
-		catch (NoSuchFieldException | SecurityException e) {
+			return Optional.ofNullable(getClass().getField(this.name()).getAnnotation(clazz));
+		} catch (NoSuchFieldException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public boolean isKeyword() {
 		return isKeyword;
 	}
